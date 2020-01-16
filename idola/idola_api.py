@@ -8,10 +8,11 @@ import time
 from collections import defaultdict
 from pprint import pprint
 
-AUTH_KEY = "f04761bb65d44816e97e60de05e122d7abffa30c"  # Refreshes when you log into the main game
-RES_VER = "123ef2a18f47ca29d712451e6091565d"  # ResourceVersion?
 
 IDOLA_API_URL = "https://game.idola.jp/api"
+IDOLA_USER_PRELOGIN = IDOLA_API_URL + "/user/prelogin"
+IDOLA_USER_LOGIN = IDOLA_API_URL + "/user/login"
+IDOLA_HOME_NOTICE = IDOLA_API_URL + "/home/notice"
 IDOLA_HOME_NOW = IDOLA_API_URL + "/home/getnow"
 IDOLA_ARENA_PARTY_DETAILS = IDOLA_API_URL + "/ant/partydetails"
 IDOLA_ARENA_EVENT_INFO = IDOLA_API_URL + "/ant/eventinfo"
@@ -20,9 +21,6 @@ IDOLA_ARENA_RANKING_OFFSET = IDOLA_API_URL + "/ant/offsetranking"
 IDOLA_RAID_EVENT_INFO = IDOLA_API_URL + "/raid/geteventinfo"
 IDOLA_RAID_RANKING = IDOLA_API_URL + "/raid/ranking"
 IDOLA_RAID_RANKING_OFFSET = IDOLA_API_URL + "/raid/offsetranking"
-
-
-APP_VERSION = "1.11.1"  # Needs to be the latest version of IDOLA
 
 
 def unpack(s):
@@ -58,7 +56,6 @@ class HTTPClient(object):
             "Content-Type": "application/json",
             "User-Agent": self.USER_AGENT,
         }
-        time.sleep(1)  # Fast requests return same message..
         response = requests.post(url, headers=headers, data=json.dumps(body))
         if response.status_code != 200:
             raise Exception(f"API Error: {response.status_code}")
@@ -75,10 +72,11 @@ class HTTPClient(object):
 
 
 class IdolaAPI(object):
-    def __init__(self, auth_key):
+    def __init__(self, auth_key, res_ver, app_ver):
         self.client = HTTPClient()
+        self.app_ver = app_ver
         self.auth_key = auth_key
-        self.res_ver = RES_VER
+        self.res_ver = res_ver
         self.retrans_key = self.update_retrans_key()
 
         self.character_map = {}
@@ -88,12 +86,15 @@ class IdolaAPI(object):
         self.import_id_map(os.path.join("idola_id", "Idomag ID.csv"))
 
     def import_id_map(self, csv_filepath):
+        # https://github.com/NNSTJP/Idola
         with open(csv_filepath, newline="") as csvfile:
             char_csv = csv.reader(csvfile, delimiter=",")
             for row in char_csv:
                 self.character_map[str(row[0])] = str(row[1])
 
     def get_name_from_id(self, char_id):
+        if not char_id:
+            return "-"
         for c_id in self.character_map:
             if str(char_id).startswith(c_id):
                 return self.character_map[c_id]
@@ -106,22 +107,73 @@ class IdolaAPI(object):
         print(f"Updating retrans_key: {retrans_key}")
         return retrans_key
 
+    def pre_login(self):
+        body = {
+            "app_ver": self.app_ver,
+            "res_ver": self.res_ver,
+            "retrans_key": self.retrans_key,
+            "uuid": "dffdec15-45fa-47f7-9f4c-1a4a4a220bca",
+        }
+        response = self.client.post(IDOLA_USER_PRELOGIN, body)
+        json_response = response.json()
+        self.retrans_key = json_response["retrans_key"]
+
+    def login(self):
+        body = {
+            "app_ver": self.app_ver,
+            "res_ver": self.res_ver,
+            "auth_key": "9447342d03528364fa600b33822ad0475374a6d3",
+            "retrans_key": self.retrans_key,
+            "device_id": "f774d83401495247d86bb411b297b664",
+            "device_token": "dpQNW3ta9ro:APA91bEMRRDaYuB0_aeO2bMtEokLdMmSiW53PLcdIzqNgu4l2K5t3OZz0Q74W-DC0ifJ5nTx3rH9dvZNRT-4zxWGXkmV4a3d7CZc1HIBRtnpDQbvdU2LziZTcMgcl3KIPInz-VA8PYxI",
+            "language_code": "English",
+            "battle_type": 0,
+            "battle_id": 0,
+            "is_tutorial": true,
+            "region": "JP",
+            "localtime": 8,
+            "device_name": "Google Pixel XL",
+            "operating_system": "Android OS 5.1.1 / API-22 (NOF26V/500191128)",
+            "i_info": 0,
+        }
+        response = self.client.post(IDOLA_USER_LOGIN, body)
+        json_response = response.json()
+        retrans_key = json_response["retrans_key"]
+        self.retrans_key = json_response["retrans_key"]
+
     def get_latest_arena_event_id(self):
         body = {
-            "app_ver": APP_VERSION,
+            "app_ver": self.app_ver,
             "res_ver": self.res_ver,
             "auth_key": self.auth_key,
             "retrans_key": self.retrans_key,
+            "is_tutorial": "false",
+            "readed_character_promotion_id_list": None,
         }
-        response = self.client.post(IDOLA_ARENA_EVENT_INFO, body)
+        response = self.client.post(IDOLA_HOME_NOTICE, body)
         json_response = response.json()
-        event_id = json_response["replace"]["ant_event_info"]["event_id"]
+        event_id = json_response["replace"]["ant"]["event_id"]
         self.retrans_key = json_response["retrans_key"]
         return event_id
 
+    def get_home_notice(self):
+        body = {
+            "app_ver": self.app_ver,
+            "res_ver": self.res_ver,
+            "auth_key": self.auth_key,
+            "retrans_key": self.retrans_key,
+            "is_tutorial": "false",
+            "readed_character_promotion_id_list": None,
+        }
+        response = self.client.post(IDOLA_HOME_NOTICE, body)
+        json_response = response.json()
+        home_notice = json_response["replace"]
+        self.retrans_key = json_response["retrans_key"]
+        return home_notice
+
     def get_arena_ranking_offset(self, event_id, offset=0):
         body = {
-            "app_ver": APP_VERSION,
+            "app_ver": self.app_ver,
             "res_ver": self.res_ver,
             "auth_key": self.auth_key,
             "retrans_key": self.retrans_key,
@@ -144,7 +196,7 @@ class IdolaAPI(object):
 
     def get_arena_party_info(self, profile_id):
         body = {
-            "app_ver": APP_VERSION,
+            "app_ver": self.app_ver,
             "res_ver": self.res_ver,
             "auth_key": self.auth_key,
             "retrans_key": self.retrans_key,
@@ -158,15 +210,16 @@ class IdolaAPI(object):
 
     def get_latest_raid_event_id(self):
         body = {
-            "app_ver": APP_VERSION,
+            "app_ver": self.app_ver,
             "res_ver": self.res_ver,
             "auth_key": self.auth_key,
             "retrans_key": self.retrans_key,
             "is_tutorial": "false",
+            "readed_character_promotion_id_list": None,
         }
-        response = self.client.post(IDOLA_RAID_EVENT_INFO, body)
+        response = self.client.post(IDOLA_HOME_NOTICE, body)
         json_response = response.json()
-        event_id = json_response["replace"]["raid_event_info"]["event_id"]
+        event_id = json_response["replace"]["raid"]["event_id"]
         self.retrans_key = json_response["retrans_key"]
         return event_id
 
@@ -174,7 +227,7 @@ class IdolaAPI(object):
         if not event_id:
             event_id = self.get_latest_raid_event_id()
         body = {
-            "app_ver": APP_VERSION,
+            "app_ver": self.app_ver,
             "res_ver": self.res_ver,
             "auth_key": self.auth_key,
             "retrans_key": self.retrans_key,
@@ -190,7 +243,7 @@ class IdolaAPI(object):
 
     def get_raid_summon_ranking(self, event_id=None, offset=0):
         body = {
-            "app_ver": APP_VERSION,
+            "app_ver": self.app_ver,
             "res_ver": self.res_ver,
             "auth_key": self.auth_key,
             "retrans_key": self.retrans_key,
@@ -205,6 +258,7 @@ class IdolaAPI(object):
         return ranking_list
 
     def show_arena_ranking_top_100_players(self, event_id=None):
+        msg = []
         if not event_id:
             event_id = self.get_latest_arena_event_id()
         top_100_ranking_information = [
@@ -214,7 +268,7 @@ class IdolaAPI(object):
             self.get_arena_ranking_offset(event_id, 60),
             self.get_arena_ranking_offset(event_id, 80),
         ]
-        print("Idola Top 100 Arena Rankings")
+        msg.append("Idola Top 100 Arena Rankings")
         for ranking_information_intervals in top_100_ranking_information:
             for profile_id, ranking_information in sorted(
                 ranking_information_intervals.items(),
@@ -223,11 +277,13 @@ class IdolaAPI(object):
                 name = ranking_information["name"]
                 arena_score_rank = ranking_information["arena_score_rank"]
                 arena_score_point = ranking_information["arena_score_point"]
-                print(
+                msg.append(
                     f"{arena_score_rank}: {name}({profile_id}) - {arena_score_point:,d}"
                 )
+        return "\n".join(msg)
 
     def show_raid_suppression_top_100_players(self, event_id=None):
+        msg = []
         if not event_id:
             event_id = self.get_latest_raid_event_id()
         top_100_ranking_information = [
@@ -238,7 +294,7 @@ class IdolaAPI(object):
             self.get_raid_battle_ranking(event_id, 80),
         ]
 
-        print("Idola Top 100 Idola Suppression Rankings")
+        msg.append("Idola Top 100 Idola Suppression Rankings")
         prev_profile_id = None
         for ranking_information_intervals in top_100_ranking_information:
             for ranking_information in sorted(
@@ -253,11 +309,13 @@ class IdolaAPI(object):
                 raid_score_point = ranking_information["score_point"]
                 if raid_score_rank > 100:
                     break
-                print(
+                msg.append(
                     f"{raid_score_rank}: {name}({profile_id}) - {raid_score_point:,d}"
                 )
+        return "\n".join(msg)
 
     def show_raid_creation_top_100_players(self, event_id=None):
+        msg = []
         if not event_id:
             event_id = self.get_latest_raid_event_id()
         top_100_ranking_information = [
@@ -268,7 +326,7 @@ class IdolaAPI(object):
             self.get_raid_summon_ranking(event_id, 80),
         ]
 
-        print("Idola Top 100 Idola Suppression Rankings")
+        msg.append("Idola Top 100 Idola Suppression Rankings")
         prev_profile_id = None
         for ranking_information_intervals in top_100_ranking_information:
             for ranking_information in sorted(
@@ -283,11 +341,13 @@ class IdolaAPI(object):
                 raid_score_point = ranking_information["score_point"]
                 if raid_score_rank > 100:
                     break
-                print(
+                msg.append(
                     f"{raid_score_rank}: {name}({profile_id}) - {raid_score_point:,d}"
                 )
+        return "\n".join(msg)
 
     def show_top_100_arena_border(self, event_id=None):
+        msg = []
         if not event_id:
             event_id = self.get_latest_arena_event_id()
         border_score_point = None
@@ -300,9 +360,27 @@ class IdolaAPI(object):
         if border_score_point is None:
             raise Exception("Could not find the Top 100 border score")
 
-        print(f"Top 100 Arena border is currently at {border_score_point:,d}")
+        msg.append(f"Top 100 Arena border is currently {border_score_point:,d} points")
+        return "\n".join(msg)
+
+    def show_top_100_arena_border_number(self, event_id=None):
+        msg = []
+        if not event_id:
+            event_id = self.get_latest_arena_event_id()
+        border_score_point = None
+        ranking_information_81_100 = self.get_arena_ranking_offset(event_id, 80)
+        for ranking_information in ranking_information_81_100.values():
+            if ranking_information["arena_score_rank"] == 100:
+                border_score_point = ranking_information["arena_score_point"]
+                break
+
+        if border_score_point is None:
+            raise Exception("Could not find the Top 100 border score")
+
+        return border_score_point
 
     def show_top_100_raid_suppression_border(self, event_id=None):
+        msg = []
         border_score_point = None
         event_id = self.get_latest_raid_event_id()
         ranking_information_81_100 = self.get_raid_battle_ranking(event_id, 80)
@@ -314,11 +392,27 @@ class IdolaAPI(object):
         if border_score_point is None:
             raise Exception("Could not find the Top 100 border score")
 
-        print(
-            f"Top 100 Idola Raid Supression border is currently at {border_score_point:,d}"
+        msg.append(
+            f"Top 100 Idola Raid Supression border is currently {border_score_point:,d} points"
         )
+        return "\n".join(msg)
+
+    def show_top_100_raid_suppression_border_number(self, event_id=None):
+        border_score_point = None
+        event_id = self.get_latest_raid_event_id()
+        ranking_information_81_100 = self.get_raid_battle_ranking(event_id, 80)
+        for ranking_information in ranking_information_81_100:
+            if ranking_information["score_rank"] == 100:
+                border_score_point = ranking_information["score_point"]
+                break
+
+        if border_score_point is None:
+            raise Exception("Could not find the Top 100 border score")
+
+        return border_score_point
 
     def show_top_100_raid_creator_border(self, event_id=None):
+        msg = []
         border_score_point = None
         event_id = self.get_latest_raid_event_id()
         ranking_information_81_100 = self.get_raid_summon_ranking(event_id, 80)
@@ -330,18 +424,20 @@ class IdolaAPI(object):
         if border_score_point is None:
             raise Exception("Could not find the Top 100 border score")
 
-        print(
-            f"Top 100 Idola Raid Summon border is currently at {border_score_point:,d}"
+        msg.append(
+            f"Top 100 Idola Raid Summon border is currently {border_score_point:,d} points"
         )
+        return "\n".join(msg)
 
     @staticmethod
     def destiny_bonus(level, status):
         if status == 0:
-            return "NA"
+            return "-"
         else:
             return level
 
     def show_arena_team_composition(self, profile_id):
+        msg = []
         party_info = self.get_arena_party_info(profile_id)
         name = party_info["player_name"]
         arena_team_score = party_info["strength_value"]
@@ -369,10 +465,17 @@ class IdolaAPI(object):
             + str(character["soul_symbol"]["level"])
             for character in party_info["law"]
         ]
-        law_idomag_type = self.get_name_from_id(
-            party_info["law_idomag"]["idomag_type_id"]
-        )
-        law_idomag_name = party_info["law_idomag"]["name"]
+        try:
+            law_idomag_type = self.get_name_from_id(
+                party_info["law_idomag"]["idomag_type_id"]
+            )
+        except:
+            law_idomag_type = None
+
+        try:
+            law_idomag_name = party_info["law_idomag"]["name"]
+        except:
+            law_idomag_name = None
 
         chaos_char_names = [
             self.get_name_from_id(character["character"]["char_id"])
@@ -397,34 +500,32 @@ class IdolaAPI(object):
             + str(character["soul_symbol"]["level"])
             for character in party_info["chaos"]
         ]
-        chaos_idomag_type = self.get_name_from_id(
-            party_info["chaos_idomag"]["idomag_type_id"]
-        )
-        chaos_idomag_name = party_info["chaos_idomag"]["name"]
+        try:
+            chaos_idomag_type = self.get_name_from_id(
+                party_info["chaos_idomag"]["idomag_type_id"]
+            )
+        except:
+            chaos_idomag_type = None
 
-        print(f"== Arena Team ==")
-        print(f"Player Name: {name}")
-        print(f"Team Score: {arena_team_score:,d}")
-        print(f"Law Characters: {unpack(law_char_names)}")
-        print(f"Law Weapon Symbol: {unpack(law_wep_names)}")
-        print(f"Law Soul Symbol: {unpack(law_soul_names)}")
-        print(f"Law Idomag: {law_idomag_type}({law_idomag_name})")
-        print(f"Chaos Characters: {unpack(chaos_char_names)}")
-        print(f"Chaos Weapon Symbol: {unpack(chaos_wep_names)}")
-        print(f"Chaos Soul Symbol: {unpack(chaos_soul_names)}")
-        print(f"Chaos Idomag: {chaos_idomag_type}({chaos_idomag_name})")
+        try:
+            chaos_idomag_name = party_info["chaos_idomag"]["name"]
+        except:
+            chaos_idomag_name = None
 
-
-def main():
-    idola = IdolaAPI(auth_key=AUTH_KEY)
-    idola.show_arena_ranking_top_100_players()
-    idola.show_raid_suppression_top_100_players()
-    idola.show_raid_creation_top_100_players()
-    idola.show_top_100_arena_border()
-    idola.show_top_100_raid_suppression_border()
-    idola.show_top_100_raid_creator_border()
-    idola.show_arena_team_composition(profile_id=186534332)
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+        msg.append(f"Player Name: {name}")
+        msg.append(f"Team Score: {arena_team_score:,d}")
+        msg.append(f"Law Characters: {unpack(law_char_names)}")
+        msg.append(f"Law Weapon Symbol: {unpack(law_wep_names)}")
+        msg.append(f"Law Soul Symbol: {unpack(law_soul_names)}")
+        if law_idomag_type:
+            msg.append(f"Law Idomag: {law_idomag_type}({law_idomag_name})")
+        else:
+            msg.append(f"Law Idomag: - ")
+        msg.append(f"Chaos Characters: {unpack(chaos_char_names)}")
+        msg.append(f"Chaos Weapon Symbol: {unpack(chaos_wep_names)}")
+        msg.append(f"Chaos Soul Symbol: {unpack(chaos_soul_names)}")
+        if chaos_idomag_type:
+            msg.append(f"Chaos Idomag: {chaos_idomag_type}({chaos_idomag_name})")
+        else:
+            msg.append(f"Chaos Idomag: - ")
+        return "\n".join(msg)
