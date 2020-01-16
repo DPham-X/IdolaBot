@@ -8,6 +8,7 @@ IDOLA_AUTH_KEY = os.getenv('IDOLA_AUTH_KEY')
 IDOLA_RES_VER= os.getenv('IDOLA_RES_VER')
 IDOLA_APP_VER = os.getenv('IDOLA_APP_VER')
 
+print(f"Idola Version: {IDOLA_APP_VER}")
 
 idola = IdolaAPI(auth_key=IDOLA_AUTH_KEY, res_ver=IDOLA_RES_VER, app_ver=IDOLA_APP_VER)
 
