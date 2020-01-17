@@ -84,31 +84,49 @@ class IDOLA(commands.Cog):
     async def arena_team_error(self, ctx, error):
         print(error)
         print(traceback.format_exc())
-        await ctx.send("Please provide a valid id")
+        await ctx.send("An error occurred")
 
     @commands.command()
     async def arena_top_100(self, ctx):
         """Shows the Top 100 Arena players"""
         msg = idola.show_arena_ranking_top_100_players()
         msg = msg.split("\n")
-        for chunks in [msg[i:i+50] for i in range(0, len(msg), 50)]:
-            await ctx.send("\n".join(chunks))
+        for j, chunks in enumerate([msg[i:i+50] for i in range(0, len(msg), 50)]):
+            text = "\n".join(chunks)
+            embed = discord.Embed(
+                title="Idola Arena Top 100" if j == 0 else "\u200b",
+                description=f"```{text}```",
+                color=discord.Colour.red()
+            )
+            await ctx.send(embed=embed)
 
     @commands.command()
     async def suppression_top_100(self, ctx):
         """Shows the Top 100 Idola Raid Suppression players"""
         msg = idola.show_raid_suppression_top_100_players()
         msg = msg.split("\n")
-        for chunks in [msg[i:i+50] for i in range(0, len(msg), 50)]:
-            await ctx.send("\n".join(chunks))
+        for j, chunks in enumerate([msg[i:i+50] for i in range(0, len(msg), 50)]):
+            text = "\n".join(chunks)
+            embed = discord.Embed(
+                title="Idola Raid Suppression Top 100" if j == 0 else "\u200b",
+                description=f"```{text}```",
+                color=discord.Colour.red()
+            )
+            await ctx.send(embed=embed)
 
     @commands.command()
     async def creation_top_100(self, ctx):
         """Shows the Top 100 Idola Creation players"""
         msg = idola.show_raid_creation_top_100_players()
         msg = msg.split("\n")
-        for chunks in [msg[i:i+50] for i in range(0, len(msg), 50)]:
-            await ctx.send("\n".join(chunks))
+        for j, chunks in enumerate([msg[i:i+50] for i in range(0, len(msg), 50)]):
+            text = "\n".join(chunks)
+            embed = discord.Embed(
+                title="Idola Raid Summon Top 100" if j == 0 else "\u200b",
+                description=f"```{text}```",
+                color=discord.Colour.red()
+            )
+            await ctx.send(embed=embed)
 
 
 def setup(client):

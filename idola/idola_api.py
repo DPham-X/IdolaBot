@@ -271,7 +271,6 @@ class IdolaAPI(object):
             self.get_arena_ranking_offset(event_id, 60),
             self.get_arena_ranking_offset(event_id, 80),
         ]
-        msg.append("Idola Top 100 Arena Rankings")
         for ranking_information_intervals in top_100_ranking_information:
             for profile_id, ranking_information in sorted(
                 ranking_information_intervals.items(),
@@ -281,7 +280,7 @@ class IdolaAPI(object):
                 arena_score_rank = ranking_information["arena_score_rank"]
                 arena_score_point = ranking_information["arena_score_point"]
                 msg.append(
-                    f"{arena_score_rank}: {name}({profile_id}) - {arena_score_point:,d}"
+                    f"{arena_score_rank}: {arena_score_point:,d} - {name}({profile_id})"
                 )
         return "\n".join(msg)
 
@@ -297,7 +296,6 @@ class IdolaAPI(object):
             self.get_raid_battle_ranking(event_id, 80),
         ]
 
-        msg.append("Idola Top 100 Idola Suppression Rankings")
         prev_profile_id = None
         for ranking_information_intervals in top_100_ranking_information:
             for ranking_information in sorted(
@@ -313,7 +311,7 @@ class IdolaAPI(object):
                 if raid_score_rank > 100:
                     break
                 msg.append(
-                    f"{raid_score_rank}: {name}({profile_id}) - {raid_score_point:,d}"
+                    f"{raid_score_rank}: {raid_score_point:,d} - {name}({profile_id})"
                 )
         return "\n".join(msg)
 
@@ -329,7 +327,6 @@ class IdolaAPI(object):
             self.get_raid_summon_ranking(event_id, 80),
         ]
 
-        msg.append("Idola Top 100 Idola Suppression Rankings")
         prev_profile_id = None
         for ranking_information_intervals in top_100_ranking_information:
             for ranking_information in sorted(
@@ -345,7 +342,7 @@ class IdolaAPI(object):
                 if raid_score_rank > 100:
                     break
                 msg.append(
-                    f"{raid_score_rank}: {name}({profile_id}) - {raid_score_point:,d}"
+                    f"{raid_score_rank}: {raid_score_point:,d} - {name}({profile_id})"
                 )
         return "\n".join(msg)
 
