@@ -27,6 +27,8 @@ IDOLA_RAID_RANKING_OFFSET = IDOLA_API_URL + "/raid/offsetranking"
 def unpack(s):
     return ",".join(map(str, s))
 
+def unpack_newline(s, style='\n'):
+    return f"{style}".join(map(str, s))
 
 def braced_number(number):
     return "(" + str(number) + ")"
@@ -34,17 +36,17 @@ def braced_number(number):
 
 def lb_bullet(number):
     if number == 0:
-        return "\u25CB\u25CB\u25CB\u25CB"
+        return "``\u25CB\u25CB\u25CB\u25CB``"
     elif number == 1:
-        return "\u25CF\u25CB\u25CB\u25CB"
+        return "``\u25CF\u25CB\u25CB\u25CB``"
     elif number == 2:
-        return "\u25CF\u25CF\u25CB\u25CB"
+        return "``\u25CF\u25CF\u25CB\u25CB``"
     elif number == 3:
-        return "\u25CF\u25CF\u25CF\u25CB"
+        return "``\u25CF\u25CF\u25CF\u25CB``"
     elif number == 4:
-        return "\u25CF\u25CF\u25CF\u25CF"
+        return "``\u25CF\u25CF\u25CF\u25CF``"
     else:
-        number
+        return number
 
 
 class HTTPClient(object):
@@ -437,6 +439,9 @@ class IdolaAPI(object):
         else:
             return level
 
+    def truncate(self, text):
+        return (text if len(text) < 23 else text[:21] + "..")
+
     def get_arena_team_composition(self, profile_id):
         msg = []
         party_info = self.get_arena_party_info(profile_id)
@@ -444,25 +449,27 @@ class IdolaAPI(object):
         arena_team_score = party_info["strength_value"]
         avatar_character_id = party_info["avator_character_id"]
         law_char_names = [
-            lb_bullet(character["character"]["potential"])
+            self.get_name_from_id(character["character"]["char_id"])
+            + "\n"
+            + lb_bullet(character["character"]["potential"])
             + braced_number(
                 self.destiny_bonus(
                     character["destiny_bonus_level"], character["destiny_bonus_status"]
                 )
             )
-            + " "
-            + self.get_name_from_id(character["character"]["char_id"])
             for character in party_info["law"]
         ]
         law_wep_names = [
-            self.get_name_from_id(character["weapon_symbol"]["symbol_id"])
-            + " LV"
+            self.truncate(self.get_name_from_id(character["weapon_symbol"]["symbol_id"]))
+            + "\n"
+            + "LV"
             + str(character["weapon_symbol"]["level"])
             for character in party_info["law"]
         ]
         law_soul_names = [
-            self.get_name_from_id(character["soul_symbol"]["symbol_id"])
-            + " LV"
+            self.truncate(self.get_name_from_id(character["soul_symbol"]["symbol_id"]))
+            + "\n"
+            + "LV"
             + str(character["soul_symbol"]["level"])
             for character in party_info["law"]
         ]
@@ -479,25 +486,27 @@ class IdolaAPI(object):
             law_idomag_name = None
 
         chaos_char_names = [
-            lb_bullet(character["character"]["potential"])
+            self.get_name_from_id(character["character"]["char_id"])
+            + "\n"
+            + lb_bullet(character["character"]["potential"])
             + braced_number(
                 self.destiny_bonus(
                     character["destiny_bonus_level"], character["destiny_bonus_status"]
                 )
             )
-            + " "
-            + self.get_name_from_id(character["character"]["char_id"])
             for character in party_info["chaos"]
         ]
         chaos_wep_names = [
-            self.get_name_from_id(character["weapon_symbol"]["symbol_id"])
-            + " LV"
+            self.truncate(self.get_name_from_id(character["weapon_symbol"]["symbol_id"]))
+            + "\n"
+            + "LV"
             + str(character["weapon_symbol"]["level"])
             for character in party_info["chaos"]
         ]
         chaos_soul_names = [
-            self.get_name_from_id(character["soul_symbol"]["symbol_id"])
-            + " LV"
+            self.truncate(self.get_name_from_id(character["soul_symbol"]["symbol_id"]))
+            + "\n"
+            + "LV"
             + str(character["soul_symbol"]["level"])
             for character in party_info["chaos"]
         ]
@@ -517,13 +526,13 @@ class IdolaAPI(object):
             "player_name": name,
             "avatar_id": avatar_character_id,
             "team_score": arena_team_score,
-            "law_characters": unpack(law_char_names),
-            "law_weapon_symbols": unpack(law_wep_names),
-            "law_soul_symbols": unpack(law_soul_names),
+            "law_characters": unpack_newline(law_char_names),
+            "law_weapon_symbols": unpack_newline(law_wep_names),
+            "law_soul_symbols": unpack_newline(law_soul_names),
             "law_idomag": f"{law_idomag_type}({law_idomag_name})" if law_idomag_type else '-',
-            "chaos_characters": unpack(chaos_char_names),
-            "chaos_weapon_symbols": unpack(chaos_wep_names),
-            "chaos_soul_symbols": unpack(chaos_soul_names),
+            "chaos_characters": unpack_newline(chaos_char_names),
+            "chaos_weapon_symbols": unpack_newline(chaos_wep_names),
+            "chaos_soul_symbols": unpack_newline(chaos_soul_names),
             "chaos_idomag": f"{chaos_idomag_type}({chaos_idomag_name})" if chaos_idomag_type else '-',
         }
 

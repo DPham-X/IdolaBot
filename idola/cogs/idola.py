@@ -64,22 +64,21 @@ class IDOLA(commands.Cog):
         """Shows the latest ranked arena team for a given profile_id"""
         arena_team = idola.get_arena_team_composition(profile_id)
         embed = discord.Embed(
+            title=f"Team Score: {arena_team['team_score']:,d}",
+            description=f"**Idomag**\nLaw: {arena_team['law_idomag']}\nChaos: {arena_team['chaos_idomag']}",
             color=discord.Colour.blue()
         )
-        embed.set_author(name=arena_team["player_name"])
+        embed.set_author(name=f"{arena_team['player_name']}")
         embed.set_thumbnail(url="https://i0.wp.com/bumped.org/idola/wp-content/uploads/2019/11/character-rappy-thumb.png")
-        embed.add_field(name="\u200b", value=f"Team Score: {arena_team['team_score']}", inline=False)
-        embed.add_field(name="\u200b", value="Law", inline=False)
-        embed.add_field(name="Characters", value=arena_team["law_characters"].replace(',','\n'), inline=False)
-        embed.add_field(name="Weapon Symbols", value=arena_team["law_weapon_symbols"].replace(',','\n'), inline=True)
-        embed.add_field(name="Soul Symbols", value=arena_team["law_soul_symbols"].replace(',','\n'), inline=True)
-        embed.add_field(name="Idomag", value=arena_team["law_idomag"], inline=False)
-        embed.add_field(name="\u200b", value="Chaos", inline=False)
-        embed.add_field(name="Characters", value=arena_team["chaos_characters"].replace(',','\n'), inline=False)
-        embed.add_field(name="Weapon Symbols", value=arena_team["chaos_weapon_symbols"].replace(',','\n'), inline=True)
-        embed.add_field(name="Soul Symbols", value=arena_team["chaos_soul_symbols"].replace(',','\n'), inline=True)
-        embed.add_field(name="Idomag", value=arena_team["chaos_idomag"], inline=False)
 
+        embed.add_field(name="Law Characters", value=arena_team["law_characters"], inline=True)
+        embed.add_field(name="Weapon Symbols", value=arena_team["law_weapon_symbols"], inline=True)
+        embed.add_field(name="Soul Symbols", value=arena_team["law_soul_symbols"], inline=True)
+        embed.add_field(name="Chaos Characters", value=arena_team["chaos_characters"], inline=True)
+        embed.add_field(name="Weapon Symbols", value=arena_team["chaos_weapon_symbols"], inline=True)
+        embed.add_field(name="Soul Symbols", value=arena_team["chaos_soul_symbols"], inline=True)
+        embed.add_field(name=78*"\u200b", value="\u200b", inline=True)
+        embed.set_footer(text=arena_team["avatar_id"])
         await ctx.send(embed=embed)
 
     @arena_team.error
