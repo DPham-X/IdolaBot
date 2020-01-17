@@ -77,8 +77,7 @@ class IDOLA(commands.Cog):
         embed.add_field(name="Chaos Characters", value=arena_team["chaos_characters"], inline=True)
         embed.add_field(name="Weapon Symbols", value=arena_team["chaos_weapon_symbols"], inline=True)
         embed.add_field(name="Soul Symbols", value=arena_team["chaos_soul_symbols"], inline=True)
-        embed.add_field(name=78*"\u200b", value="\u200b", inline=True)
-        embed.set_footer(text=arena_team["avatar_id"])
+        embed.set_footer(text=78*"\u200b")
         await ctx.send(embed=embed)
 
     @arena_team.error
