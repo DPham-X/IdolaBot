@@ -245,12 +245,14 @@ class IdolaAPI(object):
         return ranking_list
 
     def get_raid_summon_ranking(self, event_id=None, offset=0):
+        if not event_id:
+            event_id = self.get_latest_raid_event_id()
         body = {
             "app_ver": self.app_ver,
             "res_ver": self.res_ver,
             "auth_key": self.auth_key,
             "retrans_key": self.retrans_key,
-            "idola_event_id": 62,
+            "idola_event_id": event_id,
             "ranking_offset": offset,
             "ranking_type": 1,
         }
