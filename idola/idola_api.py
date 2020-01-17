@@ -437,7 +437,7 @@ class IdolaAPI(object):
             return level
 
     def truncate(self, text):
-        return (text if len(text) < 23 else text[:21] + "..")
+        return (text if len(text) < 21 else text[:19] + "..")
 
     def get_arena_team_composition(self, profile_id):
         msg = []
