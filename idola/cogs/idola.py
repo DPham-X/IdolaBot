@@ -1,5 +1,6 @@
 import discord
 import os
+import traceback
 from discord.ext import commands, tasks
 from idola_api import IdolaAPI
 
@@ -61,12 +62,30 @@ class IDOLA(commands.Cog):
     @commands.command()
     async def arena_team(self, ctx, profile_id : int):
         """Shows the latest ranked arena team for a given profile_id"""
-        msg = idola.show_arena_team_composition(profile_id)
-        await ctx.send(msg)
+        arena_team = idola.get_arena_team_composition(profile_id)
+        embed = discord.Embed(
+            color=discord.Colour.blue()
+        )
+        embed.set_author(name=arena_team["player_name"])
+        embed.set_thumbnail(url="https://i0.wp.com/bumped.org/idola/wp-content/uploads/2019/11/character-rappy-thumb.png")
+        embed.add_field(name="\u200b", value=f"Team Score: {arena_team['team_score']}", inline=False)
+        embed.add_field(name="\u200b", value="Law", inline=False)
+        embed.add_field(name="Characters", value=arena_team["law_characters"].replace(',','\n'), inline=False)
+        embed.add_field(name="Weapon Symbols", value=arena_team["law_weapon_symbols"].replace(',','\n'), inline=True)
+        embed.add_field(name="Soul Symbols", value=arena_team["law_soul_symbols"].replace(',','\n'), inline=True)
+        embed.add_field(name="Idomag", value=arena_team["law_idomag"], inline=False)
+        embed.add_field(name="\u200b", value="Chaos", inline=False)
+        embed.add_field(name="Characters", value=arena_team["chaos_characters"].replace(',','\n'), inline=False)
+        embed.add_field(name="Weapon Symbols", value=arena_team["chaos_weapon_symbols"].replace(',','\n'), inline=True)
+        embed.add_field(name="Soul Symbols", value=arena_team["chaos_soul_symbols"].replace(',','\n'), inline=True)
+        embed.add_field(name="Idomag", value=arena_team["chaos_idomag"], inline=False)
+
+        await ctx.send(embed=embed)
 
     @arena_team.error
     async def arena_team_error(self, ctx, error):
         print(error)
+        print(traceback.format_exc())
         await ctx.send("Please provide a valid id")
 
     @commands.command()
