@@ -88,6 +88,10 @@ class IdolaAPI(object):
         self.import_id_map(os.path.join("idola_id", "Soul ID.csv"))
         self.import_id_map(os.path.join("idola_id", "Idomag ID.csv"))
 
+    def update_auth_key(self, auth_key):
+        self.auth_key = auth_key
+        return f"auth_key set to {auth_key}"
+
     def import_id_map(self, csv_filepath):
         # https://github.com/NNSTJP/Idola
         with open(csv_filepath, newline="") as csvfile:

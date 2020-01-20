@@ -34,7 +34,16 @@ class IDOLA(commands.Cog):
         )
         self.border_status_update.start()
 
-    @tasks.loop(seconds=5, reconnect=True)
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def update_auth_key(self, ctx, auth_key: str):
+        try:
+            msg = idola.update_auth_key(auth_key)
+            await ctx.send(msg)
+        except Exception as e:
+            await ctx.send(f"Error: Could not update auth_key - {e}")
+
+    @tasks.loop(seconds=30, reconnect=True)
     async def border_status_update(self):
         border_score = idola.show_top_100_raid_suppression_border_number()
         await self.client.change_presence(
@@ -47,17 +56,35 @@ class IDOLA(commands.Cog):
         msg = idola.show_top_100_arena_border()
         await ctx.send(msg)
 
+    @arena_border.error
+    async def arena_border_error(self, ctx, error):
+        print(error)
+        print(traceback.format_exc())
+        await ctx.send("An error occurred")
+
     @commands.command()
     async def suppression_border(self, ctx):
         """Shows the Top 100 border for Idola Raid Suppression"""
         msg = idola.show_top_100_raid_suppression_border()
         await ctx.send(msg)
 
+    @suppression_border.error
+    async def suppression_border_error(self, ctx, error):
+        print(error)
+        print(traceback.format_exc())
+        await ctx.send("An error occurred")
+
     @commands.command()
     async def creation_border(self, ctx):
         """Shows the Top 100 border for Idola Raid Creation"""
         msg = idola.show_top_100_raid_creator_border()
         await ctx.send(msg)
+
+    @creation_border.error
+    async def creation_border_error(self, ctx, error):
+        print(error)
+        print(traceback.format_exc())
+        await ctx.send("An error occurred")
 
     @commands.command()
     async def arena_team(self, ctx, profile_id : int):
@@ -100,6 +127,12 @@ class IDOLA(commands.Cog):
             )
             await ctx.send(embed=embed)
 
+    @arena_top_100.error
+    async def arena_top_100_error(self, ctx, error):
+        print(error)
+        print(traceback.format_exc())
+        await ctx.send("An error occurred")
+
     @commands.command()
     async def suppression_top_100(self, ctx):
         """Shows the Top 100 Idola Raid Suppression players"""
@@ -114,6 +147,12 @@ class IDOLA(commands.Cog):
             )
             await ctx.send(embed=embed)
 
+    @suppression_top_100.error
+    async def suppression_top_100_error(self, ctx, error):
+        print(error)
+        print(traceback.format_exc())
+        await ctx.send("An error occurred")
+
     @commands.command()
     async def creation_top_100(self, ctx):
         """Shows the Top 100 Idola Creation players"""
@@ -127,6 +166,12 @@ class IDOLA(commands.Cog):
                 color=discord.Colour.red()
             )
             await ctx.send(embed=embed)
+
+    @creation_top_100.error
+    async def creation_top_100_error(self, ctx, error):
+        print(error)
+        print(traceback.format_exc())
+        await ctx.send("An error occurred")
 
 
 def setup(client):
