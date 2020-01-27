@@ -53,6 +53,9 @@ class IDOLA(commands.Cog):
             )
         except Exception as e:
             print(e, traceback.format_exc())
+            await self.client.change_presence(
+                activity=discord.Game("Popona is down")
+            )
 
     @commands.command()
     async def arena_border(self, ctx):
