@@ -45,11 +45,14 @@ class IDOLA(commands.Cog):
 
     @tasks.loop(seconds=30)
     async def border_status_update(self):
-        border_score = idola.show_top_100_raid_suppression_border_number()
-        print(f"{border_score:,d} - SuppressionBorderTop100")
-        await self.client.change_presence(
-            activity=discord.Game(f"{border_score:,d} - SuppressionBorderTop100")
-        )
+        try:
+            border_score = idola.show_top_100_raid_suppression_border_number()
+            print(f"{border_score:,d} - SuppressionBorderTop100")
+            await self.client.change_presence(
+                activity=discord.Game(f"{border_score:,d} - SuppressionBorderTop100")
+            )
+        except Exception as e:
+            print(e, traceback.format_exc())
 
     @commands.command()
     async def arena_border(self, ctx):
