@@ -105,6 +105,7 @@ class IdolaAPI(object):
         for c_id in self.character_map:
             if str(char_id).startswith(c_id):
                 return self.character_map[c_id]
+        print(f"Unknown char_id: {char_id}")
         return "Unknown"
 
     def update_retrans_key(self):
@@ -443,7 +444,7 @@ class IdolaAPI(object):
             return level
 
     def truncate(self, text):
-        return (text if len(text) < 21 else text[:19] + "..")
+        return (text if len(text) < 20 else text[:18] + "..")
 
     def get_arena_team_composition(self, profile_id):
         msg = []
@@ -452,7 +453,7 @@ class IdolaAPI(object):
         arena_team_score = party_info["strength_value"]
         avatar_character_id = party_info["avator_character_id"]
         law_char_names = [
-            self.get_name_from_id(character["character"]["char_id"])
+            self.truncate(self.get_name_from_id(character["character"]["char_id"]))
             + "\n"
             + lb_bullet(character["character"]["potential"])
             + braced_number(
@@ -489,7 +490,7 @@ class IdolaAPI(object):
             law_idomag_name = None
 
         chaos_char_names = [
-            self.get_name_from_id(character["character"]["char_id"])
+            self.truncate(self.get_name_from_id(character["character"]["char_id"]))
             + "\n"
             + lb_bullet(character["character"]["potential"])
             + braced_number(
