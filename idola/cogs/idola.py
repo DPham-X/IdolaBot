@@ -43,9 +43,10 @@ class IDOLA(commands.Cog):
         except Exception as e:
             await ctx.send(f"Error: Could not update auth_key - {e}")
 
-    @tasks.loop(seconds=30, reconnect=True)
+    @tasks.loop(seconds=30)
     async def border_status_update(self):
         border_score = idola.show_top_100_raid_suppression_border_number()
+        print(f"{border_score:,d} - SuppressionBorderTop100")
         await self.client.change_presence(
             activity=discord.Game(f"{border_score:,d} - SuppressionBorderTop100")
         )

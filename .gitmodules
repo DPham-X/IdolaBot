@@ -1,0 +1,3 @@
+[submodule "idola/Idola"]
+	path = idola/Idola
+	url = https://github.com/NNSTJP/Idola.git

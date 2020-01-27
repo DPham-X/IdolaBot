@@ -83,10 +83,10 @@ class IdolaAPI(object):
         self.retrans_key = self.update_retrans_key()
 
         self.character_map = {}
-        self.import_id_map(os.path.join("idola_id", "Character ID.csv"))
-        self.import_id_map(os.path.join("idola_id", "Weapon ID.csv"))
-        self.import_id_map(os.path.join("idola_id", "Soul ID.csv"))
-        self.import_id_map(os.path.join("idola_id", "Idomag ID.csv"))
+        self.import_id_map(os.path.join("Idola", "Character ID.csv"))
+        self.import_id_map(os.path.join("Idola", "Weapon ID.csv"))
+        self.import_id_map(os.path.join("Idola", "Soul ID.csv"))
+        self.import_id_map(os.path.join("Idola", "Idomag ID.csv"))
 
     def update_auth_key(self, auth_key):
         self.auth_key = auth_key
