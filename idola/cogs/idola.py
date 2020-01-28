@@ -173,7 +173,8 @@ class IDOLA(commands.Cog):
             arena_score_rank = ranking_information["arena_score_rank"]
             arena_score_point = ranking_information["arena_score_point"]
             name = ranking_information["name"]
-            msg.append(
+            msg.insert(
+                0,
                 f"{arena_score_rank}: {arena_score_point:,d} - {name}({profile_id})"
             )
         for j, chunks in enumerate([msg[i:i+50] for i in range(0, len(msg), 50)]):
