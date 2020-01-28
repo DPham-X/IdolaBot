@@ -126,6 +126,7 @@ class IDOLA(commands.Cog):
         arena_team = idola.get_arena_team_composition_from_name(profile_name)
         if not arena_team:
             await ctx.send("Could not find a player by that name in the top 100")
+            return
         embed = discord.Embed(
             title=f"Team Score: {arena_team['team_score']:,d}",
             description=f"**Idomag**\nLaw: {arena_team['law_idomag']}\nChaos: {arena_team['chaos_idomag']}",
