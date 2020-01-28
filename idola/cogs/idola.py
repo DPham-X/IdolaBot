@@ -121,10 +121,46 @@ class IDOLA(commands.Cog):
         await ctx.send("An error occurred")
 
     @commands.command()
+    async def arena_team_name(self, ctx, profile_name):
+        """Shows the matching arena_team if they are in the top 100"""
+        arena_team = idola.get_arena_team_composition_from_name(profile_name)
+        if not arena_team:
+            await ctx.send("Could not find a player by that name in the top 100")
+        embed = discord.Embed(
+            title=f"Team Score: {arena_team['team_score']:,d}",
+            description=f"**Idomag**\nLaw: {arena_team['law_idomag']}\nChaos: {arena_team['chaos_idomag']}",
+            color=discord.Colour.blue()
+        )
+        embed.set_author(name=f"{arena_team['player_name']}")
+        embed.set_thumbnail(url="https://i0.wp.com/bumped.org/idola/wp-content/uploads/2019/11/character-rappy-thumb.png")
+
+        embed.add_field(name="Law Characters", value=arena_team["law_characters"], inline=True)
+        embed.add_field(name="Weapon Symbols", value=arena_team["law_weapon_symbols"], inline=True)
+        embed.add_field(name="Soul Symbols", value=arena_team["law_soul_symbols"], inline=True)
+        embed.add_field(name="Chaos Characters", value=arena_team["chaos_characters"], inline=True)
+        embed.add_field(name="Weapon Symbols", value=arena_team["chaos_weapon_symbols"], inline=True)
+        embed.add_field(name="Soul Symbols", value=arena_team["chaos_soul_symbols"], inline=True)
+        embed.set_footer(text=78*"\u200b")
+        await ctx.send(embed=embed)
+
+    @arena_team_name.error
+    async def arena_team_name_error(self, ctx, error):
+        print(error)
+        print(traceback.format_exc())
+        await ctx.send("An error occurred")
+
+    @commands.command()
     async def arena_top_100(self, ctx):
         """Shows the Top 100 Arena players"""
-        msg = idola.show_arena_ranking_top_100_players()
-        msg = msg.split("\n")
+        players = idola.show_arena_ranking_top_100_players()
+        msg = []
+        for profile_id, ranking_information in sorted(
+            players.items(),
+            key=lambda item: item[1]["arena_score_point"],
+        ):
+            msg.append(
+                f"{arena_score_rank}: {arena_score_point:,d} - {name}({profile_id})"
+            )
         for j, chunks in enumerate([msg[i:i+50] for i in range(0, len(msg), 50)]):
             text = "\n".join(chunks)
             embed = discord.Embed(

@@ -268,7 +268,7 @@ class IdolaAPI(object):
         return ranking_list
 
     def show_arena_ranking_top_100_players(self, event_id=None):
-        msg = []
+        players = defaultdict(dict)
         if not event_id:
             event_id = self.get_latest_arena_event_id()
         top_100_ranking_information = [
@@ -279,17 +279,11 @@ class IdolaAPI(object):
             self.get_arena_ranking_offset(event_id, 80),
         ]
         for ranking_information_intervals in top_100_ranking_information:
-            for profile_id, ranking_information in sorted(
-                ranking_information_intervals.items(),
-                key=lambda item: item[1]["arena_score_rank"],
-            ):
-                name = ranking_information["name"]
-                arena_score_rank = ranking_information["arena_score_rank"]
-                arena_score_point = ranking_information["arena_score_point"]
-                msg.append(
-                    f"{arena_score_rank}: {arena_score_point:,d} - {name}({profile_id})"
-                )
-        return "\n".join(msg)
+            for profile_id, ranking_information in ranking_information_intervals.items():
+                players[profile_id]["name"] = ranking_information["name"]
+                players[profile_id]["arena_score_rank"] =  ranking_information["arena_score_rank"]
+                players[profile_id]["arena_score_point"] = ranking_information["arena_score_point"]
+        return players
 
     def show_raid_suppression_top_100_players(self, event_id=None):
         msg = []
@@ -540,6 +534,18 @@ class IdolaAPI(object):
             "chaos_idomag": f"{chaos_idomag_type}({chaos_idomag_name})" if chaos_idomag_type else '-',
         }
 
+    def get_profile_id_from_name(self, name):
+        players = self.show_arena_ranking_top_100_players()
+        for profile_id, ranking_information in players.items():
+            if ranking_information["name"].startswith(name):
+                return profile_id
+        return None
+
+    def get_arena_team_composition_from_name(self, name):
+        profile_id = self.get_profile_id_from_name(name)
+        if not profile_id:
+            return None
+        return self.get_arena_team_composition(int(profile_id))
 
 if __name__ == "__main__":
     load_dotenv()
