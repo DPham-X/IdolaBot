@@ -41,7 +41,18 @@ class IDOLA(commands.Cog):
             msg = idola.update_auth_key(auth_key)
             await ctx.send(msg)
         except Exception as e:
+            print(traceback.format_exc())
             await ctx.send(f"Error: Could not update auth_key - {e}")
+
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def save_profiles(self, ctx):
+        try:
+            idola.save_profile_cache()
+            await ctx.send("Profile cache saved")
+        except Exception as e:
+            print(traceback.format_exc())
+            await ctx.send(f"Error: Could not save profile cache - {e}")
 
     @tasks.loop(seconds=30)
     async def border_status_update(self):
@@ -125,7 +136,7 @@ class IDOLA(commands.Cog):
         """Shows the matching arena_team if they are in the top 100"""
         arena_team = idola.get_arena_team_composition_from_name(profile_name)
         if not arena_team:
-            await ctx.send("Could not find a player by that name in the top 100")
+            await ctx.send("Could not find a player by that name in the cache, to update the cache run \'arena_team\' using your profile id first")
             return
         embed = discord.Embed(
             title=f"Team Score: {arena_team['team_score']:,d}",

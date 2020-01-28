@@ -2,10 +2,12 @@
 import csv
 import json
 import os
+import pickle
+import pylru
 import requests
 import sys
 import time
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from dotenv import load_dotenv
 from pprint import pprint
 
@@ -33,7 +35,6 @@ def unpack_newline(s, style='\n'):
 def braced_number(number):
     return "(" + str(number) + ")"
 
-
 def lb_bullet(number):
     if number == 0:
         return "``\u25CB\u25CB\u25CB\u25CB``"
@@ -47,6 +48,12 @@ def lb_bullet(number):
         return "``\u25CF\u25CF\u25CF\u25CF``"
     else:
         return number
+
+
+profile_cache = pylru.lrucache(size=1000)
+def update_profile_cache(name, profile_id):
+    global profile_cache
+    profile_cache[name] = int(profile_id)
 
 
 class HTTPClient(object):
@@ -76,6 +83,7 @@ class HTTPClient(object):
 
 class IdolaAPI(object):
     def __init__(self, auth_key, res_ver, app_ver):
+        self.load_profile_cache()
         self.client = HTTPClient()
         self.app_ver = app_ver
         self.auth_key = auth_key
@@ -280,6 +288,7 @@ class IdolaAPI(object):
         ]
         for ranking_information_intervals in top_100_ranking_information:
             for profile_id, ranking_information in ranking_information_intervals.items():
+                update_profile_cache(ranking_information["name"], profile_id)
                 players[profile_id]["name"] = ranking_information["name"]
                 players[profile_id]["arena_score_rank"] =  ranking_information["arena_score_rank"]
                 players[profile_id]["arena_score_point"] = ranking_information["arena_score_point"]
@@ -304,6 +313,7 @@ class IdolaAPI(object):
             ):
                 name = ranking_information["friend_profile"]["name"]
                 profile_id = ranking_information["friend_profile"]["profile_id"]
+                update_profile_cache(name, profile_id)
                 if profile_id == prev_profile_id:
                     continue
                 prev_profile_id = ranking_information["friend_profile"]["profile_id"]
@@ -335,6 +345,7 @@ class IdolaAPI(object):
             ):
                 name = ranking_information["friend_profile"]["name"]
                 profile_id = ranking_information["friend_profile"]["profile_id"]
+                update_profile_cache(name, profile_id)
                 if profile_id == prev_profile_id:
                     continue
                 prev_profile_id = ranking_information["friend_profile"]["profile_id"]
@@ -520,6 +531,7 @@ class IdolaAPI(object):
         except:
             chaos_idomag_name = None
 
+        update_profile_cache(name, profile_id)
         return {
             "player_name": name,
             "avatar_id": avatar_character_id,
@@ -535,6 +547,9 @@ class IdolaAPI(object):
         }
 
     def get_profile_id_from_name(self, name):
+        if profile_cache.peek(name):
+            return profile_cache.get(name)
+
         players = self.show_arena_ranking_top_100_players()
         for profile_id, ranking_information in players.items():
             if ranking_information["name"].startswith(name):
@@ -547,6 +562,26 @@ class IdolaAPI(object):
             return None
         return self.get_arena_team_composition(int(profile_id))
 
+    def save_profile_cache(self):
+        profile_dict = OrderedDict()
+        for k, v in profile_cache.items():
+            profile_dict[k] = v
+        pickle.dump(profile_dict, open("profile_cache.p", "wb"))
+        return True
+
+    def load_profile_cache(self):
+        global profile_cache
+        try:
+            profile_dict = pickle.load(open("profile_cache.p", "rb"))
+            for k, v in reversed(profile_dict.items()):
+                profile_cache[k] = v
+        except FileNotFoundError as e:
+            print(f"Error: Could not load profile_cache - {e}")
+            return False
+        print("Profile cache loaded")
+        return True
+
+
 if __name__ == "__main__":
     load_dotenv()
 
@@ -555,3 +590,4 @@ if __name__ == "__main__":
     IDOLA_APP_VER = os.getenv('IDOLA_APP_VER')
 
     idola = IdolaAPI(IDOLA_AUTH_KEY, IDOLA_RES_VER, IDOLA_APP_VER)
+    print(idola.show_raid_suppression_top_100_players())
