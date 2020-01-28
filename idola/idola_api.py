@@ -547,7 +547,7 @@ class IdolaAPI(object):
         }
 
     def get_profile_id_from_name(self, name):
-        if profile_cache.peek(name):
+        if name in profile_cache:
             return profile_cache.get(name)
 
         players = self.show_arena_ranking_top_100_players()
