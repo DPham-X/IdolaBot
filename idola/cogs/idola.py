@@ -170,6 +170,9 @@ class IDOLA(commands.Cog):
             players.items(),
             key=lambda item: item[1]["arena_score_point"],
         ):
+            arena_score_rank = ranking_information["arena_score_rank"]
+            arena_score_point = ranking_information["arena_score_point"]
+            name = ranking_information["name"]
             msg.append(
                 f"{arena_score_rank}: {arena_score_point:,d} - {name}({profile_id})"
             )
