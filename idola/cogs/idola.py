@@ -46,6 +46,16 @@ class IDOLA(commands.Cog):
 
     @commands.command(hidden=True)
     @commands.is_owner()
+    async def update_res_ver(self, ctx, res_ver: str):
+        try:
+            msg = idola.update_res_ver(res_ver)
+            await ctx.send(msg)
+        except Exception as e:
+            print(traceback.format_exc())
+            await ctx.send(f"Error: Could not update res_ver - {e}")
+
+    @commands.command(hidden=True)
+    @commands.is_owner()
     async def save_profiles(self, ctx):
         try:
             idola.save_profile_cache()

@@ -100,6 +100,10 @@ class IdolaAPI(object):
         self.auth_key = auth_key
         return f"auth_key set to {auth_key}"
 
+    def update_res_ver(self, res_ver):
+        self.res_ver = res_ver
+        return f"res_ver set to {res_ver}"
+
     def import_id_map(self, csv_filepath):
         # https://github.com/NNSTJP/Idola
         with open(csv_filepath, newline="") as csvfile:
