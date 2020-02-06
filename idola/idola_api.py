@@ -107,7 +107,7 @@ class IdolaAPI(object):
         self.api_init()
         self.pre_login()
         self.login()
-
+        self.update_retrans_key()
         print("Idola API ready!")
 
     def import_id_map(self, csv_filepath):

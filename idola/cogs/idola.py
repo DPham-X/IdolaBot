@@ -61,6 +61,7 @@ class IDOLA(commands.Cog):
             idola.api_init()
             idola.pre_login()
             idola.login()
+            idola.update_retrans_key()
         except Exception as e:
             print(e, traceback.format_exc())
             await self.client.change_presence(
