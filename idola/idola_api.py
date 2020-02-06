@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import csv
+import hashlib
 import json
 import os
 import pickle
@@ -13,6 +14,7 @@ from pprint import pprint
 
 
 IDOLA_API_URL = "https://game.idola.jp/api"
+IDOLA_API_INIT = "https://service.idola.jp/api/app/init"
 IDOLA_USER_PRELOGIN = IDOLA_API_URL + "/user/prelogin"
 IDOLA_USER_LOGIN = IDOLA_API_URL + "/user/login"
 IDOLA_HOME_NOTICE = IDOLA_API_URL + "/home/notice"
@@ -57,16 +59,17 @@ def update_profile_cache(name, profile_id):
 
 
 class HTTPClient(object):
-    USER_AGENT = (
-        "Dalvik/2.1.0 (Linux; U; Android 5.1.1; Pixel XL Build/NOF26V)"  # android
-    )
-
-    def post(self, url, body={}):
-        headers = {
-            "Content-Type": "application/json",
-            "User-Agent": self.USER_AGENT,
-        }
-        response = requests.post(url, headers=headers, data=json.dumps(body))
+    # USER_AGENT = "Dalvik/2.1.0 (Linux; U; Android 5.1.1; Pixel XL Build/NOF26V)"
+    USER_AGENT = "idola/43 CFNetwork/1121.2.2 Darwin/19.3.0"
+    X_UNITY_VER = "2017.4.26f1"
+    def post(self, url, body={}, headers={}):
+        if not headers:
+            headers = {
+                "Content-Type": "application/json",
+                "User-Agent": self.USER_AGENT,
+            }
+        json_output = json.dumps(body)
+        response = requests.post(url, headers=headers, data=json_output)
         if response.status_code != 200:
             raise Exception(f"API Error: {response.status_code}")
         return response
@@ -82,13 +85,18 @@ class HTTPClient(object):
 
 
 class IdolaAPI(object):
-    def __init__(self, auth_key, res_ver, app_ver):
+    def __init__(self, app_ver, device_id, device_token, token_key):
         self.load_profile_cache()
         self.client = HTTPClient()
         self.app_ver = app_ver
-        self.auth_key = auth_key
-        self.res_ver = res_ver
-        self.retrans_key = self.update_retrans_key()
+        self.auth_key = ""
+        self.device_id = ""
+        self.device_token = ""
+        self.res_ver = ""
+        self.retrans_key = ""
+        self.session_key = ""
+        self.token_key = token_key
+        self.uuid = "cee01c9f-2492-43aa-84eb-54ecf6b6da70"
 
         self.character_map = {}
         self.import_id_map(os.path.join("Idola", "Character ID.csv"))
@@ -96,13 +104,11 @@ class IdolaAPI(object):
         self.import_id_map(os.path.join("Idola", "Soul ID.csv"))
         self.import_id_map(os.path.join("Idola", "Idomag ID.csv"))
 
-    def update_auth_key(self, auth_key):
-        self.auth_key = auth_key
-        return f"auth_key set to {auth_key}"
+        self.api_init()
+        self.pre_login()
+        self.login()
 
-    def update_res_ver(self, res_ver):
-        self.res_ver = res_ver
-        return f"res_ver set to {res_ver}"
+        print("Idola API ready!")
 
     def import_id_map(self, csv_filepath):
         # https://github.com/NNSTJP/Idola
@@ -127,33 +133,61 @@ class IdolaAPI(object):
         print(f"Updating retrans_key: {retrans_key}")
         return retrans_key
 
+    def api_init(self):
+        headers = {
+            "Content-Type": "application/json",
+            "User-Agent": HTTPClient.USER_AGENT,
+            "X-Unity-Version": HTTPClient.X_UNITY_VER,
+        }
+        body = {
+            "app_ver": self.app_ver,
+            "retrans_key": None,
+            "uuid": "",
+        }
+        response = self.client.post(IDOLA_API_INIT, body, headers)
+        json_response = response.json()
+        self.retrans_key = json_response["retrans_key"]
+        self.res_ver = json_response["res_version"]
+        print(f"ResVer: {self.res_ver}")
+
     def pre_login(self):
         body = {
             "app_ver": self.app_ver,
             "res_ver": self.res_ver,
             "retrans_key": self.retrans_key,
-            "uuid": "dffdec15-45fa-47f7-9f4c-1a4a4a220bca",
+            "uuid": self.uuid,
         }
         response = self.client.post(IDOLA_USER_PRELOGIN, body)
         json_response = response.json()
+        self.session_key = json_response["replace"]["session_key"]
         self.retrans_key = json_response["retrans_key"]
+        self.set_auth_key()
+
+    def set_auth_key(self):
+        to_hash = self.token_key + ":" + self.session_key
+        auth_key = hashlib.sha1(to_hash.encode('utf-8')).hexdigest()
+        self.auth_key = auth_key
+        print(f"Auth_key: {auth_key}")
 
     def login(self):
         body = {
             "app_ver": self.app_ver,
             "res_ver": self.res_ver,
-            "auth_key": "9447342d03528364fa600b33822ad0475374a6d3",
+            "auth_key": self.auth_key,
             "retrans_key": self.retrans_key,
-            "device_id": "f774d83401495247d86bb411b297b664",
-            "device_token": "dpQNW3ta9ro:APA91bEMRRDaYuB0_aeO2bMtEokLdMmSiW53PLcdIzqNgu4l2K5t3OZz0Q74W-DC0ifJ5nTx3rH9dvZNRT-4zxWGXkmV4a3d7CZc1HIBRtnpDQbvdU2LziZTcMgcl3KIPInz-VA8PYxI",
+            "device_id": self.device_id,
+            "device_token": self.device_token,
             "language_code": "English",
             "battle_type": 0,
             "battle_id": 0,
-            "is_tutorial": true,
+            "is_tutorial": True,
             "region": "JP",
             "localtime": 8,
-            "device_name": "Google Pixel XL",
-            "operating_system": "Android OS 5.1.1 / API-22 (NOF26V/500191128)",
+            # "device_name": "Google Pixel XL",
+            "device_name": "iPadPro11Inch",
+            # "operating_system": "Android OS 5.1.1 / API-22 (NOF26V/500191128)",
+            "operating_system": "iOS 13.3.1",
+
             "i_info": 0,
         }
         response = self.client.post(IDOLA_USER_LOGIN, body)
@@ -167,7 +201,7 @@ class IdolaAPI(object):
             "res_ver": self.res_ver,
             "auth_key": self.auth_key,
             "retrans_key": self.retrans_key,
-            "is_tutorial": "false",
+            "is_tutorial": False,
             "readed_character_promotion_id_list": None,
         }
         response = self.client.post(IDOLA_HOME_NOTICE, body)
@@ -182,7 +216,7 @@ class IdolaAPI(object):
             "res_ver": self.res_ver,
             "auth_key": self.auth_key,
             "retrans_key": self.retrans_key,
-            "is_tutorial": "false",
+            "is_tutorial": False,
             "readed_character_promotion_id_list": None,
         }
         response = self.client.post(IDOLA_HOME_NOTICE, body)
@@ -415,7 +449,8 @@ class IdolaAPI(object):
 
     def show_top_100_raid_suppression_border_number(self, event_id=None):
         border_score_point = None
-        event_id = self.get_latest_raid_event_id()
+        if not event_id:
+            event_id = self.get_latest_raid_event_id()
         ranking_information_81_100 = self.get_raid_battle_ranking(event_id, 80)
         for ranking_information in ranking_information_81_100:
             if ranking_information["score_rank"] == 100:
@@ -589,9 +624,9 @@ class IdolaAPI(object):
 if __name__ == "__main__":
     load_dotenv()
 
-    IDOLA_AUTH_KEY = os.getenv('IDOLA_AUTH_KEY')
-    IDOLA_RES_VER= os.getenv('IDOLA_RES_VER')
     IDOLA_APP_VER = os.getenv('IDOLA_APP_VER')
+    IDOLA_DEVICE_ID = os.getenv('IDOLA_DEVICE_ID')
+    IDOLA_DEVICE_TOKEN = os.getenv('IDOLA_DEVICE_TOKEN')
+    IDOLA_TOKEN_KEY = os.getenv('IDOLA_TOKEN_KEY')
 
-    idola = IdolaAPI(IDOLA_AUTH_KEY, IDOLA_RES_VER, IDOLA_APP_VER)
-    print(idola.show_raid_suppression_top_100_players())
+    idola = IdolaAPI(IDOLA_APP_VER, IDOLA_DEVICE_ID, IDOLA_DEVICE_TOKEN, IDOLA_TOKEN_KEY)

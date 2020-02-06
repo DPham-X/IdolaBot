@@ -4,9 +4,9 @@ import random
 import sys
 from discord.ext.commands.errors import CommandNotFound
 from discord.ext import commands
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
+load_dotenv(find_dotenv())
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 bot = commands.Bot(command_prefix="!idola ", description="""IDOLA BOT""")

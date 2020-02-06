@@ -5,15 +5,12 @@ from discord.ext import commands, tasks
 from idola_api import IdolaAPI
 
 
-IDOLA_AUTH_KEY = os.getenv('IDOLA_AUTH_KEY')
-IDOLA_RES_VER= os.getenv('IDOLA_RES_VER')
 IDOLA_APP_VER = os.getenv('IDOLA_APP_VER')
+IDOLA_DEVICE_ID = os.getenv('IDOLA_DEVICE_ID')
+IDOLA_DEVICE_TOKEN = os.getenv('IDOLA_DEVICE_TOKEN')
+IDOLA_TOKEN_KEY = os.getenv('IDOLA_TOKEN_KEY')
 
-print(f"Idola AuthKey: {IDOLA_AUTH_KEY}")
-print(f"Idola ResVer: {IDOLA_RES_VER}")
-print(f"Idola Version: {IDOLA_APP_VER}")
-
-idola = IdolaAPI(auth_key=IDOLA_AUTH_KEY, res_ver=IDOLA_RES_VER, app_ver=IDOLA_APP_VER)
+idola = IdolaAPI(IDOLA_APP_VER, IDOLA_DEVICE_ID, IDOLA_DEVICE_TOKEN, IDOLA_TOKEN_KEY)
 
 
 class IDOLA(commands.Cog):
@@ -36,26 +33,6 @@ class IDOLA(commands.Cog):
 
     @commands.command(hidden=True)
     @commands.is_owner()
-    async def update_auth_key(self, ctx, auth_key: str):
-        try:
-            msg = idola.update_auth_key(auth_key)
-            await ctx.send(msg)
-        except Exception as e:
-            print(traceback.format_exc())
-            await ctx.send(f"Error: Could not update auth_key - {e}")
-
-    @commands.command(hidden=True)
-    @commands.is_owner()
-    async def update_res_ver(self, ctx, res_ver: str):
-        try:
-            msg = idola.update_res_ver(res_ver)
-            await ctx.send(msg)
-        except Exception as e:
-            print(traceback.format_exc())
-            await ctx.send(f"Error: Could not update res_ver - {e}")
-
-    @commands.command(hidden=True)
-    @commands.is_owner()
     async def save_profiles(self, ctx):
         try:
             idola.save_profile_cache()
@@ -72,6 +49,18 @@ class IDOLA(commands.Cog):
             await self.client.change_presence(
                 activity=discord.Game(f"{border_score:,d} - SuppressionBorderTop100")
             )
+        except Exception as e:
+            print(e, traceback.format_exc())
+            await self.client.change_presence(
+                activity=discord.Game("Popona is down")
+            )
+
+    @tasks.loop(hours=12)
+    async def relog(self):
+        try:
+            idola.api_init()
+            idola.pre_login()
+            idola.login()
         except Exception as e:
             print(e, traceback.format_exc())
             await self.client.change_presence(
