@@ -97,12 +97,14 @@ class IdolaAPI(object):
         self.session_key = ""
         self.token_key = token_key
         self.uuid = "cee01c9f-2492-43aa-84eb-54ecf6b6da70"
-
         self.character_map = {}
+        self.character_image_map =  {}
+
         self.import_id_map(os.path.join("lib", "idola_map", "Character ID.csv"))
         self.import_id_map(os.path.join("lib", "idola_map", "Weapon ID.csv"))
         self.import_id_map(os.path.join("lib", "idola_map", "Soul ID.csv"))
         self.import_id_map(os.path.join("lib", "idola_map", "Idomag ID.csv"))
+        self.import_image_map()
 
         self.api_init()
         self.pre_login()
@@ -116,6 +118,17 @@ class IdolaAPI(object):
             char_csv = csv.reader(csvfile, delimiter=",")
             for row in char_csv:
                 self.character_map[str(row[0])] = str(row[1])
+
+    def import_image_map(self):
+        filepath = os.path.join("lib", "image_map", "CharacterImages.csv")
+        with open(filepath, newline="") as csvFile:
+            char_images_csv = csv.reader(csvFile, delimiter=",")
+            for row in char_images_csv:
+                url = str(row[1])
+                if url.startswith("http"):
+                    self.character_image_map[str(row[0])] = url
+                else:
+                    self.character_image_map[str(row[0])] = None
 
     def get_name_from_id(self, char_id):
         if not char_id:
@@ -490,12 +503,17 @@ class IdolaAPI(object):
     def truncate(self, text):
         return (text if len(text) < 20 else text[:18] + "..")
 
+    def get_image_from_character_id(self, id):
+        default_image = "https://i0.wp.com/bumped.org/idola/wp-content/uploads/2019/11/character-rappy-thumb.png"
+        return self.character_image_map.get(str(id), default_image)
+
     def get_arena_team_composition(self, profile_id):
         msg = []
         party_info = self.get_arena_party_info(profile_id)
         name = party_info["player_name"]
         arena_team_score = party_info["strength_value"]
-        avatar_character_id = party_info["avator_character_id"]
+        avatar_url = self.get_image_from_character_id(party_info["avator_character_id"])
+
         law_char_names = [
             self.truncate(self.get_name_from_id(character["character"]["char_id"]))
             + "\n"
@@ -573,7 +591,7 @@ class IdolaAPI(object):
         update_profile_cache(name, profile_id)
         return {
             "player_name": name,
-            "avatar_id": avatar_character_id,
+            "avatar_url": avatar_url,
             "team_score": arena_team_score,
             "law_characters": unpack_newline(law_char_names),
             "law_weapon_symbols": unpack_newline(law_wep_names),

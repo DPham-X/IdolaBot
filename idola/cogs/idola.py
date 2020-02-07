@@ -114,7 +114,7 @@ class IDOLA(commands.Cog):
             color=discord.Colour.blue()
         )
         embed.set_author(name=f"{arena_team['player_name']}")
-        embed.set_thumbnail(url="https://i0.wp.com/bumped.org/idola/wp-content/uploads/2019/11/character-rappy-thumb.png")
+        embed.set_thumbnail(url=arena_team["avatar_url"])
 
         embed.add_field(name="Law Characters", value=arena_team["law_characters"], inline=True)
         embed.add_field(name="Weapon Symbols", value=arena_team["law_weapon_symbols"], inline=True)
@@ -144,7 +144,7 @@ class IDOLA(commands.Cog):
             color=discord.Colour.blue()
         )
         embed.set_author(name=f"{arena_team['player_name']}")
-        embed.set_thumbnail(url="https://i0.wp.com/bumped.org/idola/wp-content/uploads/2019/11/character-rappy-thumb.png")
+        embed.set_thumbnail(url=arena_team["avatar_url"])
 
         embed.add_field(name="Law Characters", value=arena_team["law_characters"], inline=True)
         embed.add_field(name="Weapon Symbols", value=arena_team["law_weapon_symbols"], inline=True)
