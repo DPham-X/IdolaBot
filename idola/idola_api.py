@@ -90,8 +90,8 @@ class IdolaAPI(object):
         self.client = HTTPClient()
         self.app_ver = app_ver
         self.auth_key = ""
-        self.device_id = ""
-        self.device_token = ""
+        self.device_id = device_id
+        self.device_token = device_token
         self.res_ver = ""
         self.retrans_key = ""
         self.session_key = ""
@@ -201,7 +201,7 @@ class IdolaAPI(object):
             "res_ver": self.res_ver,
             "auth_key": self.auth_key,
             "retrans_key": self.retrans_key,
-            "is_tutorial": False,
+            "is_tutorial": "false",
             "readed_character_promotion_id_list": None,
         }
         response = self.client.post(IDOLA_HOME_NOTICE, body)
