@@ -98,13 +98,11 @@ class IdolaAPI(object):
         self.token_key = token_key
         self.uuid = "cee01c9f-2492-43aa-84eb-54ecf6b6da70"
         self.character_map = {}
-        self.character_image_map =  {}
 
         self.import_id_map(os.path.join("lib", "idola_map", "Character ID.csv"))
         self.import_id_map(os.path.join("lib", "idola_map", "Weapon ID.csv"))
         self.import_id_map(os.path.join("lib", "idola_map", "Soul ID.csv"))
         self.import_id_map(os.path.join("lib", "idola_map", "Idomag ID.csv"))
-        self.import_image_map()
 
         self.api_init()
         self.pre_login()
@@ -118,15 +116,6 @@ class IdolaAPI(object):
             char_csv = csv.reader(csvfile, delimiter=",")
             for row in char_csv:
                 self.character_map[str(row[0])] = str(row[1])
-
-    def import_image_map(self):
-        filepath = os.path.join("lib", "image_map", "CharacterImages.csv")
-        with open(filepath, newline="") as csvFile:
-            char_images_csv = csv.reader(csvFile, delimiter=",")
-            for row in char_images_csv:
-                url = str(row[1])
-                if url.startswith("http"):
-                    self.character_image_map[str(row[0])] = url
 
     def get_name_from_id(self, char_id):
         if not char_id:
@@ -501,9 +490,14 @@ class IdolaAPI(object):
     def truncate(self, text):
         return (text if len(text) < 20 else text[:18] + "..")
 
-    def get_image_from_character_id(self, id):
+    def get_image_from_character_id(self, char_id):
+        char_image_template = "https://raw.githubusercontent.com/NNSTJP/NNSTJP.github.io/master/Idola/PNG/Character%20Icon/{}.png"
         default_image = "https://i0.wp.com/bumped.org/idola/wp-content/uploads/2019/11/character-rappy-thumb.png"
-        return self.character_image_map.get(str(id), default_image)
+        s_char_id = str(char_id)
+        if char_id not in self.character_map:
+            return default_image
+        image_name = s_char_id[:-2] + '%20' + s_char_id[-2:]
+        return char_image_template.format(image_name)
 
     def get_arena_team_composition(self, profile_id):
         msg = []
