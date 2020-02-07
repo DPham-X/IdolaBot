@@ -127,8 +127,6 @@ class IdolaAPI(object):
                 url = str(row[1])
                 if url.startswith("http"):
                     self.character_image_map[str(row[0])] = url
-                else:
-                    self.character_image_map[str(row[0])] = None
 
     def get_name_from_id(self, char_id):
         if not char_id:
