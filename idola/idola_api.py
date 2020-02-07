@@ -494,7 +494,7 @@ class IdolaAPI(object):
         char_image_template = "https://raw.githubusercontent.com/NNSTJP/NNSTJP.github.io/master/Idola/PNG/Character%20Icon/{}.png"
         default_image = "https://i0.wp.com/bumped.org/idola/wp-content/uploads/2019/11/character-rappy-thumb.png"
         s_char_id = str(char_id)
-        if char_id not in self.character_map:
+        if s_char_id not in self.character_map:
             return default_image
         image_name = s_char_id[:-2] + '%20' + s_char_id[-2:]
         return char_image_template.format(image_name)
