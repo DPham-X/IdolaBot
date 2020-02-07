@@ -491,7 +491,7 @@ class IdolaAPI(object):
         return (text if len(text) < 20 else text[:18] + "..")
 
     def get_image_from_character_id(self, char_id):
-        char_image_template = "https://raw.githubusercontent.com/NNSTJP/NNSTJP.github.io/master/Idola/PNG/Character%20Icon/{}.png"
+        char_image_template = "https://raw.githubusercontent.com/NNSTJP/Idola/master/Character%20Icon/{}.png"
         default_image = "https://i0.wp.com/bumped.org/idola/wp-content/uploads/2019/11/character-rappy-thumb.png"
         s_char_id = str(char_id)
         if s_char_id not in self.character_map:
