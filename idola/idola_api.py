@@ -99,10 +99,10 @@ class IdolaAPI(object):
         self.uuid = "cee01c9f-2492-43aa-84eb-54ecf6b6da70"
 
         self.character_map = {}
-        self.import_id_map(os.path.join("Idola", "Character ID.csv"))
-        self.import_id_map(os.path.join("Idola", "Weapon ID.csv"))
-        self.import_id_map(os.path.join("Idola", "Soul ID.csv"))
-        self.import_id_map(os.path.join("Idola", "Idomag ID.csv"))
+        self.import_id_map(os.path.join("lib", "idola_map", "Character ID.csv"))
+        self.import_id_map(os.path.join("lib", "idola_map", "Weapon ID.csv"))
+        self.import_id_map(os.path.join("lib", "idola_map", "Soul ID.csv"))
+        self.import_id_map(os.path.join("lib", "idola_map", "Idomag ID.csv"))
 
         self.api_init()
         self.pre_login()
