@@ -68,6 +68,7 @@ class IDOLA(commands.Cog):
     async def restart(self, ctx):
         try:
             idola.start()
+            await ctx.send("IdolaBot has been restarted")
         except Exception as e:
             print(e, traceback.format_exc())
             await ctx.send("An error occurred, IdolaBot could not be restarted")
