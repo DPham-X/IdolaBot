@@ -55,16 +55,22 @@ class IDOLA(commands.Cog):
             print(e, traceback.format_exc())
             await self.client.change_presence(activity=discord.Game("Popona is down"))
 
-    @tasks.loop(hours=12)
+    @tasks.loop(hours=4)
     async def relog(self):
         try:
-            idola.api_init()
-            idola.pre_login()
-            idola.login()
-            idola.update_retrans_key()
+            idola.start()
         except Exception as e:
             print(e, traceback.format_exc())
             await self.client.change_presence(activity=discord.Game("Popona is down"))
+
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def restart(self, ctx):
+        try:
+            idola.start()
+        except Exception as e:
+            print(e, traceback.format_exc())
+            await ctx.send("An error occurred, IdolaBot could not be restarted")
 
     @commands.command()
     async def arena_border(self, ctx):

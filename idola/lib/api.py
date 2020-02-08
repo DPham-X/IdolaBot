@@ -110,11 +110,14 @@ class IdolaAPI(object):
         self.import_id_map(os.path.join("lib", "idola_map", "Soul ID.csv"))
         self.import_id_map(os.path.join("lib", "idola_map", "Idomag ID.csv"))
 
+        self.start()
+        print("Idola API ready!")
+
+    def start(self):
         self.api_init()
         self.pre_login()
         self.login()
         self.update_retrans_key()
-        print("Idola API ready!")
 
     def import_id_map(self, csv_filepath):
         # https://github.com/NNSTJP/Idola
