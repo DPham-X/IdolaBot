@@ -239,7 +239,7 @@ class IDOLA(commands.Cog):
 
     @commands.command()
     async def arena_team_name(self, ctx, profile_name):
-        """Shows the matching arena_team if they are in the top 100"""
+        """Shows the matching arena_team using their name if the profile_id has already been cached"""
         arena_team = idola.get_arena_team_composition_from_name(profile_name)
         if not arena_team:
             await ctx.send(
