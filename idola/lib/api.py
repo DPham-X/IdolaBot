@@ -203,7 +203,7 @@ class IdolaAPI(object):
         }
         response = self.client.post(IDOLA_USER_LOGIN, body)
         json_response = response.json()
-        retrans_key = json_response["retrans_key"]
+        self.res_ver = json_response["res_version"]
         self.retrans_key = json_response["retrans_key"]
 
     def get_latest_arena_event_id(self):
