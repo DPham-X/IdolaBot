@@ -648,7 +648,6 @@ class IdolaAPI(object):
         return jp_datetime.strftime("%Y-%m-%d %H:%M:%S %Z%z")
 
     def datetime_difference(self, d1, d2):
-        print(d1, d2)
         days = abs((d2 - d1).days)
         seconds = abs((d2 - d1).seconds)
         hours, seconds = divmod(seconds, 3600)
