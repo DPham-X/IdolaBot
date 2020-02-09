@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import csv
+import datetime
 import hashlib
 import json
 import os
@@ -12,6 +13,8 @@ from pprint import pprint
 import pylru
 import requests
 from dotenv import load_dotenv
+import pytz
+
 
 IDOLA_API_URL = "https://game.idola.jp/api"
 IDOLA_API_INIT = "https://service.idola.jp/api/app/init"
@@ -455,7 +458,7 @@ class IdolaAPI(object):
                 break
 
         if border_score_point is None:
-            raise Exception("Could not find the Top 1000 border score")
+            raise Exception("Could not find the Top 10000 border score")
 
         return border_score_point
 
@@ -499,7 +502,7 @@ class IdolaAPI(object):
                 break
 
         if border_score_point is None:
-            raise Exception("Could not find the Top 1000 border score")
+            raise Exception("Could not find the Top 10000 border score")
 
         return border_score_point
 
@@ -633,6 +636,38 @@ class IdolaAPI(object):
         if not profile_id:
             return None
         return self.get_arena_team_composition(int(profile_id))
+
+    def epoch_to_datetime(self, epoch_time):
+        utc_datetime = datetime.datetime.utcfromtimestamp(epoch_time)
+        return utc_datetime
+
+    def datetime_jp_format(self, d1):
+        localised_utc = pytz.utc.localize(d1)
+        jp_tz = pytz.timezone("Asia/Tokyo")
+        jp_datetime = jp_tz.normalize(localised_utc)
+        return jp_datetime.strftime("%Y-%m-%d %H:%M:%S %Z%z")
+
+    def datetime_difference(self, d1, d2):
+        print(d1, d2)
+        days = abs((d2 - d1).days)
+        seconds = abs((d2 - d1).seconds)
+        hours, seconds = divmod(seconds, 3600)
+        minutes, _ = divmod(seconds, 60)
+        return f"{days}d {hours}h {minutes}m"
+
+    def get_current_time(self):
+        cur_time = datetime.datetime.utcnow()
+        return cur_time
+
+    def get_raid_event_end_date(self):
+        home_notice = self.get_home_notice()
+        raid_end_date = home_notice["raid"]["end_date"]
+        return self.epoch_to_datetime(raid_end_date) - datetime.timedelta(hours=5)
+
+    def get_arena_event_end_date(self):
+        home_notice = self.get_home_notice()
+        arena_end_date = home_notice["ant"]["end_date"]
+        return self.epoch_to_datetime(arena_end_date) - datetime.timedelta(hours=5)
 
     def save_profile_cache(self):
         profile_dict = OrderedDict()
