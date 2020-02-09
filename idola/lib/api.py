@@ -91,7 +91,7 @@ class HTTPClient(object):
 
 
 class IdolaAPI(object):
-    def __init__(self, app_ver, device_id, device_token, token_key):
+    def __init__(self, app_ver, device_id, device_token, token_key, uuid):
         self.load_profile_cache()
         self.client = HTTPClient()
         self.app_ver = app_ver
@@ -102,7 +102,7 @@ class IdolaAPI(object):
         self.retrans_key = ""
         self.session_key = ""
         self.token_key = token_key
-        self.uuid = "cee01c9f-2492-43aa-84eb-54ecf6b6da70"
+        self.uuid = uuid
         self.character_map = {}
 
         self.import_id_map(os.path.join("lib", "idola_map", "Character ID.csv"))
@@ -639,4 +639,4 @@ if __name__ == "__main__":
     IDOLA_DEVICE_TOKEN = os.getenv("IDOLA_DEVICE_TOKEN")
     IDOLA_TOKEN_KEY = os.getenv("IDOLA_TOKEN_KEY")
 
-    idola = IdolaAPI(IDOLA_APP_VER, IDOLA_DEVICE_ID, IDOLA_DEVICE_TOKEN, IDOLA_TOKEN_KEY)
+    idola = IdolaAPI(IDOLA_APP_VER, IDOLA_DEVICE_ID, IDOLA_DEVICE_TOKEN, IDOLA_TOKEN_KEY, IDOLA_UUID)
