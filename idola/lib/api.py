@@ -398,24 +398,7 @@ class IdolaAPI(object):
                 msg.append(f"{raid_score_rank}: {raid_score_point:,d} - {name}({profile_id})")
         return "\n".join(msg)
 
-    def show_top_100_arena_border(self, event_id=None):
-        msg = []
-        if not event_id:
-            event_id = self.get_latest_arena_event_id()
-        border_score_point = None
-        ranking_information_81_100 = self.get_arena_ranking_offset(event_id, 80)
-        for ranking_information in ranking_information_81_100.values():
-            if ranking_information["arena_score_rank"] == 100:
-                border_score_point = ranking_information["arena_score_point"]
-                break
-
-        if border_score_point is None:
-            raise Exception("Could not find the Top 100 border score")
-
-        msg.append(f"Top 100 Arena border is currently {border_score_point:,d} points")
-        return "\n".join(msg)
-
-    def show_top_100_arena_border_number(self, event_id=None):
+    def get_top_100_arena_border(self, event_id=None):
         msg = []
         if not event_id:
             event_id = self.get_latest_arena_event_id()
@@ -431,32 +414,14 @@ class IdolaAPI(object):
 
         return border_score_point
 
-    def show_top_100_raid_suppression_border(self, event_id=None):
-        msg = []
-        border_score_point = None
-        event_id = self.get_latest_raid_event_id()
-        ranking_information_81_100 = self.get_raid_battle_ranking(event_id, 80)
-        for ranking_information in ranking_information_81_100:
-            if ranking_information["score_rank"] == 100:
-                border_score_point = ranking_information["score_point"]
-                break
-
-        if border_score_point is None:
-            raise Exception("Could not find the Top 100 border score")
-
-        msg.append(
-            f"Top 100 Idola Raid Supression border is currently {border_score_point:,d} points"
-        )
-        return "\n".join(msg)
-
-    def show_top_100_raid_suppression_border_number(self, event_id=None):
+    def get_top_100_raid_suppression_border(self, event_id=None):
         border_score_point = None
         if not event_id:
             event_id = self.get_latest_raid_event_id()
-        ranking_information_81_100 = self.get_raid_battle_ranking(event_id, 80)
-        for ranking_information in ranking_information_81_100:
-            if ranking_information["score_rank"] == 100:
-                border_score_point = ranking_information["score_point"]
+        ranking_information = self.get_raid_battle_ranking(event_id, 99)
+        for player_information in ranking_information:
+            if player_information["score_rank"] == 100:
+                border_score_point = player_information["score_point"]
                 break
 
         if border_score_point is None:
@@ -464,21 +429,79 @@ class IdolaAPI(object):
 
         return border_score_point
 
-    def show_top_100_raid_creator_border(self, event_id=None):
-        msg = []
+    def get_top_1000_raid_suppression_border(self, event_id=None):
+        border_score_point = None
+        if not event_id:
+            event_id = self.get_latest_raid_event_id()
+        ranking_information = self.get_raid_battle_ranking(event_id, 999)
+        for player_information in ranking_information:
+            if player_information["score_rank"] == 1000:
+                border_score_point = player_information["score_point"]
+                break
+
+        if border_score_point is None:
+            raise Exception("Could not find the Top 1000 border score")
+
+        return border_score_point
+
+    def get_top_10000_raid_suppression_border(self, event_id=None):
+        border_score_point = None
+        if not event_id:
+            event_id = self.get_latest_raid_event_id()
+        ranking_information = self.get_raid_battle_ranking(event_id, 9999)
+        for player_information in ranking_information:
+            if player_information["score_rank"] == 10000:
+                border_score_point = player_information["score_point"]
+                break
+
+        if border_score_point is None:
+            raise Exception("Could not find the Top 1000 border score")
+
+        return border_score_point
+
+    def get_top_100_raid_creation_border(self, event_id=None):
         border_score_point = None
         event_id = self.get_latest_raid_event_id()
-        ranking_information_81_100 = self.get_raid_summon_ranking(event_id, 80)
-        for ranking_information in ranking_information_81_100:
-            if ranking_information["score_rank"] == 100:
-                border_score_point = ranking_information["score_point"]
+        ranking_information = self.get_raid_summon_ranking(event_id, 99)
+        for player_information in ranking_information:
+            if player_information["score_rank"] == 100:
+                border_score_point = player_information["score_point"]
                 break
 
         if border_score_point is None:
             raise Exception("Could not find the Top 100 border score")
 
-        msg.append(f"Top 100 Idola Raid Summon border is currently {border_score_point:,d} points")
-        return "\n".join(msg)
+        return border_score_point
+
+    def get_top_1000_raid_creation_border(self, event_id=None):
+        border_score_point = None
+        if not event_id:
+            event_id = self.get_latest_raid_event_id()
+        ranking_information = self.get_raid_summon_ranking(event_id, 999)
+        for player_information in ranking_information:
+            if player_information["score_rank"] == 1000:
+                border_score_point = player_information["score_point"]
+                break
+
+        if border_score_point is None:
+            raise Exception("Could not find the Top 1000 border score")
+
+        return border_score_point
+
+    def get_top_10000_raid_creation_border(self, event_id=None):
+        border_score_point = None
+        if not event_id:
+            event_id = self.get_latest_raid_event_id()
+        ranking_information = self.get_raid_summon_ranking(event_id, 9999)
+        for player_information in ranking_information:
+            if player_information["score_rank"] == 10000:
+                border_score_point = player_information["score_point"]
+                break
+
+        if border_score_point is None:
+            raise Exception("Could not find the Top 1000 border score")
+
+        return border_score_point
 
     @staticmethod
     def destiny_bonus(level, status):
