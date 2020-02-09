@@ -304,7 +304,7 @@ class IdolaAPI(object):
         self.retrans_key = json_response["retrans_key"]
         return ranking_list
 
-    def get_raid_summon_ranking(self, event_id=None, offset=0):
+    def get_raid_creation_ranking(self, event_id=None, offset=0):
         if not event_id:
             event_id = self.get_latest_raid_event_id()
         body = {
@@ -376,11 +376,11 @@ class IdolaAPI(object):
         if not event_id:
             event_id = self.get_latest_raid_event_id()
         top_100_ranking_information = [
-            self.get_raid_summon_ranking(event_id, 0),
-            self.get_raid_summon_ranking(event_id, 20),
-            self.get_raid_summon_ranking(event_id, 40),
-            self.get_raid_summon_ranking(event_id, 60),
-            self.get_raid_summon_ranking(event_id, 80),
+            self.get_raid_creation_ranking(event_id, 0),
+            self.get_raid_creation_ranking(event_id, 20),
+            self.get_raid_creation_ranking(event_id, 40),
+            self.get_raid_creation_ranking(event_id, 60),
+            self.get_raid_creation_ranking(event_id, 80),
         ]
 
         prev_profile_id = None
@@ -465,7 +465,7 @@ class IdolaAPI(object):
     def get_top_100_raid_creation_border(self, event_id=None):
         border_score_point = None
         event_id = self.get_latest_raid_event_id()
-        ranking_information = self.get_raid_summon_ranking(event_id, 99)
+        ranking_information = self.get_raid_creation_ranking(event_id, 99)
         for player_information in ranking_information:
             if player_information["score_rank"] == 100:
                 border_score_point = player_information["score_point"]
@@ -480,7 +480,7 @@ class IdolaAPI(object):
         border_score_point = None
         if not event_id:
             event_id = self.get_latest_raid_event_id()
-        ranking_information = self.get_raid_summon_ranking(event_id, 999)
+        ranking_information = self.get_raid_creation_ranking(event_id, 999)
         for player_information in ranking_information:
             if player_information["score_rank"] == 1000:
                 border_score_point = player_information["score_point"]
@@ -495,7 +495,7 @@ class IdolaAPI(object):
         border_score_point = None
         if not event_id:
             event_id = self.get_latest_raid_event_id()
-        ranking_information = self.get_raid_summon_ranking(event_id, 9999)
+        ranking_information = self.get_raid_creation_ranking(event_id, 9999)
         for player_information in ranking_information:
             if player_information["score_rank"] == 10000:
                 border_score_point = player_information["score_point"]

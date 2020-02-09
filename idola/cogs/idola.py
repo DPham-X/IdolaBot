@@ -49,7 +49,7 @@ class IDOLA(commands.Cog):
             print(traceback.format_exc())
             await ctx.send(f"Error: Could not save profile cache - {e}")
 
-    @tasks.loop(seconds=600)
+    @tasks.loop(seconds=60)
     async def border_status_update(self):
         try:
             border_score = idola.get_top_100_raid_suppression_border()
@@ -164,7 +164,7 @@ class IDOLA(commands.Cog):
         time_left = idola.datetime_difference(current_time, end_date)
 
         embed=discord.Embed(
-            title="Top 100: Idola Raid Summon",
+            title="Top 100: Idola Raid Creation",
             color=discord.Colour.blue(),
         )
         embed.set_thumbnail(url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png")
@@ -183,7 +183,7 @@ class IDOLA(commands.Cog):
         time_left = idola.datetime_difference(current_time, end_date)
 
         embed=discord.Embed(
-            title="Top 1000: Idola Raid Summon",
+            title="Top 1000: Idola Raid Creation",
             color=discord.Colour.blue(),
         )
         embed.set_thumbnail(url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png")
@@ -202,7 +202,7 @@ class IDOLA(commands.Cog):
         time_left = idola.datetime_difference(current_time, end_date)
 
         embed=discord.Embed(
-            title="Top 10000: Idola Raid Summon",
+            title="Top 10000: Idola Raid Creation",
             color=discord.Colour.blue(),
         )
         embed.set_thumbnail(url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png")
@@ -306,7 +306,7 @@ class IDOLA(commands.Cog):
         for j, chunks in enumerate([msg[i : i + 50] for i in range(0, len(msg), 50)]):
             text = "\n".join(chunks)
             embed = discord.Embed(
-                title="Idola Raid Summon Top 100" if j == 0 else "\u200b",
+                title="Idola Raid Creation Top 100" if j == 0 else "\u200b",
                 description=f"```{text}```",
                 color=discord.Colour.blue(),
             )
