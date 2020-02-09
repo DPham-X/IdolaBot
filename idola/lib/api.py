@@ -67,9 +67,9 @@ def update_profile_cache(name, profile_id):
 
 
 class HTTPClient(object):
-    # USER_AGENT = "Dalvik/2.1.0 (Linux; U; Android 5.1.1; Pixel XL Build/NOF26V)"
-    USER_AGENT = "idola/43 CFNetwork/1121.2.2 Darwin/19.3.0"
-    X_UNITY_VER = "2017.4.26f1"
+    def __init__(self, user_agent):
+        self.USER_AGENT = user_agent
+        self.X_UNITY_VER = "2017.4.26f1"
 
     def post(self, url, body={}, headers={}):
         if not headers:
@@ -94,9 +94,9 @@ class HTTPClient(object):
 
 
 class IdolaAPI(object):
-    def __init__(self, app_ver, device_id, device_token, token_key, uuid):
+    def __init__(self, user_agent, app_ver, device_id, device_token, token_key, uuid):
         self.load_profile_cache()
-        self.client = HTTPClient()
+        self.client = HTTPClient(user_agent)
         self.app_ver = app_ver
         self.auth_key = ""
         self.device_id = device_id
@@ -121,6 +121,7 @@ class IdolaAPI(object):
         self.pre_login()
         self.login()
         self.update_retrans_key()
+        self.update_res_ver()
 
     def import_id_map(self, csv_filepath):
         # https://github.com/NNSTJP/Idola
@@ -141,15 +142,27 @@ class IdolaAPI(object):
     def update_retrans_key(self):
         response = self.client.post(IDOLA_HOME_NOW)
         json_response = response.json()
-        retrans_key = json_response["retrans_key"]
-        print(f"Updating retrans_key: {retrans_key}")
-        return retrans_key
+        self.retrans_key = json_response["retrans_key"]
+
+    def update_res_ver(self):
+        body = {
+            "app_ver": self.app_ver,
+            "res_ver": self.res_ver,
+            "auth_key": self.auth_key,
+            "retrans_key": self.retrans_key,
+            "is_tutorial": False,
+            "readed_character_promotion_id_list": None,
+        }
+        response = self.client.post(IDOLA_HOME_NOTICE, body)
+        json_response = response.json()
+        self.res_ver = json_response["res_version"]
+        print(f"ResVer updated to {self.res_ver}")
 
     def api_init(self):
         headers = {
             "Content-Type": "application/json",
-            "User-Agent": HTTPClient.USER_AGENT,
-            "X-Unity-Version": HTTPClient.X_UNITY_VER,
+            "User-Agent": self.client.USER_AGENT,
+            "X-Unity-Version": self.client.X_UNITY_VER,
         }
         body = {
             "app_ver": self.app_ver,
@@ -203,7 +216,6 @@ class IdolaAPI(object):
         }
         response = self.client.post(IDOLA_USER_LOGIN, body)
         json_response = response.json()
-        self.res_ver = json_response["res_version"]
         self.retrans_key = json_response["retrans_key"]
 
     def get_latest_arena_event_id(self):
@@ -691,9 +703,10 @@ class IdolaAPI(object):
 if __name__ == "__main__":
     load_dotenv()
 
+    IDOLA_USER_AGENT = os.getenv("IDOLA_USER_AGENT")
     IDOLA_APP_VER = os.getenv("IDOLA_APP_VER")
     IDOLA_DEVICE_ID = os.getenv("IDOLA_DEVICE_ID")
     IDOLA_DEVICE_TOKEN = os.getenv("IDOLA_DEVICE_TOKEN")
     IDOLA_TOKEN_KEY = os.getenv("IDOLA_TOKEN_KEY")
 
-    idola = IdolaAPI(IDOLA_APP_VER, IDOLA_DEVICE_ID, IDOLA_DEVICE_TOKEN, IDOLA_TOKEN_KEY, IDOLA_UUID)
+    idola = IdolaAPI(IDOLA_USER_AGENT, IDOLA_APP_VER, IDOLA_DEVICE_ID, IDOLA_DEVICE_TOKEN, IDOLA_TOKEN_KEY, IDOLA_UUID)
