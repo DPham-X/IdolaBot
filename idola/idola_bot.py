@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
-import random
-import sys
 
 from discord.ext import commands
-from discord.ext.commands.errors import CommandNotFound
 from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv())
