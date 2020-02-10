@@ -760,7 +760,7 @@ if __name__ == "__main__":
     IDOLA_DEVICE_ID = os.getenv("IDOLA_DEVICE_ID")
     IDOLA_DEVICE_TOKEN = os.getenv("IDOLA_DEVICE_TOKEN")
     IDOLA_TOKEN_KEY = os.getenv("IDOLA_TOKEN_KEY")
-    IDOLA_IDOLA_UUID = os.getenv("IDOLA_UUID")
+    IDOLA_UUID = os.getenv("IDOLA_UUID")
 
     idola = IdolaAPI(
         IDOLA_USER_AGENT,
