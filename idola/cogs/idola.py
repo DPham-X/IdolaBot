@@ -212,7 +212,7 @@ class IDOLA(commands.Cog):
         embed.add_field(
             name="Top 500",
             value=f"{border_score_point_500:,d} points",
-            inline=False,
+            inline=True,
         )
         embed.add_field(
             name="Top 1000",
@@ -222,7 +222,7 @@ class IDOLA(commands.Cog):
         embed.add_field(
             name="Top 5000",
             value=f"{border_score_point_5000:,d} points",
-            inline=False,
+            inline=True,
         )
         embed.add_field(name="Time Left", value=time_left, inline=False)
         embed.add_field(
@@ -264,7 +264,7 @@ class IDOLA(commands.Cog):
         embed.add_field(
             name="Top 500",
             value=f"{border_score_point_500:,d} points",
-            inline=False,
+            inline=True,
         )
         embed.add_field(
             name="Top 1000",
@@ -274,7 +274,7 @@ class IDOLA(commands.Cog):
         embed.add_field(
             name="Top 5000",
             value=f"{border_score_point_5000:,d} points",
-            inline=False,
+            inline=True,
         )
         embed.add_field(name="Time Left", value=time_left, inline=False)
         embed.add_field(
