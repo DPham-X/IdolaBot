@@ -162,7 +162,7 @@ class IDOLA(commands.Cog):
         time_left = idola.datetime_difference(current_time, end_date)
 
         embed = discord.Embed(
-            title="Top 100: Idola Arena", color=discord.Colour.blue(),
+            title="Idola Arena Border", color=discord.Colour.blue(),
         )
         embed.set_thumbnail(
             url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/arena.png"
@@ -198,7 +198,7 @@ class IDOLA(commands.Cog):
         time_left = idola.datetime_difference(current_time, end_date)
 
         embed = discord.Embed(
-            title="Top 100: Idola Raid Suppression",
+            title="Idola Raid Suppression Border",
             color=discord.Colour.blue(),
         )
         embed.set_thumbnail(
@@ -250,7 +250,7 @@ class IDOLA(commands.Cog):
         time_left = idola.datetime_difference(current_time, end_date)
 
         embed = discord.Embed(
-            title="Top 100: Idola Raid Creation",
+            title="Idola Raid Creation Border",
             color=discord.Colour.blue(),
         )
         embed.set_thumbnail(
