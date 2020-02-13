@@ -89,10 +89,10 @@ class IDOLA(commands.Cog):
             arena_border_score = idola.get_top_100_arena_border()
             raid_suppression_border_100 = idola.get_top_100_raid_suppression_border()
             raid_suppression_border_1000 = idola.get_top_1000_raid_suppression_border()
-            raid_suppression_border_10000 = idola.get_top_10000_raid_suppression_border()
+            raid_suppression_border_5000 = idola.get_top_5000_raid_suppression_border()
             raid_creation_border_100 = idola.get_top_100_raid_creation_border()
             raid_creation_border_1000 = idola.get_top_1000_raid_creation_border()
-            raid_creation_border_10000 = idola.get_top_10000_raid_creation_border()
+            raid_creation_border_5000 = idola.get_top_5000_raid_creation_border()
 
             # Arena
             channel = self.client.get_channel(677346136176197662)
@@ -104,7 +104,7 @@ class IDOLA(commands.Cog):
             channel = self.client.get_channel(677346847781552137)
             await channel.edit(name=f"🥈1K: {raid_suppression_border_1000:,d}")
             channel = self.client.get_channel(677346863271247930)
-            await channel.edit(name=f"🥉10K: {raid_suppression_border_10000:,d}")
+            await channel.edit(name=f"🥉10K: {raid_suppression_border_5000:,d}")
 
             # Creation
             channel = self.client.get_channel(677347022541422612)
@@ -112,7 +112,7 @@ class IDOLA(commands.Cog):
             channel = self.client.get_channel(677347036001206322)
             await channel.edit(name=f"🥈1K: {raid_creation_border_1000:,d}")
             channel = self.client.get_channel(677347053902233602)
-            await channel.edit(name=f"🥉10K: {raid_creation_border_10000:,d}")
+            await channel.edit(name=f"🥉10K: {raid_creation_border_5000:,d}")
         except Exception as e:
             print(traceback.format_exc())
             # Arena
@@ -184,7 +184,7 @@ class IDOLA(commands.Cog):
         """Shows the border for Idola Raid Suppression"""
         border_score_point_100 = idola.get_top_100_raid_suppression_border()
         border_score_point_1000 = idola.get_top_1000_raid_suppression_border()
-        border_score_point_10000 = idola.get_top_10000_raid_suppression_border()
+        border_score_point_5000 = idola.get_top_5000_raid_suppression_border()
 
         current_time = idola.get_current_time()
         end_date = idola.get_raid_event_end_date()
@@ -208,8 +208,8 @@ class IDOLA(commands.Cog):
             inline=True,
         )
         embed.add_field(
-            name="Top 10000",
-            value=f"{border_score_point_10000:,d} points",
+            name="Top 5000",
+            value=f"{border_score_point_5000:,d} points",
             inline=False,
         )
         embed.add_field(name="Time Left", value=time_left, inline=False)
@@ -230,7 +230,7 @@ class IDOLA(commands.Cog):
         """Shows the border for Idola Raid Creation"""
         border_score_point_100 = idola.get_top_100_raid_creation_border()
         border_score_point_1000 = idola.get_top_1000_raid_creation_border()
-        border_score_point_10000 = idola.get_top_10000_raid_creation_border()
+        border_score_point_5000 = idola.get_top_5000_raid_creation_border()
 
         current_time = idola.get_current_time()
         end_date = idola.get_raid_event_end_date()
@@ -254,8 +254,8 @@ class IDOLA(commands.Cog):
             inline=True,
         )
         embed.add_field(
-            name="Top 10000",
-            value=f"{border_score_point_10000:,d} points",
+            name="Top 5000",
+            value=f"{border_score_point_5000:,d} points",
             inline=False,
         )
         embed.add_field(name="Time Left", value=time_left, inline=False)

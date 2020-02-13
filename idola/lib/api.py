@@ -499,20 +499,20 @@ class IdolaAPI(object):
 
         return border_score_point
 
-    def get_top_10000_raid_suppression_border(self, event_id=None):
+    def get_top_5000_raid_suppression_border(self, event_id=None):
         border_score_point = None
         if not event_id:
             event_id = self.get_latest_raid_event_id()
-        ranking_information = self.get_raid_battle_ranking(event_id, 9998)
+        ranking_information = self.get_raid_battle_ranking(event_id, 4998)
         for player_information in ranking_information:
-            if player_information["score_rank"] == 10000:
+            if player_information["score_rank"] == 5000:
                 border_score_point = player_information["score_point"]
                 break
-            elif player_information["score_rank"] == 9999:
+            elif player_information["score_rank"] == 4999:
                 border_score_point = player_information["score_point"]
                 break
         if border_score_point is None:
-            raise Exception("Could not find the Top 10000 border score")
+            raise Exception("Could not find the Top 5000 border score")
 
         return border_score_point
 
@@ -549,20 +549,20 @@ class IdolaAPI(object):
 
         return border_score_point
 
-    def get_top_10000_raid_creation_border(self, event_id=None):
+    def get_top_5000_raid_creation_border(self, event_id=None):
         border_score_point = None
         if not event_id:
             event_id = self.get_latest_raid_event_id()
-        ranking_information = self.get_raid_creation_ranking(event_id, 9998)
+        ranking_information = self.get_raid_creation_ranking(event_id, 4998)
         for player_information in ranking_information:
-            if player_information["score_rank"] == 10000:
+            if player_information["score_rank"] == 5000:
                 border_score_point = player_information["score_point"]
                 break
-            elif player_information["score_rank"] == 9999:
+            elif player_information["score_rank"] == 4999:
                 border_score_point = player_information["score_point"]
                 break
         if border_score_point is None:
-            raise Exception("Could not find the Top 10000 border score")
+            raise Exception("Could not find the Top 5000 border score")
 
         return border_score_point
 
