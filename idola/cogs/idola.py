@@ -28,6 +28,7 @@ idola = IdolaAPI(
 class IDOLA(commands.Cog):
     def __init__(self, client):
         self.client = client
+        self.border_fails = 0
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -113,27 +114,32 @@ class IDOLA(commands.Cog):
             await channel.edit(name=f"🥈1K: {raid_creation_border_1000:,d}")
             channel = self.client.get_channel(677347053902233602)
             await channel.edit(name=f"🥉5K: {raid_creation_border_5000:,d}")
+            self.border_fails = 0
         except Exception as e:
             print(traceback.format_exc())
-            # Arena
-            channel = self.client.get_channel(677346136176197662)
-            await channel.edit(name=f"🥇100: Unknown")
+            if self.border_fails == 5:
+                # Arena
+                channel = self.client.get_channel(677346136176197662)
+                await channel.edit(name=f"🥇100: Unknown")
 
-            # Suppression
-            channel = self.client.get_channel(677346267231158283)
-            await channel.edit(name=f"🥇100:Unknown")
-            channel = self.client.get_channel(677346847781552137)
-            await channel.edit(name=f"🥈1K: Unknown")
-            channel = self.client.get_channel(677346863271247930)
-            await channel.edit(name=f"🥉5K: Unknown")
+                # Suppression
+                channel = self.client.get_channel(677346267231158283)
+                await channel.edit(name=f"🥇100:Unknown")
+                channel = self.client.get_channel(677346847781552137)
+                await channel.edit(name=f"🥈1K: Unknown")
+                channel = self.client.get_channel(677346863271247930)
+                await channel.edit(name=f"🥉5K: Unknown")
 
-            # Creation
-            channel = self.client.get_channel(677347022541422612)
-            await channel.edit(name=f"🥇100: Unknown")
-            channel = self.client.get_channel(677347036001206322)
-            await channel.edit(name=f"🥈1K: Unknown")
-            channel = self.client.get_channel(677347053902233602)
-            await channel.edit(name=f"🥉5K: Unknown")
+                # Creation
+                channel = self.client.get_channel(677347022541422612)
+                await channel.edit(name=f"🥇100: Unknown")
+                channel = self.client.get_channel(677347036001206322)
+                await channel.edit(name=f"🥈1K: Unknown")
+                channel = self.client.get_channel(677347053902233602)
+                await channel.edit(name=f"🥉5K: Unknown")
+                self.border_fails = 0
+            else:
+                self.border_fails += 1
 
     @commands.command(hidden=True)
     @commands.is_owner()
