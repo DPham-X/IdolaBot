@@ -73,16 +73,11 @@ class IDOLA(commands.Cog):
             await self.client.change_presence(
                 activity=discord.Game("Popona is down")
             )
+            idola.start()
 
     @tasks.loop(hours=4)
     async def relog(self):
-        try:
-            idola.start()
-        except Exception as e:
-            print(e, traceback.format_exc())
-            await self.client.change_presence(
-                activity=discord.Game("Popona is down")
-            )
+        idola.start()
 
     @commands.command(hidden=True)
     @commands.is_owner()

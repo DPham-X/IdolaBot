@@ -5,12 +5,13 @@ import hashlib
 import json
 import os
 import pickle
+import traceback
 from collections import OrderedDict, defaultdict
 
 import pylru
+import pytz
 import requests
 from dotenv import load_dotenv
-import pytz
 
 
 IDOLA_API_URL = "https://game.idola.jp/api"
@@ -118,11 +119,15 @@ class IdolaAPI(object):
         print("Idola API ready!")
 
     def start(self):
-        self.api_init()
-        self.pre_login()
-        self.login()
-        self.update_retrans_key()
-        self.update_res_ver()
+        try:
+            self.api_init()
+            self.pre_login()
+            self.login()
+            self.update_retrans_key()
+            self.update_res_ver()
+        except Exception as e:
+            print(e, traceback.format_exc())
+
 
     def import_id_map(self, csv_filepath):
         # https://github.com/NNSTJP/Idola
