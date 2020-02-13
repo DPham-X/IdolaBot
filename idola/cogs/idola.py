@@ -104,7 +104,7 @@ class IDOLA(commands.Cog):
             channel = self.client.get_channel(677346847781552137)
             await channel.edit(name=f"🥈1K: {raid_suppression_border_1000:,d}")
             channel = self.client.get_channel(677346863271247930)
-            await channel.edit(name=f"🥉10K: {raid_suppression_border_5000:,d}")
+            await channel.edit(name=f"🥉5K: {raid_suppression_border_5000:,d}")
 
             # Creation
             channel = self.client.get_channel(677347022541422612)
@@ -112,7 +112,7 @@ class IDOLA(commands.Cog):
             channel = self.client.get_channel(677347036001206322)
             await channel.edit(name=f"🥈1K: {raid_creation_border_1000:,d}")
             channel = self.client.get_channel(677347053902233602)
-            await channel.edit(name=f"🥉10K: {raid_creation_border_5000:,d}")
+            await channel.edit(name=f"🥉5K: {raid_creation_border_5000:,d}")
         except Exception as e:
             print(traceback.format_exc())
             # Arena
@@ -125,7 +125,7 @@ class IDOLA(commands.Cog):
             channel = self.client.get_channel(677346847781552137)
             await channel.edit(name=f"🥈1K: Unknown")
             channel = self.client.get_channel(677346863271247930)
-            await channel.edit(name=f"🥉10K: Unknown")
+            await channel.edit(name=f"🥉5K: Unknown")
 
             # Creation
             channel = self.client.get_channel(677347022541422612)
@@ -133,7 +133,7 @@ class IDOLA(commands.Cog):
             channel = self.client.get_channel(677347036001206322)
             await channel.edit(name=f"🥈1K: Unknown")
             channel = self.client.get_channel(677347053902233602)
-            await channel.edit(name=f"🥉10K: Unknown")
+            await channel.edit(name=f"🥉5K: Unknown")
 
     @commands.command(hidden=True)
     @commands.is_owner()
