@@ -41,6 +41,8 @@ class IDOLA(commands.Cog):
             f"{self.client.user} is connected to the following guild:\n"
             f"{guild.name}(id: {guild.id})"
         )
+
+        self.relog.start()
         self.border_status_update.start()
 
     @commands.Cog.listener()
@@ -73,10 +75,10 @@ class IDOLA(commands.Cog):
             await self.client.change_presence(
                 activity=discord.Game("Popona is down")
             )
-            idola.start()
 
     @tasks.loop(hours=4)
     async def relog(self):
+        print("Relogging started")
         idola.start()
 
     @commands.command(hidden=True)
