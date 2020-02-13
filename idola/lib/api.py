@@ -473,6 +473,14 @@ class IdolaAPI(object):
         sorted_ranking_information = sorted([player_information["score_point"] for player_information in ranking_information], reverse=True)
         return sorted_ranking_information[0]
 
+    def get_top_500_raid_suppression_border(self, event_id=None):
+        border_score_point = None
+        if not event_id:
+            event_id = self.get_latest_raid_event_id()
+        ranking_information = self.get_raid_battle_ranking(event_id, 499)
+        sorted_ranking_information = sorted([player_information["score_point"] for player_information in ranking_information], reverse=True)
+        return sorted_ranking_information[0]
+
     def get_top_1000_raid_suppression_border(self, event_id=None):
         border_score_point = None
         if not event_id:
@@ -493,6 +501,13 @@ class IdolaAPI(object):
         border_score_point = None
         event_id = self.get_latest_raid_event_id()
         ranking_information = self.get_raid_creation_ranking(event_id, 99)
+        sorted_ranking_information = sorted([player_information["score_point"] for player_information in ranking_information], reverse=True)
+        return sorted_ranking_information[0]
+
+    def get_top_500_raid_creation_border(self, event_id=None):
+        border_score_point = None
+        event_id = self.get_latest_raid_event_id()
+        ranking_information = self.get_raid_creation_ranking(event_id, 499)
         sorted_ranking_information = sorted([player_information["score_point"] for player_information in ranking_information], reverse=True)
         return sorted_ranking_information[0]
 

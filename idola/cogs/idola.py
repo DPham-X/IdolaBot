@@ -189,6 +189,7 @@ class IDOLA(commands.Cog):
     async def suppression_border(self, ctx):
         """Shows the border for Idola Raid Suppression"""
         border_score_point_100 = idola.get_top_100_raid_suppression_border()
+        border_score_point_500 = idola.get_top_500_raid_suppression_border()
         border_score_point_1000 = idola.get_top_1000_raid_suppression_border()
         border_score_point_5000 = idola.get_top_5000_raid_suppression_border()
 
@@ -207,6 +208,11 @@ class IDOLA(commands.Cog):
             name="Top 100",
             value=f"{border_score_point_100:,d} points",
             inline=True,
+        )
+        embed.add_field(
+            name="Top 500",
+            value=f"{border_score_point_500:,d} points",
+            inline=False,
         )
         embed.add_field(
             name="Top 1000",
@@ -235,6 +241,7 @@ class IDOLA(commands.Cog):
     async def creation_border(self, ctx):
         """Shows the border for Idola Raid Creation"""
         border_score_point_100 = idola.get_top_100_raid_creation_border()
+        border_score_point_500 = idola.get_top_500_raid_creation_border()
         border_score_point_1000 = idola.get_top_1000_raid_creation_border()
         border_score_point_5000 = idola.get_top_5000_raid_creation_border()
 
@@ -253,6 +260,11 @@ class IDOLA(commands.Cog):
             name="Top 100",
             value=f"{border_score_point_100:,d} points",
             inline=True,
+        )
+        embed.add_field(
+            name="Top 500",
+            value=f"{border_score_point_500:,d} points",
+            inline=False,
         )
         embed.add_field(
             name="Top 1000",
