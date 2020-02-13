@@ -181,19 +181,11 @@ class IDOLA(commands.Cog):
 
     @commands.command()
     async def suppression_border(self, ctx):
-        await self.suppression_100(ctx)
-        await self.suppression_1000(ctx)
-        await self.suppression_10000(ctx)
+        """Shows the border for Idola Raid Suppression"""
+        border_score_point_100 = idola.get_top_100_raid_suppression_border()
+        border_score_point_1000 = idola.get_top_1000_raid_suppression_border()
+        border_score_point_10000 = idola.get_top_10000_raid_suppression_border()
 
-    @commands.command()
-    async def creation_border(self, ctx):
-        await self.creation_100(ctx)
-        await self.creation_1000(ctx)
-        await self.creation_10000(ctx)
-
-    async def suppression_100(self, ctx):
-        """Shows the Top 100 border for Idola Raid Suppression"""
-        border_score_point = idola.get_top_100_raid_suppression_border()
         current_time = idola.get_current_time()
         end_date = idola.get_raid_event_end_date()
         time_left = idola.datetime_difference(current_time, end_date)
@@ -206,8 +198,18 @@ class IDOLA(commands.Cog):
             url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png"
         )
         embed.add_field(
-            name="Current",
-            value=f"{border_score_point:,d} points",
+            name="Top 100",
+            value=f"{border_score_point_100:,d} points",
+            inline=True,
+        )
+        embed.add_field(
+            name="Top 1000",
+            value=f"{border_score_point_1000:,d} points",
+            inline=True,
+        )
+        embed.add_field(
+            name="Top 10000",
+            value=f"{border_score_point_10000:,d} points",
             inline=False,
         )
         embed.add_field(name="Time Left", value=time_left, inline=False)
@@ -223,149 +225,37 @@ class IDOLA(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    async def suppression_1000(self, ctx):
-        """Shows the Top 1000 border for Idola Raid Suppression"""
-        border_score_point = idola.get_top_1000_raid_suppression_border()
+    @commands.command()
+    async def creation_border(self, ctx):
+        """Shows the border for Idola Raid Creation"""
+        border_score_point_100 = idola.get_top_100_raid_creation_border()
+        border_score_point_1000 = idola.get_top_1000_raid_creation_border()
+        border_score_point_10000 = idola.get_top_10000_raid_creation_border()
+
         current_time = idola.get_current_time()
         end_date = idola.get_raid_event_end_date()
         time_left = idola.datetime_difference(current_time, end_date)
 
         embed = discord.Embed(
-            title="Top 1000: Idola Raid Suppression",
+            title="Top 100: Idola Raid Creation",
             color=discord.Colour.blue(),
         )
         embed.set_thumbnail(
             url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png"
         )
         embed.add_field(
-            name="Current",
-            value=f"{border_score_point:,d} points",
-            inline=False,
-        )
-        embed.add_field(name="Time Left", value=time_left, inline=False)
-        embed.add_field(
-            name="Current Time",
-            value=idola.datetime_jp_format(current_time),
+            name="Top 100",
+            value=f"{border_score_point_100:,d} points",
             inline=True,
         )
         embed.add_field(
-            name="Ending at",
-            value=idola.datetime_jp_format(end_date),
-            inline=True,
-        )
-        await ctx.send(embed=embed)
-
-    async def suppression_10000(self, ctx):
-        """Shows the Top 10000 border for Idola Raid Suppression"""
-        border_score_point = idola.get_top_10000_raid_suppression_border()
-        current_time = idola.get_current_time()
-        end_date = idola.get_raid_event_end_date()
-        time_left = idola.datetime_difference(current_time, end_date)
-
-        embed = discord.Embed(
-            title="Top 10000: Idola Raid Suppression",
-            color=discord.Colour.blue(),
-        )
-        embed.set_thumbnail(
-            url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png"
-        )
-        embed.add_field(
-            name="Current",
-            value=f"{border_score_point:,d} points",
-            inline=False,
-        )
-        embed.add_field(name="Time Left", value=time_left, inline=False)
-        embed.add_field(
-            name="Current Time",
-            value=idola.datetime_jp_format(current_time),
+            name="Top 1000",
+            value=f"{border_score_point_1000:,d} points",
             inline=True,
         )
         embed.add_field(
-            name="Ending at",
-            value=idola.datetime_jp_format(end_date),
-            inline=True,
-        )
-        await ctx.send(embed=embed)
-
-    async def creation_100(self, ctx):
-        """Shows the Top 100 border for Idola Raid Creation"""
-        border_score_point = idola.get_top_100_raid_creation_border()
-        current_time = idola.get_current_time()
-        end_date = idola.get_raid_event_end_date()
-        time_left = idola.datetime_difference(current_time, end_date)
-
-        embed = discord.Embed(
-            title="Top 100: Idola Raid Creation", color=discord.Colour.blue(),
-        )
-        embed.set_thumbnail(
-            url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png"
-        )
-        embed.add_field(
-            name="Current",
-            value=f"{border_score_point:,d} points",
-            inline=False,
-        )
-        embed.add_field(name="Time Left", value=time_left, inline=False)
-        embed.add_field(
-            name="Current Time",
-            value=idola.datetime_jp_format(current_time),
-            inline=True,
-        )
-        embed.add_field(
-            name="Ending at",
-            value=idola.datetime_jp_format(end_date),
-            inline=True,
-        )
-        await ctx.send(embed=embed)
-
-    async def creation_1000(self, ctx):
-        """Shows the Top 1000 border for Idola Raid Creation"""
-        border_score_point = idola.get_top_1000_raid_creation_border()
-        current_time = idola.get_current_time()
-        end_date = idola.get_raid_event_end_date()
-        time_left = idola.datetime_difference(current_time, end_date)
-
-        embed = discord.Embed(
-            title="Top 1000: Idola Raid Creation", color=discord.Colour.blue(),
-        )
-        embed.set_thumbnail(
-            url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png"
-        )
-        embed.add_field(
-            name="Current",
-            value=f"{border_score_point:,d} points",
-            inline=False,
-        )
-        embed.add_field(name="Time Left", value=time_left, inline=False)
-        embed.add_field(
-            name="Current Time",
-            value=idola.datetime_jp_format(current_time),
-            inline=True,
-        )
-        embed.add_field(
-            name="Ending at",
-            value=idola.datetime_jp_format(end_date),
-            inline=True,
-        )
-        await ctx.send(embed=embed)
-
-    async def creation_10000(self, ctx):
-        """Shows the Top 10000 border for Idola Raid Creation"""
-        border_score_point = idola.get_top_10000_raid_creation_border()
-        current_time = idola.get_current_time()
-        end_date = idola.get_raid_event_end_date()
-        time_left = idola.datetime_difference(current_time, end_date)
-
-        embed = discord.Embed(
-            title="Top 10000: Idola Raid Creation",
-            color=discord.Colour.blue(),
-        )
-        embed.set_thumbnail(
-            url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png"
-        )
-        embed.add_field(
-            name="Current",
-            value=f"{border_score_point:,d} points",
+            name="Top 10000",
+            value=f"{border_score_point_10000:,d} points",
             inline=False,
         )
         embed.add_field(name="Time Left", value=time_left, inline=False)
