@@ -457,7 +457,9 @@ class IdolaAPI(object):
             if ranking_information["arena_score_rank"] == 100:
                 border_score_point = ranking_information["arena_score_point"]
                 break
-
+            elif ranking_information["arena_score_rank"] == 99:
+                border_score_point = ranking_information["arena_score_point"]
+                break
         if border_score_point is None:
             raise Exception("Could not find the Top 100 border score")
 
@@ -472,7 +474,9 @@ class IdolaAPI(object):
             if player_information["score_rank"] == 100:
                 border_score_point = player_information["score_point"]
                 break
-
+            elif player_information["score_rank"] == 99:
+                border_score_point = player_information["score_point"]
+                break
         if border_score_point is None:
             raise Exception("Could not find the Top 100 border score")
 
@@ -487,7 +491,9 @@ class IdolaAPI(object):
             if player_information["score_rank"] == 1000:
                 border_score_point = player_information["score_point"]
                 break
-
+            elif player_information["score_rank"] == 999:
+                border_score_point = player_information["score_point"]
+                break
         if border_score_point is None:
             raise Exception("Could not find the Top 1000 border score")
 
@@ -502,7 +508,9 @@ class IdolaAPI(object):
             if player_information["score_rank"] == 10000:
                 border_score_point = player_information["score_point"]
                 break
-
+            elif player_information["score_rank"] == 9999:
+                border_score_point = player_information["score_point"]
+                break
         if border_score_point is None:
             raise Exception("Could not find the Top 10000 border score")
 
@@ -516,7 +524,9 @@ class IdolaAPI(object):
             if player_information["score_rank"] == 100:
                 border_score_point = player_information["score_point"]
                 break
-
+            elif player_information["score_rank"] == 99:
+                border_score_point = player_information["score_point"]
+                break
         if border_score_point is None:
             raise Exception("Could not find the Top 100 border score")
 
@@ -531,7 +541,9 @@ class IdolaAPI(object):
             if player_information["score_rank"] == 1000:
                 border_score_point = player_information["score_point"]
                 break
-
+            elif player_information["score_rank"] == 999:
+                border_score_point = player_information["score_point"]
+                break
         if border_score_point is None:
             raise Exception("Could not find the Top 1000 border score")
 
@@ -546,7 +558,10 @@ class IdolaAPI(object):
             if player_information["score_rank"] == 10000:
                 border_score_point = player_information["score_point"]
                 break
-
+            elif player_information["score_rank"] == 9999:
+                border_score_point = player_information["score_point"]
+                break
+        print(ranking_information)
         if border_score_point is None:
             raise Exception("Could not find the Top 10000 border score")
 
