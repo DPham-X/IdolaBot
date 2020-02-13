@@ -457,10 +457,7 @@ class IdolaAPI(object):
             if ranking_information["arena_score_rank"] == 100:
                 border_score_point = ranking_information["arena_score_point"]
                 break
-            elif ranking_information["arena_score_rank"] == 99:
-                border_score_point = ranking_information["arena_score_point"]
-                break
-        if border_score_point is None:
+        else:
             raise Exception("Could not find the Top 100 border score")
 
         return border_score_point
