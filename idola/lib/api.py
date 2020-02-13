@@ -561,7 +561,6 @@ class IdolaAPI(object):
             elif player_information["score_rank"] == 9999:
                 border_score_point = player_information["score_point"]
                 break
-        print(ranking_information)
         if border_score_point is None:
             raise Exception("Could not find the Top 10000 border score")
 
