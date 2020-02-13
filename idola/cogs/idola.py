@@ -82,7 +82,7 @@ class IDOLA(commands.Cog):
         print("Relogging started")
         idola.start()
 
-    @tasks.loop(minutes=120)
+    @tasks.loop(seconds=120)
     async def border_channel_update(self):
         print("Updating channel borders")
         try:
@@ -148,7 +148,7 @@ class IDOLA(commands.Cog):
             )
 
     @commands.command()
-    async def arena_100(self, ctx):
+    async def arena_border(self, ctx):
         """Shows the Top 100 border for arena"""
         border_score_point = idola.get_top_100_arena_border()
         current_time = idola.get_current_time()
@@ -180,6 +180,17 @@ class IDOLA(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def suppression_border(self, ctx):
+        await self.suppression_100(ctx)
+        await self.suppression_1000(ctx)
+        await self.suppression_10000(ctx)
+
+    @commands.command()
+    async def creation_border(self, ctx):
+        await self.creation_100(ctx)
+        await self.creation_1000(ctx)
+        await self.creation_10000(ctx)
+
     async def suppression_100(self, ctx):
         """Shows the Top 100 border for Idola Raid Suppression"""
         border_score_point = idola.get_top_100_raid_suppression_border()
@@ -212,7 +223,6 @@ class IDOLA(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
     async def suppression_1000(self, ctx):
         """Shows the Top 1000 border for Idola Raid Suppression"""
         border_score_point = idola.get_top_1000_raid_suppression_border()
@@ -245,7 +255,6 @@ class IDOLA(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
     async def suppression_10000(self, ctx):
         """Shows the Top 10000 border for Idola Raid Suppression"""
         border_score_point = idola.get_top_10000_raid_suppression_border()
@@ -278,7 +287,6 @@ class IDOLA(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
     async def creation_100(self, ctx):
         """Shows the Top 100 border for Idola Raid Creation"""
         border_score_point = idola.get_top_100_raid_creation_border()
@@ -310,7 +318,6 @@ class IDOLA(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
     async def creation_1000(self, ctx):
         """Shows the Top 1000 border for Idola Raid Creation"""
         border_score_point = idola.get_top_1000_raid_creation_border()
@@ -342,7 +349,6 @@ class IDOLA(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
     async def creation_10000(self, ctx):
         """Shows the Top 10000 border for Idola Raid Creation"""
         border_score_point = idola.get_top_10000_raid_creation_border()
