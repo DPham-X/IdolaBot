@@ -87,7 +87,9 @@ class IDOLA(commands.Cog):
     async def border_channel_update(self):
         print("Updating channel borders")
         try:
-            arena_border_score = idola.get_top_100_arena_border()
+            arena_border_score_100 = idola.get_top_100_arena_border()
+            arena_border_score_500 = idola.get_top_500_arena_border()
+            arena_border_score_1000 = idola.get_top_1000_arena_border()
             raid_suppression_border_100 = idola.get_top_100_raid_suppression_border()
             raid_suppression_border_1000 = idola.get_top_1000_raid_suppression_border()
             raid_suppression_border_5000 = idola.get_top_5000_raid_suppression_border()
@@ -97,7 +99,11 @@ class IDOLA(commands.Cog):
 
             # Arena
             channel = self.client.get_channel(677346136176197662)
-            await channel.edit(name=f"🥇100: {arena_border_score:,d}")
+            await channel.edit(name=f"🥇100: {arena_border_score_100:,d}")
+            channel = self.client.get_channel(677860796751151106)
+            await channel.edit(name=f"🥈500: {arena_border_score_500:,d}")
+            channel = self.client.get_channel(677860638663376927)
+            await channel.edit(name=f"🥉1K: {arena_border_score_1000:,d}")
 
             # Suppression
             channel = self.client.get_channel(677346267231158283)
@@ -121,10 +127,14 @@ class IDOLA(commands.Cog):
                 # Arena
                 channel = self.client.get_channel(677346136176197662)
                 await channel.edit(name=f"🥇100: Unknown")
+                channel = self.client.get_channel(677860796751151106)
+                await channel.edit(name=f"🥈500: Unknown")
+                channel = self.client.get_channel(677860638663376927)
+                await channel.edit(name=f"🥉1K: Unknown")
 
                 # Suppression
                 channel = self.client.get_channel(677346267231158283)
-                await channel.edit(name=f"🥇100:Unknown")
+                await channel.edit(name=f"🥇100: Unknown")
                 channel = self.client.get_channel(677346847781552137)
                 await channel.edit(name=f"🥈1K: Unknown")
                 channel = self.client.get_channel(677346863271247930)
@@ -156,21 +166,35 @@ class IDOLA(commands.Cog):
     @commands.command()
     async def arena_border(self, ctx):
         """Shows the Top 100 border for arena"""
-        border_score_point = idola.get_top_100_arena_border()
+        border_score_point_100 = idola.get_top_100_arena_border()
+        border_score_point_500 = idola.get_top_500_arena_border()
+        border_score_point_1000 = idola.get_top_1000_arena_border()
+
         current_time = idola.get_current_time()
-        end_date = idola.get_arena_event_end_date()
+        end_date = idola.get_raid_event_end_date()
         time_left = idola.datetime_difference(current_time, end_date)
 
         embed = discord.Embed(
-            title="Idola Arena Border", color=discord.Colour.blue(),
+            title="Idola Arena Border",
+            color=discord.Colour.blue(),
         )
         embed.set_thumbnail(
             url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/arena.png"
         )
         embed.add_field(
-            name="Current",
-            value=f"{border_score_point:,d} points",
-            inline=False,
+            name="Top 100",
+            value=f"{border_score_point_100:,d} points",
+            inline=True,
+        )
+        embed.add_field(
+            name="Top 500",
+            value=f"{border_score_point_500:,d} points",
+            inline=True,
+        )
+        embed.add_field(
+            name="Top 1000",
+            value=f"{border_score_point_1000:,d} points",
+            inline=True,
         )
         embed.add_field(name="Time Left", value=time_left, inline=False)
         embed.add_field(

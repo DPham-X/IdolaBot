@@ -310,6 +310,21 @@ class IdolaAPI(object):
         self.retrans_key = json_response["retrans_key"]
         return event_id
 
+    def get_arena_ranking(self, event_id, offset=0):
+        body = {
+            "app_ver": self.app_ver,
+            "res_ver": self.res_ver,
+            "auth_key": self.auth_key,
+            "retrans_key": self.retrans_key,
+            "event_id": event_id,
+            "ranking_offset": offset,
+        }
+        response = self.client.post(IDOLA_ARENA_RANKING_OFFSET, body)
+        json_response = response.json()
+        ranking_list = json_response["replace"]["ranking_list"]
+        self.retrans_key = json_response["retrans_key"]
+        return ranking_list
+
     def get_raid_battle_ranking(self, event_id=None, offset=0):
         if not event_id:
             event_id = self.get_latest_raid_event_id()
@@ -450,17 +465,25 @@ class IdolaAPI(object):
         if not event_id:
             event_id = self.get_latest_arena_event_id()
         border_score_point = None
-        ranking_information_81_100 = self.get_arena_ranking_offset(
-            event_id, 80
-        )
-        for ranking_information in ranking_information_81_100.values():
-            if ranking_information["arena_score_rank"] == 100:
-                border_score_point = ranking_information["arena_score_point"]
-                break
-        else:
-            raise Exception("Could not find the Top 100 border score")
+        ranking_information = self.get_arena_ranking(event_id, 99)
+        sorted_ranking_information = sorted([player_information["score_point"] for player_information in ranking_information], reverse=True)
+        return sorted_ranking_information[0]
 
-        return border_score_point
+    def get_top_500_arena_border(self, event_id=None):
+        if not event_id:
+            event_id = self.get_latest_arena_event_id()
+        border_score_point = None
+        ranking_information = self.get_arena_ranking(event_id, 499)
+        sorted_ranking_information = sorted([player_information["score_point"] for player_information in ranking_information], reverse=True)
+        return sorted_ranking_information[0]
+
+    def get_top_1000_arena_border(self, event_id=None):
+        if not event_id:
+            event_id = self.get_latest_arena_event_id()
+        border_score_point = None
+        ranking_information = self.get_arena_ranking(event_id, 999)
+        sorted_ranking_information = sorted([player_information["score_point"] for player_information in ranking_information], reverse=True)
+        return sorted_ranking_information[0]
 
     def get_top_100_raid_suppression_border(self, event_id=None):
         border_score_point = None
