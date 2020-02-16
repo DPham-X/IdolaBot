@@ -30,16 +30,23 @@ class IDOLA(commands.Cog):
         self.client = client
         self.border_fails = 0
 
+        self.arena_border_100_channel = int(os.getenv("ARENA_BORDER_100_CHANNEL"))
+        self.arena_border_500_channel = int(os.getenv("ARENA_BORDER_500_CHANNEL"))
+        self.arena_border_1000_channel = int(os.getenv("ARENA_BORDER_1000_CHANNEL"))
+        self.suppression_border_100_channel = int(os.getenv("SUPPRESSION_BORDER_100_CHANNEL"))
+        self.suppression_border_1000_channel = int(os.getenv("SUPPRESSION_BORDER_1000_CHANNEL"))
+        self.suppression_border_5000_channel = int(os.getenv("SUPPRESSION_BORDER_5000_CHANNEL"))
+        self.creation_border_100_channel = int(os.getenv("CREATION_BORDER_100_CHANNEL"))
+        self.creation_border_1000_channel = int(os.getenv("CREATION_BORDER_1000_CHANNEL"))
+        self.creation_border_5000_channel = int(os.getenv("CREATION_BORDER_5000_CHANNEL"))
+
     @commands.Cog.listener()
     async def on_ready(self):
-        GUILD = "IDOLATest"
         await self.client.change_presence(activity=discord.Game("Ready!"))
         for guild in self.client.guilds:
-            if guild.name == GUILD:
-                break
+            print(f"{self.client.user} is connected to the following guild:\n" f"{guild.name}(id: {guild.id})")
 
-        print(f"{self.client.user} is connected to the following guild:\n" f"{guild.name}(id: {guild.id})")
-
+        # Start looping tasks
         self.relog.start()
         self.border_status_update.start()
         self.border_channel_update.start()
@@ -48,6 +55,16 @@ class IDOLA(commands.Cog):
     async def on_command_error(self, ctx, error):
         traceback.print_exception(type(error), error, error.__traceback__)
         await ctx.send("An error occurred")
+
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def restart(self, ctx):
+        try:
+            idola.start()
+            await ctx.send("IdolaBot has been restarted")
+        except Exception as e:
+            print(e, traceback.format_exc())
+            await ctx.send("An error occurred, IdolaBot could not be restarted")
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -67,90 +84,93 @@ class IDOLA(commands.Cog):
             await self.client.change_presence(activity=discord.Game(f"{border_score:,d} - SuppressionBorderTop100"))
         except Exception as e:
             print(e, traceback.format_exc())
-            await self.client.change_presence(activity=discord.Game("Popona is down"))
 
     @tasks.loop(hours=4)
     async def relog(self):
-        print("Relogging started")
+        print("Relogging")
         idola.start()
 
     @tasks.loop(seconds=120)
     async def border_channel_update(self):
         print("Updating channel borders")
         try:
-            arena_border_score_100 = idola.get_top_100_arena_border()
-            arena_border_score_500 = idola.get_top_500_arena_border()
-            arena_border_score_1000 = idola.get_top_1000_arena_border()
-            raid_suppression_border_100 = idola.get_top_100_raid_suppression_border()
-            raid_suppression_border_1000 = idola.get_top_1000_raid_suppression_border()
-            raid_suppression_border_5000 = idola.get_top_5000_raid_suppression_border()
-            raid_creation_border_100 = idola.get_top_100_raid_creation_border()
-            raid_creation_border_1000 = idola.get_top_1000_raid_creation_border()
-            raid_creation_border_5000 = idola.get_top_5000_raid_creation_border()
-
             # Arena
-            channel = self.client.get_channel(677346136176197662)
-            await channel.edit(name=f"🥇100: {arena_border_score_100:,d}")
-            channel = self.client.get_channel(677860796751151106)
-            await channel.edit(name=f"🥈500: {arena_border_score_500:,d}")
-            channel = self.client.get_channel(677860638663376927)
-            await channel.edit(name=f"🥉1K: {arena_border_score_1000:,d}")
-
+            if self.arena_border_100_channel:
+                arena_border_score_100 = idola.get_top_100_arena_border()
+                channel = self.client.get_channel(self.arena_border_100_channel)
+                await channel.edit(name=f"🥇100: {arena_border_score_100:,d}")
+            if self.arena_border_500_channel:
+                arena_border_score_500 = idola.get_top_500_arena_border()
+                channel = self.client.get_channel(self.arena_border_500_channel)
+                await channel.edit(name=f"🥈500: {arena_border_score_500:,d}")
+            if self.arena_border_1000_channel:
+                arena_border_score_1000 = idola.get_top_1000_arena_border()
+                channel = self.client.get_channel(self.arena_border_1000_channel)
+                await channel.edit(name=f"🥉1K: {arena_border_score_1000:,d}")
             # Suppression
-            channel = self.client.get_channel(677346267231158283)
-            await channel.edit(name=f"🥇100: {raid_suppression_border_100:,d}")
-            channel = self.client.get_channel(677346847781552137)
-            await channel.edit(name=f"🥈1K: {raid_suppression_border_1000:,d}")
-            channel = self.client.get_channel(677346863271247930)
-            await channel.edit(name=f"🥉5K: {raid_suppression_border_5000:,d}")
-
+            if self.suppression_border_100_channel:
+                raid_suppression_border_100 = idola.get_top_100_raid_suppression_border()
+                channel = self.client.get_channel(self.suppression_border_100_channel)
+                await channel.edit(name=f"🥇100: {raid_suppression_border_100:,d}")
+            if self.suppression_border_1000_channel:
+                raid_suppression_border_1000 = idola.get_top_1000_raid_suppression_border()
+                channel = self.client.get_channel(self.suppression_border_1000_channel)
+                await channel.edit(name=f"🥈1K: {raid_suppression_border_1000:,d}")
+            if self.suppression_border_5000_channel:
+                raid_suppression_border_5000 = idola.get_top_5000_raid_suppression_border()
+                channel = self.client.get_channel(self.suppression_border_5000_channel)
+                await channel.edit(name=f"🥉5K: {raid_suppression_border_5000:,d}")
             # Creation
-            channel = self.client.get_channel(677347022541422612)
-            await channel.edit(name=f"🥇100: {raid_creation_border_100:,d}")
-            channel = self.client.get_channel(677347036001206322)
-            await channel.edit(name=f"🥈1K: {raid_creation_border_1000:,d}")
-            channel = self.client.get_channel(677347053902233602)
-            await channel.edit(name=f"🥉5K: {raid_creation_border_5000:,d}")
+            if self.creation_border_100_channel:
+                raid_creation_border_100 = idola.get_top_100_raid_creation_border()
+                channel = self.client.get_channel(self.creation_border_100_channel)
+                await channel.edit(name=f"🥇100: {raid_creation_border_100:,d}")
+            if self.creation_border_1000_channel:
+                raid_creation_border_1000 = idola.get_top_1000_raid_creation_border()
+                channel = self.client.get_channel(self.creation_border_1000_channel)
+                await channel.edit(name=f"🥈1K: {raid_creation_border_1000:,d}")
+            if self.creation_border_5000_channel:
+                raid_creation_border_5000 = idola.get_top_5000_raid_creation_border()
+                channel = self.client.get_channel(self.creation_border_5000_channel)
+                await channel.edit(name=f"🥉5K: {raid_creation_border_5000:,d}")
+
             self.border_fails = 0
         except Exception as e:
             print(traceback.format_exc())
             if self.border_fails == 5:
                 # Arena
-                channel = self.client.get_channel(677346136176197662)
-                await channel.edit(name=f"🥇100: Unknown")
-                channel = self.client.get_channel(677860796751151106)
-                await channel.edit(name=f"🥈500: Unknown")
-                channel = self.client.get_channel(677860638663376927)
-                await channel.edit(name=f"🥉1K: Unknown")
-
+                if self.arena_border_100_channel:
+                    channel = self.client.get_channel(self.arena_border_100_channel)
+                    await channel.edit(name=f"🥇100: Unknown")
+                if self.arena_border_500_channel:
+                    channel = self.client.get_channel(self.arena_border_500_channel)
+                    await channel.edit(name=f"🥈500: Unknown")
+                if self.arena_border_1000_channel:
+                    channel = self.client.get_channel(self.arena_border_1000_channel)
+                    await channel.edit(name=f"🥉1K: Unknown")
                 # Suppression
-                channel = self.client.get_channel(677346267231158283)
-                await channel.edit(name=f"🥇100: Unknown")
-                channel = self.client.get_channel(677346847781552137)
-                await channel.edit(name=f"🥈1K: Unknown")
-                channel = self.client.get_channel(677346863271247930)
-                await channel.edit(name=f"🥉5K: Unknown")
-
+                if self.suppression_border_100_channel:
+                    channel = self.client.get_channel(self.suppression_border_100_channel)
+                    await channel.edit(name=f"🥇100: Unknown")
+                if self.suppression_border_1000_channel:
+                    channel = self.client.get_channel(self.suppression_border_1000_channel)
+                    await channel.edit(name=f"🥈1K: Unknown")
+                if self.suppression_border_5000_channel:
+                    channel = self.client.get_channel(self.suppression_border_5000_channel)
+                    await channel.edit(name=f"🥉5K: Unknown")
                 # Creation
-                channel = self.client.get_channel(677347022541422612)
-                await channel.edit(name=f"🥇100: Unknown")
-                channel = self.client.get_channel(677347036001206322)
-                await channel.edit(name=f"🥈1K: Unknown")
-                channel = self.client.get_channel(677347053902233602)
-                await channel.edit(name=f"🥉5K: Unknown")
+                if self.creation_border_100_channel:
+                    channel = self.client.get_channel(self.creation_border_100_channel)
+                    await channel.edit(name=f"🥇100: Unknown")
+                if self.creation_border_1000_channel:
+                    channel = self.client.get_channel(self.creation_border_1000_channel)
+                    await channel.edit(name=f"🥈1K: Unknown")
+                if self.creation_border_5000_channel:
+                    channel = self.client.get_channel(self.creation_border_5000_channel)
+                    await channel.edit(name=f"🥉5K: Unknown")
                 self.border_fails = 0
             else:
                 self.border_fails += 1
-
-    @commands.command(hidden=True)
-    @commands.is_owner()
-    async def restart(self, ctx):
-        try:
-            idola.start()
-            await ctx.send("IdolaBot has been restarted")
-        except Exception as e:
-            print(e, traceback.format_exc())
-            await ctx.send("An error occurred, IdolaBot could not be restarted")
 
     @commands.command()
     async def arena_border(self, ctx):
