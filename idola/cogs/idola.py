@@ -98,79 +98,43 @@ class IDOLA(commands.Cog):
             if self.arena_border_100_channel:
                 arena_border_score_100 = idola.get_top_100_arena_border()
                 channel = self.client.get_channel(int(self.arena_border_100_channel))
-                await channel.edit(name=f"🥇100: {arena_border_score_100:,d}")
+                await channel.edit(name=f"🥇100: {arena_border_score_100:,d}" if arena_border_score_100 else f"🥇100: Unknown")
             if self.arena_border_500_channel:
                 arena_border_score_500 = idola.get_top_500_arena_border()
                 channel = self.client.get_channel(int(self.arena_border_500_channel))
-                await channel.edit(name=f"🥈500: {arena_border_score_500:,d}")
+                await channel.edit(name=f"🥈500: {arena_border_score_500:,d}" if arena_border_score_500 else f"🥈500: Unknown")
             if self.arena_border_1000_channel:
                 arena_border_score_1000 = idola.get_top_1000_arena_border()
                 channel = self.client.get_channel(int(self.arena_border_1000_channel))
-                await channel.edit(name=f"🥉1K: {arena_border_score_1000:,d}")
+                await channel.edit(name=f"🥉1K: {arena_border_score_1000:,d}" if arena_border_score_1000 else f"🥉1K: Unknown")
             # Suppression
             if self.suppression_border_100_channel:
                 raid_suppression_border_100 = idola.get_top_100_raid_suppression_border()
                 channel = self.client.get_channel(int(self.suppression_border_100_channel))
-                await channel.edit(name=f"🥇100: {raid_suppression_border_100:,d}")
+                await channel.edit(name=f"🥇100: {raid_suppression_border_100:,d}" if raid_suppression_border_100 else f"🥇100: Unknown")
             if self.suppression_border_1000_channel:
                 raid_suppression_border_1000 = idola.get_top_1000_raid_suppression_border()
                 channel = self.client.get_channel(int(self.suppression_border_1000_channel))
-                await channel.edit(name=f"🥈1K: {raid_suppression_border_1000:,d}")
+                await channel.edit(name=f"🥈1K: {raid_suppression_border_1000:,d}" if raid_suppression_border_1000 else f"🥈1K: Unknown")
             if self.suppression_border_5000_channel:
                 raid_suppression_border_5000 = idola.get_top_5000_raid_suppression_border()
                 channel = self.client.get_channel(int(self.suppression_border_5000_channel))
-                await channel.edit(name=f"🥉5K: {raid_suppression_border_5000:,d}")
+                await channel.edit(name=f"🥉5K: {raid_suppression_border_5000:,d}" if raid_suppression_border_5000 else f"🥉5K: Unknown")
             # Creation
             if self.creation_border_100_channel:
                 raid_creation_border_100 = idola.get_top_100_raid_creation_border()
                 channel = self.client.get_channel(int(self.creation_border_100_channel))
-                await channel.edit(name=f"🥇100: {raid_creation_border_100:,d}")
+                await channel.edit(name=f"🥇100: {raid_creation_border_100:,d}" if raid_creation_border_100 else f"🥇100: Unknown")
             if self.creation_border_1000_channel:
                 raid_creation_border_1000 = idola.get_top_1000_raid_creation_border()
                 channel = self.client.get_channel(int(self.creation_border_1000_channel))
-                await channel.edit(name=f"🥈1K: {raid_creation_border_1000:,d}")
+                await channel.edit(name=f"🥈1K: {raid_creation_border_1000:,d}" if raid_creation_border_1000 else f"🥈1K: Unknown")
             if self.creation_border_5000_channel:
                 raid_creation_border_5000 = idola.get_top_5000_raid_creation_border()
                 channel = self.client.get_channel(int(self.creation_border_5000_channel))
-                await channel.edit(name=f"🥉5K: {raid_creation_border_5000:,d}")
-
-            self.border_fails = 0
+                await channel.edit(name=f"🥉5K: {raid_creation_border_5000:,d}" if raid_creation_border_5000 else f"🥉5K: Unknown")
         except Exception as e:
             print(traceback.format_exc())
-            if self.border_fails == 5:
-                # Arena
-                if self.arena_border_100_channel:
-                    channel = self.client.get_channel(int(self.arena_border_100_channel))
-                    await channel.edit(name=f"🥇100: Unknown")
-                if self.arena_border_500_channel:
-                    channel = self.client.get_channel(int(self.arena_border_500_channel))
-                    await channel.edit(name=f"🥈500: Unknown")
-                if self.arena_border_1000_channel:
-                    channel = self.client.get_channel(int(self.arena_border_1000_channel))
-                    await channel.edit(name=f"🥉1K: Unknown")
-                # Suppression
-                if self.suppression_border_100_channel:
-                    channel = self.client.get_channel(int(self.suppression_border_100_channel))
-                    await channel.edit(name=f"🥇100: Unknown")
-                if self.suppression_border_1000_channel:
-                    channel = self.client.get_channel(int(self.suppression_border_1000_channel))
-                    await channel.edit(name=f"🥈1K: Unknown")
-                if self.suppression_border_5000_channel:
-                    channel = self.client.get_channel(int(self.suppression_border_5000_channel))
-                    await channel.edit(name=f"🥉5K: Unknown")
-                # Creation
-                if self.creation_border_100_channel:
-                    channel = self.client.get_channel(int(self.creation_border_100_channel))
-                    await channel.edit(name=f"🥇100: Unknown")
-                if self.creation_border_1000_channel:
-                    channel = self.client.get_channel(int(self.creation_border_1000_channel))
-                    await channel.edit(name=f"🥈1K: Unknown")
-                if self.creation_border_5000_channel:
-                    channel = self.client.get_channel(int(self.creation_border_5000_channel))
-                    await channel.edit(name=f"🥉5K: Unknown")
-                self.border_fails = 0
-            else:
-                self.border_fails += 1
 
     @commands.command()
     async def arena_border(self, ctx):
@@ -192,17 +156,17 @@ class IDOLA(commands.Cog):
         )
         embed.add_field(
             name="Top 100",
-            value=f"{border_score_point_100:,d} points",
+            value=f"{border_score_point_100:,d} points" if border_score_point_100 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 500",
-            value=f"{border_score_point_500:,d} points",
+            value=f"{border_score_point_500:,d} points" if border_score_point_500 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 1000",
-            value=f"{border_score_point_1000:,d} points",
+            value=f"{border_score_point_1000:,d} points" if border_score_point_1000 else "Unknown",
             inline=True,
         )
         embed.add_field(
@@ -243,22 +207,22 @@ class IDOLA(commands.Cog):
         )
         embed.add_field(
             name="Top 100",
-            value=f"{border_score_point_100:,d} points",
+            value=f"{border_score_point_100:,d} points" if border_score_point_100 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 500",
-            value=f"{border_score_point_500:,d} points",
+            value=f"{border_score_point_500:,d} points" if border_score_point_500 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 1000",
-            value=f"{border_score_point_1000:,d} points",
+            value=f"{border_score_point_1000:,d} points" if border_score_point_1000 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 5000",
-            value=f"{border_score_point_5000:,d} points",
+            value=f"{border_score_point_5000:,d} points" if border_score_point_5000 else "Unknown",
             inline=True,
         )
         embed.add_field(
@@ -297,22 +261,22 @@ class IDOLA(commands.Cog):
         embed.set_thumbnail(url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png")
         embed.add_field(
             name="Top 100",
-            value=f"{border_score_point_100:,d} points",
+            value=f"{border_score_point_100:,d} points" if border_score_point_100 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 500",
-            value=f"{border_score_point_500:,d} points",
+            value=f"{border_score_point_500:,d} points" if border_score_point_500 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 1000",
-            value=f"{border_score_point_1000:,d} points",
+            value=f"{border_score_point_1000:,d} points" if border_score_point_1000 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 5000",
-            value=f"{border_score_point_5000:,d} points",
+            value=f"{border_score_point_5000:,d} points" if border_score_point_5000 else "Unknown",
             inline=True,
         )
         embed.add_field(
