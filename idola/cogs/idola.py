@@ -38,10 +38,7 @@ class IDOLA(commands.Cog):
             if guild.name == GUILD:
                 break
 
-        print(
-            f"{self.client.user} is connected to the following guild:\n"
-            f"{guild.name}(id: {guild.id})"
-        )
+        print(f"{self.client.user} is connected to the following guild:\n" f"{guild.name}(id: {guild.id})")
 
         self.relog.start()
         self.border_status_update.start()
@@ -67,16 +64,10 @@ class IDOLA(commands.Cog):
         try:
             border_score = idola.get_top_100_raid_suppression_border()
             print(f"{border_score:,d} - SuppressionBorderTop100")
-            await self.client.change_presence(
-                activity=discord.Game(
-                    f"{border_score:,d} - SuppressionBorderTop100"
-                )
-            )
+            await self.client.change_presence(activity=discord.Game(f"{border_score:,d} - SuppressionBorderTop100"))
         except Exception as e:
             print(e, traceback.format_exc())
-            await self.client.change_presence(
-                activity=discord.Game("Popona is down")
-            )
+            await self.client.change_presence(activity=discord.Game("Popona is down"))
 
     @tasks.loop(hours=4)
     async def relog(self):
@@ -159,9 +150,7 @@ class IDOLA(commands.Cog):
             await ctx.send("IdolaBot has been restarted")
         except Exception as e:
             print(e, traceback.format_exc())
-            await ctx.send(
-                "An error occurred, IdolaBot could not be restarted"
-            )
+            await ctx.send("An error occurred, IdolaBot could not be restarted")
 
     @commands.command()
     async def arena_border(self, ctx):
@@ -196,7 +185,11 @@ class IDOLA(commands.Cog):
             value=f"{border_score_point_1000:,d} points",
             inline=True,
         )
-        embed.add_field(name="Time Left", value=time_left, inline=False)
+        embed.add_field(
+            name="Time Left",
+            value=time_left,
+            inline=False
+        )
         embed.add_field(
             name="Current Time",
             value=idola.datetime_jp_format(current_time),
@@ -248,7 +241,11 @@ class IDOLA(commands.Cog):
             value=f"{border_score_point_5000:,d} points",
             inline=True,
         )
-        embed.add_field(name="Time Left", value=time_left, inline=False)
+        embed.add_field(
+            name="Time Left",
+            value=time_left,
+            inline=False
+        )
         embed.add_field(
             name="Current Time",
             value=idola.datetime_jp_format(current_time),
@@ -275,11 +272,9 @@ class IDOLA(commands.Cog):
 
         embed = discord.Embed(
             title="Idola Raid Creation Border",
-            color=discord.Colour.blue(),
+            color=discord.Colour.blue()
         )
-        embed.set_thumbnail(
-            url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png"
-        )
+        embed.set_thumbnail(url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png")
         embed.add_field(
             name="Top 100",
             value=f"{border_score_point_100:,d} points",
@@ -300,7 +295,11 @@ class IDOLA(commands.Cog):
             value=f"{border_score_point_5000:,d} points",
             inline=True,
         )
-        embed.add_field(name="Time Left", value=time_left, inline=False)
+        embed.add_field(
+            name="Time Left",
+            value=time_left,
+            inline=False
+        )
         embed.add_field(
             name="Current Time",
             value=idola.datetime_jp_format(current_time),
@@ -413,19 +412,14 @@ class IDOLA(commands.Cog):
         """Shows the Top 100 Arena players"""
         players = idola.show_arena_ranking_top_100_players()
         msg = []
-        for profile_id, ranking_information in sorted(
-            players.items(), key=lambda item: item[1]["arena_score_point"],
-        ):
+        for profile_id, ranking_information in sorted(players.items(), key=lambda item: item[1]["arena_score_point"],):
             arena_score_rank = ranking_information["arena_score_rank"]
             arena_score_point = ranking_information["arena_score_point"]
             name = ranking_information["name"]
             msg.insert(
-                0,
-                f"{arena_score_rank}: {arena_score_point:,d} - {name}({profile_id})",
+                0, f"{arena_score_rank}: {arena_score_point:,d} - {name}({profile_id})",
             )
-        for j, chunks in enumerate(
-            [msg[i : i + 50] for i in range(0, len(msg), 50)]
-        ):
+        for j, chunks in enumerate([msg[i : i + 50] for i in range(0, len(msg), 50)]):
             text = "\n".join(chunks)
             embed = discord.Embed(
                 title="Idola Arena Top 100" if j == 0 else "\u200b",
@@ -439,9 +433,7 @@ class IDOLA(commands.Cog):
         """Shows the Top 100 Idola Raid Suppression players"""
         msg = idola.show_raid_suppression_top_100_players()
         msg = msg.split("\n")
-        for j, chunks in enumerate(
-            [msg[i : i + 50] for i in range(0, len(msg), 50)]
-        ):
+        for j, chunks in enumerate([msg[i : i + 50] for i in range(0, len(msg), 50)]):
             text = "\n".join(chunks)
             embed = discord.Embed(
                 title="Idola Raid Suppression Top 100" if j == 0 else "\u200b",
@@ -455,9 +447,7 @@ class IDOLA(commands.Cog):
         """Shows the Top 100 Idola Creation players"""
         msg = idola.show_raid_creation_top_100_players()
         msg = msg.split("\n")
-        for j, chunks in enumerate(
-            [msg[i : i + 50] for i in range(0, len(msg), 50)]
-        ):
+        for j, chunks in enumerate([msg[i : i + 50] for i in range(0, len(msg), 50)]):
             text = "\n".join(chunks)
             embed = discord.Embed(
                 title="Idola Raid Creation Top 100" if j == 0 else "\u200b",
