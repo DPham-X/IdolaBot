@@ -30,15 +30,15 @@ class IDOLA(commands.Cog):
         self.client = client
         self.border_fails = 0
 
-        self.arena_border_100_channel = int(os.getenv("ARENA_BORDER_100_CHANNEL"))
-        self.arena_border_500_channel = int(os.getenv("ARENA_BORDER_500_CHANNEL"))
-        self.arena_border_1000_channel = int(os.getenv("ARENA_BORDER_1000_CHANNEL"))
-        self.suppression_border_100_channel = int(os.getenv("SUPPRESSION_BORDER_100_CHANNEL"))
-        self.suppression_border_1000_channel = int(os.getenv("SUPPRESSION_BORDER_1000_CHANNEL"))
-        self.suppression_border_5000_channel = int(os.getenv("SUPPRESSION_BORDER_5000_CHANNEL"))
-        self.creation_border_100_channel = int(os.getenv("CREATION_BORDER_100_CHANNEL"))
-        self.creation_border_1000_channel = int(os.getenv("CREATION_BORDER_1000_CHANNEL"))
-        self.creation_border_5000_channel = int(os.getenv("CREATION_BORDER_5000_CHANNEL"))
+        self.arena_border_100_channel = os.getenv("ARENA_BORDER_100_CHANNEL")
+        self.arena_border_500_channel = os.getenv("ARENA_BORDER_500_CHANNEL")
+        self.arena_border_1000_channel = os.getenv("ARENA_BORDER_1000_CHANNEL")
+        self.suppression_border_100_channel = os.getenv("SUPPRESSION_BORDER_100_CHANNEL")
+        self.suppression_border_1000_channel = os.getenv("SUPPRESSION_BORDER_1000_CHANNEL")
+        self.suppression_border_5000_channel = os.getenv("SUPPRESSION_BORDER_5000_CHANNEL")
+        self.creation_border_100_channel = os.getenv("CREATION_BORDER_100_CHANNEL")
+        self.creation_border_1000_channel = os.getenv("CREATION_BORDER_1000_CHANNEL")
+        self.creation_border_5000_channel = os.getenv("CREATION_BORDER_5000_CHANNEL")
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -97,41 +97,41 @@ class IDOLA(commands.Cog):
             # Arena
             if self.arena_border_100_channel:
                 arena_border_score_100 = idola.get_top_100_arena_border()
-                channel = self.client.get_channel(self.arena_border_100_channel)
+                channel = self.client.get_channel(int(self.arena_border_100_channel))
                 await channel.edit(name=f"🥇100: {arena_border_score_100:,d}")
             if self.arena_border_500_channel:
                 arena_border_score_500 = idola.get_top_500_arena_border()
-                channel = self.client.get_channel(self.arena_border_500_channel)
+                channel = self.client.get_channel(int(self.arena_border_500_channel))
                 await channel.edit(name=f"🥈500: {arena_border_score_500:,d}")
             if self.arena_border_1000_channel:
                 arena_border_score_1000 = idola.get_top_1000_arena_border()
-                channel = self.client.get_channel(self.arena_border_1000_channel)
+                channel = self.client.get_channel(int(self.arena_border_1000_channel))
                 await channel.edit(name=f"🥉1K: {arena_border_score_1000:,d}")
             # Suppression
             if self.suppression_border_100_channel:
                 raid_suppression_border_100 = idola.get_top_100_raid_suppression_border()
-                channel = self.client.get_channel(self.suppression_border_100_channel)
+                channel = self.client.get_channel(int(self.suppression_border_100_channel))
                 await channel.edit(name=f"🥇100: {raid_suppression_border_100:,d}")
             if self.suppression_border_1000_channel:
                 raid_suppression_border_1000 = idola.get_top_1000_raid_suppression_border()
-                channel = self.client.get_channel(self.suppression_border_1000_channel)
+                channel = self.client.get_channel(int(self.suppression_border_1000_channel))
                 await channel.edit(name=f"🥈1K: {raid_suppression_border_1000:,d}")
             if self.suppression_border_5000_channel:
                 raid_suppression_border_5000 = idola.get_top_5000_raid_suppression_border()
-                channel = self.client.get_channel(self.suppression_border_5000_channel)
+                channel = self.client.get_channel(int(self.suppression_border_5000_channel))
                 await channel.edit(name=f"🥉5K: {raid_suppression_border_5000:,d}")
             # Creation
             if self.creation_border_100_channel:
                 raid_creation_border_100 = idola.get_top_100_raid_creation_border()
-                channel = self.client.get_channel(self.creation_border_100_channel)
+                channel = self.client.get_channel(int(self.creation_border_100_channel))
                 await channel.edit(name=f"🥇100: {raid_creation_border_100:,d}")
             if self.creation_border_1000_channel:
                 raid_creation_border_1000 = idola.get_top_1000_raid_creation_border()
-                channel = self.client.get_channel(self.creation_border_1000_channel)
+                channel = self.client.get_channel(int(self.creation_border_1000_channel))
                 await channel.edit(name=f"🥈1K: {raid_creation_border_1000:,d}")
             if self.creation_border_5000_channel:
                 raid_creation_border_5000 = idola.get_top_5000_raid_creation_border()
-                channel = self.client.get_channel(self.creation_border_5000_channel)
+                channel = self.client.get_channel(int(self.creation_border_5000_channel))
                 await channel.edit(name=f"🥉5K: {raid_creation_border_5000:,d}")
 
             self.border_fails = 0
@@ -140,33 +140,33 @@ class IDOLA(commands.Cog):
             if self.border_fails == 5:
                 # Arena
                 if self.arena_border_100_channel:
-                    channel = self.client.get_channel(self.arena_border_100_channel)
+                    channel = self.client.get_channel(int(self.arena_border_100_channel))
                     await channel.edit(name=f"🥇100: Unknown")
                 if self.arena_border_500_channel:
-                    channel = self.client.get_channel(self.arena_border_500_channel)
+                    channel = self.client.get_channel(int(self.arena_border_500_channel))
                     await channel.edit(name=f"🥈500: Unknown")
                 if self.arena_border_1000_channel:
-                    channel = self.client.get_channel(self.arena_border_1000_channel)
+                    channel = self.client.get_channel(int(self.arena_border_1000_channel))
                     await channel.edit(name=f"🥉1K: Unknown")
                 # Suppression
                 if self.suppression_border_100_channel:
-                    channel = self.client.get_channel(self.suppression_border_100_channel)
+                    channel = self.client.get_channel(int(self.suppression_border_100_channel))
                     await channel.edit(name=f"🥇100: Unknown")
                 if self.suppression_border_1000_channel:
-                    channel = self.client.get_channel(self.suppression_border_1000_channel)
+                    channel = self.client.get_channel(int(self.suppression_border_1000_channel))
                     await channel.edit(name=f"🥈1K: Unknown")
                 if self.suppression_border_5000_channel:
-                    channel = self.client.get_channel(self.suppression_border_5000_channel)
+                    channel = self.client.get_channel(int(self.suppression_border_5000_channel))
                     await channel.edit(name=f"🥉5K: Unknown")
                 # Creation
                 if self.creation_border_100_channel:
-                    channel = self.client.get_channel(self.creation_border_100_channel)
+                    channel = self.client.get_channel(int(self.creation_border_100_channel))
                     await channel.edit(name=f"🥇100: Unknown")
                 if self.creation_border_1000_channel:
-                    channel = self.client.get_channel(self.creation_border_1000_channel)
+                    channel = self.client.get_channel(int(self.creation_border_1000_channel))
                     await channel.edit(name=f"🥈1K: Unknown")
                 if self.creation_border_5000_channel:
-                    channel = self.client.get_channel(self.creation_border_5000_channel)
+                    channel = self.client.get_channel(int(self.creation_border_5000_channel))
                     await channel.edit(name=f"🥉5K: Unknown")
                 self.border_fails = 0
             else:
