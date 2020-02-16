@@ -120,7 +120,6 @@ class IdolaAPI(object):
             self.pre_login()
             self.login()
             self.update_retrans_key()
-            self.update_res_ver()
         except Exception as e:
             print(e, traceback.format_exc())
 
