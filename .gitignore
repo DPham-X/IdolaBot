@@ -2,3 +2,5 @@
 .p
 .pyc
 __pycache__
+.vs
+profile_cache.p
