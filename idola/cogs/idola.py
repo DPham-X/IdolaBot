@@ -5,6 +5,8 @@ import traceback
 import discord
 from discord.ext import commands, tasks
 
+from datetime import datetime
+
 from lib.api import IdolaAPI
 
 
@@ -39,6 +41,8 @@ class IDOLA(commands.Cog):
         self.creation_border_100_channel = os.getenv("CREATION_BORDER_100_CHANNEL")
         self.creation_border_1000_channel = os.getenv("CREATION_BORDER_1000_CHANNEL")
         self.creation_border_5000_channel = os.getenv("CREATION_BORDER_5000_CHANNEL")
+        
+        self.border_message_channel = os.getenv("BORDER_MESSAGE_CHANNEL")
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -90,6 +94,88 @@ class IDOLA(commands.Cog):
         print("Relogging")
         idola.start()
 
+    @tasks.loop(seconds=120)
+    async def border_channel_update(self):
+        print("Updating pinned channel border message")
+        try:
+            if not self.border_message_channel: return
+            
+            channel = self.client.get_channel(int(self.border_message_channel))
+            pinned_messages = await channel.pins()
+            border_message = None
+            for pinned_message in pinned_messages:
+                if pinned_message.author.id == self.client.user.id:
+                    border_message = pinned_message
+                    break
+                    
+            embed = discord.Embed(
+                title="Idola Borders",
+                color=discord.Colour.blue(),
+            )
+            embed.set_footer(text=datetime.now().strftime('%Y-%m-%d %H:%M'))
+            arena_border_score_100 = idola.get_top_100_arena_border()
+            embed.add_field(
+                name="Arena Border 100",
+                value=f"🥇100: {arena_border_score_100:,d}" if arena_border_score_100 else f"🥇100: Unknown",
+                inline=False,
+            )
+            arena_border_score_500 = idola.get_top_500_arena_border()
+            embed.add_field(
+                name="Arena Border 500",
+                value=f"🥇500: {arena_border_score_500:,d}" if arena_border_score_500 else f"🥇500: Unknown",
+                inline=False,
+            )
+            arena_border_score_1000 = idola.get_top_1000_arena_border()
+            embed.add_field(
+                name="Arena Border 1000",
+                value=f"🥇1000: {arena_border_score_1000:,d}" if arena_border_score_1000 else f"🥇1000: Unknown",
+                inline=False,
+            )
+            raid_suppression_border_100 = idola.get_top_100_raid_suppression_border()
+            embed.add_field(
+                name="Raid Suppression Border 100",
+                value=f"🥇100: {raid_suppression_border_100:,d}" if raid_suppression_border_100 else f"🥇100: Unknown",
+                inline=False,
+            )
+            raid_suppression_border_1000 = idola.get_top_1000_raid_suppression_border()
+            embed.add_field(
+                name="Raid Suppression Border 1000",
+                value=f"🥇1000: {raid_suppression_border_1000:,d}" if raid_suppression_border_1000 else f"🥇1000: Unknown",
+                inline=False,
+            )
+            raid_suppression_border_5000 = idola.get_top_5000_raid_suppression_border()
+            embed.add_field(
+                name="Raid Suppression Border 5000",
+                value=f"🥇5000: {raid_suppression_border_5000:,d}" if raid_suppression_border_5000 else f"🥇5000: Unknown",
+                inline=False,
+            )
+            raid_creation_border_100 = idola.get_top_100_raid_creation_border()
+            embed.add_field(
+                name="Raid Creation Border 100",
+                value=f"🥇100: {raid_creation_border_100:,d}" if raid_creation_border_100 else f"🥇100: Unknown",
+                inline=False,
+            )
+            raid_creation_border_1000 = idola.get_top_1000_raid_creation_border()
+            embed.add_field(
+                name="Raid Creation Border 1000",
+                value=f"🥇1000: {raid_creation_border_1000:,d}" if raid_creation_border_1000 else f"🥇1000: Unknown",
+                inline=False,
+            )
+            raid_creation_border_5000 = idola.get_top_5000_raid_creation_border()
+            embed.add_field(
+                name="Raid Creation Border 5000",
+                value=f"🥇5000: {raid_creation_border_5000:,d}" if raid_creation_border_5000 else f"🥇5000: Unknown",
+                inline=False,
+            )
+            
+            if not border_message == None:
+                await border_message.edit(embed=embed)
+            else:
+                border_message = channel.send(embed=embed)
+                await border_message.pin()
+        except Exception as e:
+            print(traceback.format_exc())
+        
     @tasks.loop(seconds=120)
     async def border_channel_update(self):
         print("Updating channel borders")
