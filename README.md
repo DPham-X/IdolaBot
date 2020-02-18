@@ -13,7 +13,7 @@ git pull https://github.com/iXyk/IdolaBot.git
 git submodule update --recursive --remote
 
 
-##Requirements
+## Requirements
 
 pip install discord.py python-dotenv pylru pytz
 
