@@ -692,6 +692,7 @@ class IdolaAPI(object):
             "chaos_weapon_symbols": unpack_newline(chaos_wep_names),
             "chaos_soul_symbols": unpack_newline(chaos_soul_names),
             "chaos_idomag": f"{chaos_idomag_type}({chaos_idomag_name})" if chaos_idomag_type else "-",
+            "party_info": party_info,
         }
 
     def get_profile_id_from_name(self, name):
