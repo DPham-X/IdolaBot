@@ -15,5 +15,5 @@ git submodule update --recursive --remote
 
 ## Requirements
 
-pip install discord.py python-dotenv pylru pytz
+pip install -r requirements.txt
 
