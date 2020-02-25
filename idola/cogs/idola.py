@@ -74,6 +74,7 @@ class IDOLA(commands.Cog):
     async def save_profiles(self, ctx):
         try:
             idola.save_profile_cache()
+            idola.save_discord_profile_ids()
             await ctx.send("Profile cache saved")
         except Exception as e:
             print(traceback.format_exc())
@@ -369,8 +370,23 @@ class IDOLA(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def arena_team(self, ctx, profile_id: int):
+    async def register_profile(self, ctx, profile_id: int):
+        """Register an idola profile_id to your discord profile"""
+        discord_id = ctx.message.author.id
+        if idola.register_discord_profile_id(discord_id, profile_id):
+            await ctx.send("Successfully registered ID")
+        else:
+            await ctx.send("There was a problem registering your ID")
+
+    @commands.command()
+    async def arena_team(self, ctx, profile_id=None):
         """Shows the latest ranked arena team for a given profile_id"""
+        if profile_id is None:
+            discord_id = ctx.message.author.id
+            profile_id = idola.get_profile_id_from_discord_id(int(discord_id))
+            if profile_id is None:
+                await ctx.send("Your arena_team has not been registed. Use `register_profile` to register your team. Or enter a profile id.")
+                return
         arena_team = idola.get_arena_team_composition(profile_id)
 
         try:

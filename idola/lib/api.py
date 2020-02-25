@@ -57,6 +57,7 @@ def lb_bullet(number):
 
 
 profile_cache = pylru.lrucache(size=1000)
+discord_profile_ids = {}
 
 
 def update_profile_cache(name, profile_id):
@@ -94,6 +95,7 @@ class HTTPClient(object):
 class IdolaAPI(object):
     def __init__(self, user_agent, app_ver, device_id, device_token, token_key, uuid):
         self.load_profile_cache()
+        self.load_discord_profile_ids()
         self.client = HTTPClient(user_agent)
         self.app_ver = app_ver
         self.auth_key = ""
@@ -740,6 +742,26 @@ class IdolaAPI(object):
         print("Profile cache loaded")
         return True
 
+    def register_discord_profile_id(self, discord_id, profile_id):
+        discord_profile_ids[discord_id] = profile_id
+        return True
+
+    def get_profile_id_from_discord_id(self, discord_id):
+        return discord_profile_ids.get(discord_id, None)
+
+    def save_discord_profile_ids(self):
+        pickle.dump(discord_profile_ids, open("discord_profile_ids.p", "wb"))
+        return True
+
+    def load_discord_profile_ids(self):
+        global discord_profile_ids
+        try:
+            discord_profile_ids = pickle.load(open("discord_profile_ids.p", "rb"))
+        except FileNotFoundError as e:
+            print(f"Error: Could not load profile_cache - {e}")
+            return False
+        print("Discord ID DB loaded")
+        return True
 
 if __name__ == "__main__":
     load_dotenv()
