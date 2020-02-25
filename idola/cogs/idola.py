@@ -387,7 +387,7 @@ class IDOLA(commands.Cog):
             if profile_id is None:
                 await ctx.send("Your arena_team has not been registed. Use `register_profile` to register your team. Or enter a profile id.")
                 return
-        arena_team = idola.get_arena_team_composition(profile_id)
+        arena_team = idola.get_arena_team_composition(int(profile_id))
 
         try:
             link = NNSTJPWebVisualiser.generate_shareable_link(arena_team["party_info"])
