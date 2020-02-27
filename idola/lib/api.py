@@ -2,6 +2,7 @@
 import csv
 import datetime
 import hashlib
+import itertools
 import json
 import os
 import pickle
@@ -387,6 +388,40 @@ class IdolaAPI(object):
     def truncate(text):
         return text if len(text) < 20 else text[:18] + ".."
 
+    @staticmethod
+    def option_bonus_id_to_name(option_bonus_id):
+        if option_bonus_id == 1:
+            return "HP"
+        elif option_bonus_id == 2:
+            return "ATK"
+        elif  option_bonus_id == 3:
+            return "DEF"
+        elif  option_bonus_id == 4:
+            return "SPD"
+        elif  option_bonus_id == 5:
+            return "CRIT"
+        elif  option_bonus_id == 6:
+            return "RES"
+        elif option_bonus_id == 7:
+            return "ELE"
+        else:
+            return "Unknown"
+
+    @staticmethod
+    def element_id_to_name(element_id):
+        if element_id == 1:
+            return 'Fire'
+        elif element_id == 2:
+            return 'Water'
+        elif element_id == 3:
+            return 'Wind'
+        elif element_id == 4:
+            return 'Earth'
+        elif element_id == 255:
+            return 'Any'
+        else:
+            raise Exception("Unknown element id")
+
     def show_arena_ranking_top_100_players(self, event_id=None):
         players = defaultdict(dict)
         if not event_id:
@@ -762,6 +797,43 @@ class IdolaAPI(object):
             return False
         print("Discord ID DB loaded")
         return True
+
+    def parse_symbol_option_bonus(self, option_bonus_list):
+        decoded_option_bonus = []
+        for option_bonus in option_bonus_list:
+            option_bonus_name = self.option_bonus_id_to_name(option_bonus["option_bonus_id"])
+            value = option_bonus["value"]
+            is_fixed = option_bonus["is_fixed"]
+            if is_fixed:
+                decoded_option_bonus.append(f"{option_bonus_name}: {value}")
+            else:
+                if option_bonus["option_bonus_id"] == 7:
+                    decoded_option_bonus.append(f"{option_bonus_name}: 0.{value}")
+                else:
+                    decoded_option_bonus.append(f"{option_bonus_name}: {value}%")
+        return decoded_option_bonus
+
+    def get_arena_next_options(self, profile_id):
+        option_char = []
+        party_info = self.get_arena_party_info(profile_id)
+        for character in itertools.chain(party_info["law"], party_info["chaos"]):
+            character_name = self.get_name_from_id(character["character"]["char_id"])
+            weapon_symbol = self.get_name_from_id(character["weapon_symbol"]["symbol_id"])
+            weapon_cur_option_bonus = self.parse_symbol_option_bonus(character["weapon_symbol"]["option_bonus_list"])
+            weapon_next_option_bonus = self.parse_symbol_option_bonus(character["weapon_symbol"]["next_option_bonus_list"])
+            soul_symbol = self.get_name_from_id(character["soul_symbol"]["symbol_id"])
+            soul_cur_option_bonus = self.parse_symbol_option_bonus(character["soul_symbol"]["option_bonus_list"])
+            soul_next_option_bonus = self.parse_symbol_option_bonus(character["soul_symbol"]["next_option_bonus_list"])
+
+            char_details = {}
+            char_details["character_name"] = f"{character_name}"
+            char_details["weapon_symbol"] = f"Weapon Symbol: {weapon_symbol}"
+            char_details["weapon_next_option"] = f"{weapon_cur_option_bonus} \u21D2 {weapon_next_option_bonus}"
+            char_details["soul_symbol"] = f"Soul Symbol: {soul_symbol}"
+            char_details["soul_next_option"] = f"{soul_cur_option_bonus} \u21D2 {soul_next_option_bonus}"
+            option_char.append(char_details)
+        return party_info['player_name'], option_char
+
 
 if __name__ == "__main__":
     load_dotenv()

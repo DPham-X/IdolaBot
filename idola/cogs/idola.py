@@ -550,6 +550,28 @@ class IDOLA(commands.Cog):
             )
             await ctx.send(embed=embed)
 
+    @commands.command()
+    async def arena_roll(self, ctx, profile_id=None):
+        """Shows what your next symbol roll will be using your arena team"""
+        if profile_id is None:
+            discord_id = ctx.message.author.id
+            profile_id = idola.get_profile_id_from_discord_id(int(discord_id))
+            if profile_id is None:
+                await ctx.send("Your arena_team has not been registed. Use `register_profile` to register your team. Or enter a profile id.")
+                return
+        player_name, char_option = idola.get_arena_next_options(int(profile_id))
+        embed=discord.Embed(
+            title=player_name,
+            description="\u200b",
+            color=discord.Colour.blue()
+        )
+        embed.set_author(name="Arena Roll")
+        for char in char_option:
+            embed.add_field(name="\u200b", value=f"__**{char['character_name']}**__", inline=False)
+            embed.add_field(name=char["weapon_symbol"], value=char["weapon_next_option"], inline=False)
+            embed.add_field(name=char["soul_symbol"], value=char["soul_next_option"], inline=False)
+        await ctx.send(embed=embed)
+
 
 def setup(client):
     client.add_cog(IDOLA(client))
