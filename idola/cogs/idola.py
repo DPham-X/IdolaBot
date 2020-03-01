@@ -53,6 +53,7 @@ class IDOLA(commands.Cog):
         self.border_status_update.start()
         self.border_channel_update.start()
         self.border_pinned_update.start()
+        self.periodic_save.start()
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -79,6 +80,14 @@ class IDOLA(commands.Cog):
         except Exception as e:
             print(traceback.format_exc())
             await ctx.send(f"Error: Could not save profile cache - {e}")
+
+    @tasks.loop(seconds=60)
+    async def periodic_save(self):
+        try:
+            idola.save_profile_cache()
+            idola.save_discord_profile_ids()
+        except Exception as e:
+            print(traceback.format_exc())
 
     @tasks.loop(seconds=60)
     async def border_status_update(self):
