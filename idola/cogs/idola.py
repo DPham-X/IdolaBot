@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands, tasks
 
 from lib.api import IdolaAPI
+from lib.bumped import BumpedParser
 from lib.web_visualiser import NNSTJPWebVisualiser
 
 IDOLA_USER_AGENT = os.getenv("IDOLA_USER_AGENT")
@@ -26,6 +27,8 @@ idola = IdolaAPI(
 class IDOLA(commands.Cog):
     def __init__(self, client):
         self.client = client
+        self.bumped_api = BumpedParser()
+
         self.border_fails = 0
 
         self.arena_border_100_channel = os.getenv("ARENA_BORDER_100_CHANNEL")
@@ -564,7 +567,9 @@ class IDOLA(commands.Cog):
             discord_id = ctx.message.author.id
             profile_id = idola.get_profile_id_from_discord_id(int(discord_id))
             if profile_id is None:
-                await ctx.send("Your arena_team has not been registered. Use `register_profile` to register your team. Or enter a profile id.")
+                await ctx.send(
+                    "Your arena_team has not been registered. Use `register_profile` to register your team. Or enter a profile id."
+                )
                 return
         player_name, char_option = idola.get_arena_next_options(int(profile_id))
         embed=discord.Embed(
@@ -577,6 +582,55 @@ class IDOLA(commands.Cog):
             embed.add_field(name="\u200b", value=f"__**{char['character_name']}**__", inline=False)
             embed.add_field(name=char["weapon_symbol"], value=char["weapon_next_option"], inline=False)
             embed.add_field(name=char["soul_symbol"], value=char["soul_next_option"], inline=False)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def weapon(self, ctx, weapon_name: str):
+        """Get Weapon Symbol information from Bumped"""
+        weapon_name = self.bumped_api.get_unfuzzed_weapon_name(weapon_name)
+        if not weapon_name:
+            await ctx.send('Could not find weapon in Bumped database')
+            return
+        weapon = self.bumped_api.weapon_symbols.get(weapon_name, None)
+        embed=discord.Embed(
+            title=f"{weapon.en_name} | {weapon.jp_name}",
+            description="\u200b",
+            color=discord.Colour.blue()
+        )
+        embed.set_thumbnail(url=weapon.icon_url)
+        embed.add_field(name="Base Stats", value=weapon.base_stats, inline=True)
+        embed.add_field(name="Arena/Raid Stats", value=weapon.arena_stats, inline=True)
+        embed.add_field(name="Effect", value=weapon.effect, inline=False)
+        embed.add_field(
+            name=78 * "\u200b",
+            value=f"[{weapon.url}]({weapon.url})",
+        )
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def soul(self, ctx, soul_name: str):
+        """Get Soul Symbol information from Bumped"""
+        soul_name = self.bumped_api.get_unfuzzed_soul_name(soul_name)
+        if not soul_name:
+            await ctx.send('Could not find soul in Bumped database')
+            return
+        soul = self.bumped_api.soul_symbols.get(soul_name, None)
+        embed=discord.Embed(
+            title=f"{soul.en_name} | {soul.jp_name}",
+            description="\u200b",
+            color=discord.Colour.blue()
+        )
+        embed.set_thumbnail(url=soul.icon_url)
+        embed.add_field(name="Base Stats", value=soul.base_stats, inline=True)
+        if soul.arena_stats:
+            embed.add_field(name="Arena/Raid Stats", value=soul.arena_stats, inline=True)
+        else:
+            embed.add_field(name="Requirements", value=soul.requirements, inline=True)
+        embed.add_field(name="Effect", value=soul.effect, inline=False)
+        embed.add_field(
+            name=78 * "\u200b",
+            value=f"[{soul.url}]({soul.url})",
+        )
         await ctx.send(embed=embed)
 
 
