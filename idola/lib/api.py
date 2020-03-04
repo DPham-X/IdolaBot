@@ -9,6 +9,7 @@ import pickle
 import traceback
 from collections import OrderedDict, defaultdict
 
+import play_scraper
 import pylru
 import pytz
 import requests
@@ -94,11 +95,11 @@ class HTTPClient(object):
 
 
 class IdolaAPI(object):
-    def __init__(self, user_agent, app_ver, device_id, device_token, token_key, uuid):
+    def __init__(self, user_agent, device_id, device_token, token_key, uuid):
         self.load_profile_cache()
         self.load_discord_profile_ids()
         self.client = HTTPClient(user_agent)
-        self.app_ver = app_ver
+        self.app_ver = self.get_app_ver()
         self.auth_key = ""
         self.device_id = device_id
         self.device_token = device_token
@@ -125,6 +126,9 @@ class IdolaAPI(object):
             self.update_retrans_key()
         except Exception as e:
             print(e, traceback.format_exc())
+
+    def get_app_ver(self):
+        return play_scraper.details('com.sega.idola').get('current_version')
 
     def import_id_map(self, csv_filepath):
         # https://github.com/NNSTJP/Idola
@@ -839,10 +843,9 @@ if __name__ == "__main__":
     load_dotenv()
 
     IDOLA_USER_AGENT = os.getenv("IDOLA_USER_AGENT")
-    IDOLA_APP_VER = os.getenv("IDOLA_APP_VER")
     IDOLA_DEVICE_ID = os.getenv("IDOLA_DEVICE_ID")
     IDOLA_DEVICE_TOKEN = os.getenv("IDOLA_DEVICE_TOKEN")
     IDOLA_TOKEN_KEY = os.getenv("IDOLA_TOKEN_KEY")
     IDOLA_UUID = os.getenv("IDOLA_UUID")
 
-    idola = IdolaAPI(IDOLA_USER_AGENT, IDOLA_APP_VER, IDOLA_DEVICE_ID, IDOLA_DEVICE_TOKEN, IDOLA_TOKEN_KEY, IDOLA_UUID,)
+    idola = IdolaAPI(IDOLA_USER_AGENT, IDOLA_DEVICE_ID, IDOLA_DEVICE_TOKEN, IDOLA_TOKEN_KEY, IDOLA_UUID,)

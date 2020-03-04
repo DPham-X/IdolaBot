@@ -9,7 +9,6 @@ from lib.api import IdolaAPI
 from lib.web_visualiser import NNSTJPWebVisualiser
 
 IDOLA_USER_AGENT = os.getenv("IDOLA_USER_AGENT")
-IDOLA_APP_VER = os.getenv("IDOLA_APP_VER")
 IDOLA_DEVICE_ID = os.getenv("IDOLA_DEVICE_ID")
 IDOLA_DEVICE_TOKEN = os.getenv("IDOLA_DEVICE_TOKEN")
 IDOLA_TOKEN_KEY = os.getenv("IDOLA_TOKEN_KEY")
@@ -17,7 +16,6 @@ IDOLA_UUID = os.getenv("IDOLA_UUID")
 
 idola = IdolaAPI(
     IDOLA_USER_AGENT,
-    IDOLA_APP_VER,
     IDOLA_DEVICE_ID,
     IDOLA_DEVICE_TOKEN,
     IDOLA_TOKEN_KEY,
