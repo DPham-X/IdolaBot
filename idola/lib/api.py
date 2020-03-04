@@ -123,7 +123,6 @@ class IdolaAPI(object):
             self.api_init()
             self.pre_login()
             self.login()
-            self.update_retrans_key()
         except Exception as e:
             print(e, traceback.format_exc())
 
@@ -159,7 +158,7 @@ class IdolaAPI(object):
             "res_ver": self.res_ver,
             "auth_key": self.auth_key,
             "retrans_key": self.retrans_key,
-            "is_tutorial": False,
+            "is_tutorial": "false",
             "readed_character_promotion_id_list": None,
         }
         response = self.client.post(IDOLA_HOME_NOTICE, body)
