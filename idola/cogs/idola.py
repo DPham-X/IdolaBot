@@ -564,7 +564,7 @@ class IDOLA(commands.Cog):
             discord_id = ctx.message.author.id
             profile_id = idola.get_profile_id_from_discord_id(int(discord_id))
             if profile_id is None:
-                await ctx.send("Your arena_team has not been registed. Use `register_profile` to register your team. Or enter a profile id.")
+                await ctx.send("Your arena_team has not been registered. Use `register_profile` to register your team. Or enter a profile id.")
                 return
         player_name, char_option = idola.get_arena_next_options(int(profile_id))
         embed=discord.Embed(
