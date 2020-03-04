@@ -79,7 +79,7 @@ class IDOLA(commands.Cog):
             print(traceback.format_exc())
             await ctx.send(f"Error: Could not save profile cache - {e}")
 
-    @tasks.loop(seconds=60)
+    @tasks.loop(hours=1)
     async def periodic_save(self):
         try:
             idola.save_profile_cache()
