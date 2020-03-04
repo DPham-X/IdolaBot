@@ -5,6 +5,7 @@ import re
 from dataclasses import dataclass, field
 
 import requests
+import textdistance
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz, process
 from requests_html import HTMLSession
@@ -37,6 +38,26 @@ class SoulSymbol(object):
     url: str = field(repr=False, default=SOUL_DATABASE_URL)
 
 
+def custom_scorer(s1, s2):
+    s1 = s1.lower()
+    s2 = s2.lower()
+    s1 = s1.encode('utf-8')
+    s2 = s2.encode('utf-8')
+    score = textdistance.levenshtein.normalized_similarity(s1, s2)
+    if score < 0.7:
+        score = textdistance.sorensen.normalized_similarity(s1, s2)
+    if score < 0.7:
+        score = textdistance.jaro_winkler.normalized_similarity(s1, s2)
+    if score < 0.7:
+        score = float(fuzz.partial_ratio(s1, s2)) / float(100)
+    if s1 not in s2:
+        score -= 0.2
+    score = int(score * 100)
+    if score > 100:
+        score = 100
+    return score
+
+
 class BumpedParser(object):
     def __init__(self):
         super(BumpedParser, self).__init__()
@@ -51,7 +72,7 @@ class BumpedParser(object):
         session = HTMLSession()
         response = session.get(WEAPON_DATABASE_URL)
         if response.status_code != 200:
-            raise Exception("Could not retrieve weapon database from bumped")
+            raise Exception(f"Could not retrieve weapon database from bumped: {response.status_code}")
         response.html.render()
         soup = BeautifulSoup(response.html.html, "html.parser")
 
@@ -88,7 +109,7 @@ class BumpedParser(object):
         session = HTMLSession()
         response = session.get(SOUL_DATABASE_URL)
         if response.status_code != 200:
-            raise Exception("Could not retrieve weapon database from bumped")
+            raise Exception(f"Could not retrieve soul database from bumped: {response.status_code}")
         response.html.render()
         soup = BeautifulSoup(response.html.html, "html.parser")
 
@@ -138,17 +159,17 @@ class BumpedParser(object):
 
     def get_unfuzzed_weapon_name(self, weapon_name):
         unfuzz_weapon_name, score = process.extractOne(
-            weapon_name, self.weapon_symbols.keys(), scorer=fuzz.UQRatio
+            weapon_name, self.weapon_symbols.keys(), scorer=custom_scorer
         )
-        if score < 30:
+        if score < 60:
             return False
         return unfuzz_weapon_name
 
     def get_unfuzzed_soul_name(self, soul_name):
         unfuzz_soul_name, score = process.extractOne(
-            soul_name, self.soul_symbols.keys(), scorer=fuzz.UQRatio
+            soul_name, self.soul_symbols.keys(), scorer=custom_scorer
         )
-        if score < 30:
+        if score < 60:
             return False
         return unfuzz_soul_name
 
