@@ -39,8 +39,8 @@ class SoulSymbol(object):
 
 
 def custom_scorer(s1, s2):
-    s1 = s1.lower()
-    s2 = s2.lower()
+    s1 = s1.lower().replace("'", "")
+    s2 = s2.lower().replace("'", "")
     s1 = s1.encode('utf-8')
     s2 = s2.encode('utf-8')
     score = textdistance.levenshtein.normalized_similarity(s1, s2)
@@ -172,6 +172,12 @@ class BumpedParser(object):
         if score < 60:
             return False
         return unfuzz_soul_name
+
+    def get_weapon_database(self):
+        return set(weapon_symbol.en_name for weapon_symbol in self.weapon_symbol.values())
+
+    def get_soul_database(self):
+        return set(soul_symbol.en_name for soul_symbol in self.soul_symbols.values())
 
 
 if __name__ == "__main__":
