@@ -73,6 +73,16 @@ class IDOLA(commands.Cog):
 
     @commands.command(hidden=True)
     @commands.is_owner()
+    async def update_bumped(self, ctx):
+        try:
+            self.bumped_api.start()
+            await ctx.send("Pulling information from bumped")
+        except Exception as e:
+            print(e, traceback.format_exc())
+            await ctx.send("An error occurred")
+
+    @commands.command(hidden=True)
+    @commands.is_owner()
     async def save_profiles(self, ctx):
         try:
             idola.save_profile_cache()

@@ -64,7 +64,12 @@ class BumpedParser(object):
         self.weapon_symbols = {}
         self.soul_symbols = {}
 
+        self.start()
+
+    def start(self):
         print("Parsing Bumped website")
+        self.weapon_symbols = {}
+        self.soul_symbols = {}
         self.import_weapon_symbols()
         self.import_soul_symbols()
 
