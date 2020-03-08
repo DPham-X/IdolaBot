@@ -221,7 +221,8 @@ class IDOLA(commands.Cog):
 
     @commands.command()
     async def arena_border(self, ctx):
-        """Shows the Top 100 border for arena"""
+        """Shows the border for arena"""
+        border_score_point_50 = idola.get_top_50_arena_border()
         border_score_point_100 = idola.get_top_100_arena_border()
         border_score_point_500 = idola.get_top_500_arena_border()
         border_score_point_1000 = idola.get_top_1000_arena_border()
@@ -236,6 +237,11 @@ class IDOLA(commands.Cog):
         )
         embed.set_thumbnail(
             url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/arena.png"
+        )
+        embed.add_field(
+            name="Top 50",
+            value=f"{border_score_point_50:,d} points" if border_score_point_50 else "Unknown",
+            inline=True,
         )
         embed.add_field(
             name="Top 100",
@@ -275,6 +281,7 @@ class IDOLA(commands.Cog):
         border_score_point_100 = idola.get_top_100_raid_suppression_border()
         border_score_point_500 = idola.get_top_500_raid_suppression_border()
         border_score_point_1000 = idola.get_top_1000_raid_suppression_border()
+        border_score_point_2000 = idola.get_top_2000_raid_suppression_border()
         border_score_point_5000 = idola.get_top_5000_raid_suppression_border()
 
         current_time = idola.get_current_time()
@@ -301,6 +308,11 @@ class IDOLA(commands.Cog):
         embed.add_field(
             name="Top 1000",
             value=f"{border_score_point_1000:,d} points" if border_score_point_1000 else "Unknown",
+            inline=True,
+        )
+        embed.add_field(
+            name="Top 2000",
+            value=f"{border_score_point_2000:,d} points" if border_score_point_2000 else "Unknown",
             inline=True,
         )
         embed.add_field(
@@ -331,6 +343,7 @@ class IDOLA(commands.Cog):
         border_score_point_100 = idola.get_top_100_raid_creation_border()
         border_score_point_500 = idola.get_top_500_raid_creation_border()
         border_score_point_1000 = idola.get_top_1000_raid_creation_border()
+        border_score_point_2000 = idola.get_top_2000_raid_creation_border()
         border_score_point_5000 = idola.get_top_5000_raid_creation_border()
 
         current_time = idola.get_current_time()
@@ -355,6 +368,11 @@ class IDOLA(commands.Cog):
         embed.add_field(
             name="Top 1000",
             value=f"{border_score_point_1000:,d} points" if border_score_point_1000 else "Unknown",
+            inline=True,
+        )
+        embed.add_field(
+            name="Top 2000",
+            value=f"{border_score_point_2000:,d} points" if border_score_point_2000 else "Unknown",
             inline=True,
         )
         embed.add_field(

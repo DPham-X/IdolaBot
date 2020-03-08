@@ -502,6 +502,19 @@ class IdolaAPI(object):
                 msg.append(f"{raid_score_rank}: {raid_score_point:,d} - {name}({profile_id})")
         return "\n".join(msg)
 
+    def get_top_50_arena_border(self, event_id=None):
+        try:
+            if not event_id:
+                event_id = self.get_latest_arena_event_id()
+            ranking_information = self.get_arena_ranking(event_id, 49)
+            sorted_ranking_information = sorted(
+                [player_information["score_point"] for player_information in ranking_information], reverse=True
+            )
+            return sorted_ranking_information[0]
+        except IndexError as e:
+            print(e, traceback.format_exc())
+            return None
+
     def get_top_100_arena_border(self, event_id=None):
         try:
             if not event_id:
@@ -580,6 +593,19 @@ class IdolaAPI(object):
             print(e, traceback.format_exc())
             return None
 
+    def get_top_2000_raid_suppression_border(self, event_id=None):
+        try:
+            if not event_id:
+                event_id = self.get_latest_raid_event_id()
+            ranking_information = self.get_raid_battle_ranking(event_id, 1999)
+            sorted_ranking_information = sorted(
+                [player_information["score_point"] for player_information in ranking_information], reverse=True
+            )
+            return sorted_ranking_information[0]
+        except IndexError as e:
+            print(e, traceback.format_exc())
+            return None
+
     def get_top_5000_raid_suppression_border(self, event_id=None):
         try:
             if not event_id:
@@ -622,6 +648,19 @@ class IdolaAPI(object):
             if not event_id:
                 event_id = self.get_latest_raid_event_id()
             ranking_information = self.get_raid_creation_ranking(event_id, 999)
+            sorted_ranking_information = sorted(
+                [player_information["score_point"] for player_information in ranking_information], reverse=True
+            )
+            return sorted_ranking_information[0]
+        except IndexError as e:
+            print(e, traceback.format_exc())
+            return None
+
+    def get_top_2000_raid_creation_border(self, event_id=None):
+        try:
+            if not event_id:
+                event_id = self.get_latest_raid_event_id()
+            ranking_information = self.get_raid_creation_ranking(event_id, 1999)
             sorted_ranking_information = sorted(
                 [player_information["score_point"] for player_information in ranking_information], reverse=True
             )
