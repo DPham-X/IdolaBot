@@ -58,7 +58,7 @@ def lb_bullet(number):
         return number
 
 
-profile_cache = pylru.lrucache(size=1000)
+profile_cache = pylru.lrucache(size=10000)
 discord_profile_ids = {}
 
 
