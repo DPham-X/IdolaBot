@@ -43,6 +43,22 @@ class IDOLA(commands.Cog):
 
         self.border_message_channel = os.getenv("BORDER_MESSAGE_CHANNEL")
 
+    async def send_embed_error(self, ctx, message):
+        embed = discord.Embed(
+            title="Error",
+            description=f"{message}",
+            color=discord.Colour.red(),
+        )
+        await ctx.send(embed=embed)
+
+    async def send_embed_info(self, ctx, message):
+        embed = discord.Embed(
+            title="Info",
+            description=f"{message}",
+            color=discord.Colour.green(),
+        )
+        await ctx.send(embed=embed)
+
     @commands.Cog.listener()
     async def on_ready(self):
         await self.client.change_presence(activity=discord.Game("Ready!"))
@@ -59,27 +75,27 @@ class IDOLA(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         traceback.print_exception(type(error), error, error.__traceback__)
-        await ctx.send("An error occurred")
+        await self.send_embed_error(ctx, "An unexpected error occurred")
 
     @commands.command(hidden=True)
     @commands.is_owner()
     async def restart(self, ctx):
         try:
             idola.start()
-            await ctx.send("IdolaBot has been restarted")
+            await self.send_embed_info(ctx, "IdolaBot has been restarted")
         except Exception as e:
             print(e, traceback.format_exc())
-            await ctx.send("An error occurred, IdolaBot could not be restarted")
+            await self.send_embed_error(ctx, "An error occurred, IdolaBot could not be restarted")
 
     @commands.command(hidden=True)
     @commands.is_owner()
     async def update_bumped(self, ctx):
         try:
             self.bumped_api.start()
-            await ctx.send("Pulling information from bumped")
+            await self.send_embed_info(ctx, "Pulling information from bumped")
         except Exception as e:
             print(e, traceback.format_exc())
-            await ctx.send("An error occurred")
+            await self.send_embed_error(ctx, "An error occurred whilst trying to update bumped database")
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -87,10 +103,10 @@ class IDOLA(commands.Cog):
         try:
             idola.save_profile_cache()
             idola.save_discord_profile_ids()
-            await ctx.send("Profile cache saved")
+            await self.send_embed_info(ctx, "Profile cache saved")
         except Exception as e:
             print(traceback.format_exc())
-            await ctx.send(f"Error: Could not save profile cache - {e}")
+            await self.send_embed_error(ctx, f"Could not save profile cache - {e}")
 
     @tasks.loop(hours=1)
     async def periodic_save(self):
@@ -412,9 +428,9 @@ class IDOLA(commands.Cog):
         """Register an idola profile_id to your discord profile"""
         discord_id = ctx.message.author.id
         if idola.register_discord_profile_id(discord_id, profile_id):
-            await ctx.send("Successfully registered ID")
+            await self.send_embed_info(ctx, "Successfully registered ID")
         else:
-            await ctx.send("There was a problem registering your ID")
+            await self.send_embed_error(ctx, "There was a problem registering your ID")
 
     @commands.command()
     async def arena_team(self, ctx, profile_id=None):
@@ -423,9 +439,14 @@ class IDOLA(commands.Cog):
             discord_id = ctx.message.author.id
             profile_id = idola.get_profile_id_from_discord_id(int(discord_id))
             if profile_id is None:
-                await ctx.send("Your arena_team has not been registed. Use `register_profile` to register your team. Or enter a profile id.")
+                await self.send_embed_error(ctx, "Your arena_team has not been registered. Use `register_profile` to register your team. Or enter a profile id.")
                 return
-        arena_team = idola.get_arena_team_composition(int(profile_id))
+
+        try:
+            arena_team = idola.get_arena_team_composition(int(profile_id))
+        except KeyError:
+            await self.send_embed_error(ctx, f"Unable to find the arena_team for profile id: '{profile_id}', ensure that it is correct.")
+            return
 
         try:
             link = NNSTJPWebVisualiser.generate_shareable_link(arena_team["party_info"])
@@ -483,8 +504,10 @@ class IDOLA(commands.Cog):
         """Shows the matching arena_team using their name if the profile_id has already been cached"""
         arena_team = idola.get_arena_team_composition_from_name(profile_name)
         if not arena_team:
-            await ctx.send(
-                "Could not find a player by that name in the cache, to update the cache run 'arena_team' using your profile id first"
+            await self.send_embed_error(ctx,
+                "Could not find a player by that name in the cache.\n"
+                "To update the cache run '!arena_team' with your profile id first.\n"
+                "To find a name that contains spaces use quotes around your profile name. (Eg. !arena_team_name \"<profile_name>\")"
             )
             return
 
@@ -595,7 +618,7 @@ class IDOLA(commands.Cog):
             discord_id = ctx.message.author.id
             profile_id = idola.get_profile_id_from_discord_id(int(discord_id))
             if profile_id is None:
-                await ctx.send(
+                await self.send_embed_error(ctx,
                     "Your arena_team has not been registered. Use `register_profile` to register your team. Or enter a profile id."
                 )
                 return
@@ -617,7 +640,7 @@ class IDOLA(commands.Cog):
         """Get Weapon Symbol information from Bumped"""
         weapon_name = self.bumped_api.get_unfuzzed_weapon_name(weapon_name)
         if not weapon_name:
-            await ctx.send('Could not find weapon in Bumped database')
+            await self.send_embed_error(ctx, 'Could not find weapon in Bumped database')
             return
         weapon = self.bumped_api.weapon_symbols.get(weapon_name, None)
         embed=discord.Embed(
@@ -640,7 +663,7 @@ class IDOLA(commands.Cog):
         """Get Soul Symbol information from Bumped"""
         soul_name = self.bumped_api.get_unfuzzed_soul_name(soul_name)
         if not soul_name:
-            await ctx.send('Could not find soul in Bumped database')
+            await self.send_embed_error(ctx, 'Could not find soul in Bumped database')
             return
         soul = self.bumped_api.soul_symbols.get(soul_name, None)
         embed=discord.Embed(
