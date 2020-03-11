@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import asyncio
 import json
 import pprint
 import re
@@ -8,7 +9,7 @@ import requests
 import textdistance
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz, process
-from requests_html import HTMLSession
+from requests_html import AsyncHTMLSession
 
 BUMPED_IDOLA_URL = "https://bumped.org/idola"
 WEAPON_DATABASE_URL = BUMPED_IDOLA_URL + "/idola-weapon-database/"
@@ -64,21 +65,21 @@ class BumpedParser(object):
         self.weapon_symbols = {}
         self.soul_symbols = {}
 
-        self.start()
+        asyncio.run(self.start())
 
-    def start(self):
+    async def start(self):
         print("Parsing Bumped website")
         self.weapon_symbols = {}
         self.soul_symbols = {}
-        self.import_weapon_symbols()
-        self.import_soul_symbols()
+        await self.import_weapon_symbols()
+        await self.import_soul_symbols()
 
-    def import_weapon_symbols(self):
-        session = HTMLSession()
-        response = session.get(WEAPON_DATABASE_URL)
+    async def import_weapon_symbols(self):
+        asession = AsyncHTMLSession()
+        response = await asession.get(WEAPON_DATABASE_URL)
         if response.status_code != 200:
             raise Exception(f"Could not retrieve weapon database from bumped: {response.status_code}")
-        response.html.render()
+        await response.html.arender()
         soup = BeautifulSoup(response.html.html, "html.parser")
 
         # Remove javascript and css from html
@@ -110,12 +111,12 @@ class BumpedParser(object):
                 self.weapon_symbols[en_name] = ws
                 self.weapon_symbols[jp_name] = ws
 
-    def import_soul_symbols(self):
-        session = HTMLSession()
-        response = session.get(SOUL_DATABASE_URL)
+    async def import_soul_symbols(self):
+        asession = AsyncHTMLSession()
+        response = await asession.get(SOUL_DATABASE_URL)
         if response.status_code != 200:
             raise Exception(f"Could not retrieve soul database from bumped: {response.status_code}")
-        response.html.render()
+        await response.html.arender()
         soup = BeautifulSoup(response.html.html, "html.parser")
 
         # Remove javascript and css from html

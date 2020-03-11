@@ -91,8 +91,9 @@ class IDOLA(commands.Cog):
     @commands.is_owner()
     async def update_bumped(self, ctx):
         try:
-            self.bumped_api.start()
-            await self.send_embed_info(ctx, "Pulling information from bumped")
+            await self.send_embed_info(ctx, "Updating database from bumped website")
+            await self.bumped_api.start()
+            await self.send_embed_info(ctx, "Finished updating bumped database")
         except Exception as e:
             print(e, traceback.format_exc())
             await self.send_embed_error(ctx, "An error occurred whilst trying to update bumped database")
