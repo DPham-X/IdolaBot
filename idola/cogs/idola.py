@@ -7,7 +7,7 @@ from discord.ext import commands, tasks
 
 from lib.api import IdolaAPI
 from lib.bumped import BumpedParser
-from lib.web_visualiser import NNSTJPWebVisualiser
+from lib.web_visualiser import AfuureusIdolaStatusTool, NNSTJPWebVisualiser
 
 IDOLA_USER_AGENT = os.getenv("IDOLA_USER_AGENT")
 IDOLA_DEVICE_ID = os.getenv("IDOLA_DEVICE_ID")
@@ -450,11 +450,18 @@ class IDOLA(commands.Cog):
             return
 
         try:
-            link = NNSTJPWebVisualiser.generate_shareable_link(arena_team["party_info"])
-            formatted_link = f"NNSTJP: [{link}]({link})"
+            nnstjp_link = NNSTJPWebVisualiser.generate_shareable_link(arena_team["party_info"])
+            nnstjp_formatted_link = f"NNSTJP: [{nnstjp_link}]({nnstjp_link})"
         except Exception as e:
             print(e, traceback.format_exc())
-            formatted_link ="Unavailable"
+            nnstjp_formatted_link ="Unavailable"
+
+        try:
+            afuu_link = AfuureusIdolaStatusTool.generate_shareable_link(arena_team["party_info"])
+            afuu_formatted_link = f"Afuureus: [{afuu_link}]({afuu_link})"
+        except Exception as e:
+            print(e, traceback.format_exc())
+            afuu_formatted_link ="Unavailable"
 
         embed = discord.Embed(
             title=f"Team Score: {arena_team['team_score']:,d}",
@@ -496,7 +503,7 @@ class IDOLA(commands.Cog):
         )
         embed.add_field(
             name=78 * "\u200b",
-            value=formatted_link,
+            value=f"{nnstjp_formatted_link} \n {afuu_formatted_link}",
         )
         await ctx.send(embed=embed)
 

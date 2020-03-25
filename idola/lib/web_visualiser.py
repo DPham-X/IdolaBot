@@ -31,16 +31,7 @@ base_data = {
 };
 
 
-class NNSTJPWebVisualiser(object):
-    url = "http://nnstjp.github.io/Idola/index.html"
-
-    @classmethod
-    def generate_shareable_link(cls, party_info):
-        data = cls._import_party_info(party_info)
-        link = cls.url + "?" + quote(json.dumps(data, separators=(',', ':')), safe='~@#$&()*!+=:;,.?/\'')
-        shortened_link = shorten_url(link)
-        return shortened_link
-
+class PartyStats(object):
     @classmethod
     def _import_party_info(cls, party_info):
         data = deepcopy(base_data)
@@ -117,3 +108,25 @@ class NNSTJPWebVisualiser(object):
         for character in chain([law_idomag, chaos_idomag]):
             encoded_idomag.append(character[:-2] + " " + character[-2:])
         data["IdoMagID"] = encoded_idomag
+
+
+class AfuureusIdolaStatusTool(PartyStats):
+    url = "https://afuureus.github.io/"
+
+    @classmethod
+    def generate_shareable_link(cls, party_info):
+        data = cls._import_party_info(party_info)
+        link = cls.url + "?" + "build=" + quote(json.dumps(data, separators=(',', ':')), safe='~@#$&()*!+=:;,.?/\'') + "&format=nnstjp"
+        shortened_link = shorten_url(link)
+        return shortened_link
+
+
+class NNSTJPWebVisualiser(PartyStats):
+    url = "http://nnstjp.github.io/Idola/index.html"
+
+    @classmethod
+    def generate_shareable_link(cls, party_info):
+        data = cls._import_party_info(party_info)
+        link = cls.url + "?" + quote(json.dumps(data, separators=(',', ':')), safe='~@#$&()*!+=:;,.?/\'')
+        shortened_link = shorten_url(link)
+        return shortened_link
