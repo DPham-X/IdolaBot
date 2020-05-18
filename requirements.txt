@@ -5,5 +5,5 @@ requests-html==0.10.0
 textdistance==4.2.0
 play-scraper==0.6.0
 pylru==1.2.0
-python-dotenv==0.10.3
+python-dotenv==0.13.0
 pytz==2019.3
