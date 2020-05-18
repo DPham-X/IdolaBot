@@ -208,7 +208,7 @@ class IDOLA(commands.Cog):
             # Arena
             if self.arena_border_50_channel:
                 arena_border_score_50 = idola.get_top_50_arena_border()
-                channel = self.client.get_channel(int(self.arena_border_score_50))
+                channel = self.client.get_channel(int(self.arena_border_50_channel))
                 await channel.edit(name=f"🏆50: {arena_border_score_50:,d}" if arena_border_score_50 else f"🏆50: Unknown")
             if self.arena_border_100_channel:
                 arena_border_score_100 = idola.get_top_100_arena_border()
