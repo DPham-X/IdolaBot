@@ -31,6 +31,7 @@ class IDOLA(commands.Cog):
 
         self.border_fails = 0
 
+        self.arena_border_50_channel = os.getenv("ARENA_BORDER_50_CHANNEL")
         self.arena_border_100_channel = os.getenv("ARENA_BORDER_100_CHANNEL")
         self.arena_border_500_channel = os.getenv("ARENA_BORDER_500_CHANNEL")
         self.arena_border_1000_channel = os.getenv("ARENA_BORDER_1000_CHANNEL")
@@ -205,6 +206,10 @@ class IDOLA(commands.Cog):
         print("Updating channel borders")
         try:
             # Arena
+            if self.arena_border_50_channel:
+                arena_border_score_50 = idola.get_top_50_arena_border()
+                channel = self.client.get_channel(int(self.arena_border_score_50))
+                await channel.edit(name=f"🏆50: {arena_border_score_50:,d}" if arena_border_score_50 else f"🏆50: Unknown")
             if self.arena_border_100_channel:
                 arena_border_score_100 = idola.get_top_100_arena_border()
                 channel = self.client.get_channel(int(self.arena_border_100_channel))
