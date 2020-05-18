@@ -665,7 +665,7 @@ class IDOLA(commands.Cog):
         weapon = self.bumped_api.weapon_symbols.get(weapon_name, None)
         embed=discord.Embed(
             title=f"{weapon.en_name} | {weapon.jp_name}",
-            description="\u200b",
+            description=f"Closest match for '{weapon_name}'",
             color=discord.Colour.blue()
         )
         embed.set_thumbnail(url=weapon.icon_url)
@@ -688,7 +688,7 @@ class IDOLA(commands.Cog):
         soul = self.bumped_api.soul_symbols.get(soul_name, None)
         embed=discord.Embed(
             title=f"{soul.en_name} | {soul.jp_name}",
-            description="\u200b",
+            description=f"Closest match for '{soul_name}'",
             color=discord.Colour.blue()
         )
         embed.set_thumbnail(url=soul.icon_url)
