@@ -59,6 +59,8 @@ def custom_scorer(s1, s2):
 class BumpedParser(object):
     def __init__(self):
         super(BumpedParser, self).__init__()
+        self._RENDER_TIMEOUT = 30
+
         self.weapon_symbols = {}
         self.soul_symbols = {}
 
@@ -78,7 +80,7 @@ class BumpedParser(object):
             raise Exception(
                 f"Could not retrieve weapon database from bumped: {response.status_code}"
             )
-        await response.html.arender()
+        await response.html.arender(timeout=self._RENDER_TIMEOUT)
         soup = BeautifulSoup(response.html.html, "html.parser")
 
         # Remove javascript and css from html
@@ -119,7 +121,7 @@ class BumpedParser(object):
             raise Exception(
                 f"Could not retrieve soul database from bumped: {response.status_code}"
             )
-        await response.html.arender()
+        await response.html.arender(timeout=self._RENDER_TIMEOUT)
         soup = BeautifulSoup(response.html.html, "html.parser")
 
         # Remove javascript and css from html
