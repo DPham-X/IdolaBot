@@ -15,7 +15,6 @@ import pytz
 import requests
 from dotenv import load_dotenv
 
-
 IDOLA_API_URL = "https://game.idola.jp/api"
 IDOLA_API_INIT = "https://service.idola.jp/api/app/init"
 IDOLA_USER_PRELOGIN = IDOLA_API_URL + "/user/prelogin"
@@ -128,7 +127,7 @@ class IdolaAPI(object):
             print(e, traceback.format_exc())
 
     def get_app_ver(self):
-        self.app_ver = play_scraper.details('com.sega.idola').get('current_version')
+        self.app_ver = play_scraper.details("com.sega.idola").get("current_version")
         print(f"Got com.sega.idola app_ver: {self.app_ver}")
 
     def import_id_map(self, csv_filepath):
@@ -273,7 +272,9 @@ class IdolaAPI(object):
             profile_id = profile["friend_profile"]["profile_id"]
             ranking_information[profile_id]["name"] = profile["friend_profile"]["name"]
             ranking_information[profile_id]["arena_score_rank"] = profile["score_rank"]
-            ranking_information[profile_id]["arena_score_point"] = profile["score_point"]
+            ranking_information[profile_id]["arena_score_point"] = profile[
+                "score_point"
+            ]
         self.retrans_key = json_response["retrans_key"]
         return ranking_information
 
@@ -399,13 +400,13 @@ class IdolaAPI(object):
             return "HP"
         elif option_bonus_id == 2:
             return "ATK"
-        elif  option_bonus_id == 3:
+        elif option_bonus_id == 3:
             return "DEF"
-        elif  option_bonus_id == 4:
+        elif option_bonus_id == 4:
             return "SPD"
-        elif  option_bonus_id == 5:
+        elif option_bonus_id == 5:
             return "CRIT"
-        elif  option_bonus_id == 6:
+        elif option_bonus_id == 6:
             return "RES"
         elif option_bonus_id == 7:
             return "ELE"
@@ -415,15 +416,15 @@ class IdolaAPI(object):
     @staticmethod
     def element_id_to_name(element_id):
         if element_id == 1:
-            return 'Fire'
+            return "Fire"
         elif element_id == 2:
-            return 'Water'
+            return "Water"
         elif element_id == 3:
-            return 'Wind'
+            return "Wind"
         elif element_id == 4:
-            return 'Earth'
+            return "Earth"
         elif element_id == 255:
-            return 'Any'
+            return "Any"
         else:
             raise Exception("Unknown element id")
 
@@ -439,11 +440,18 @@ class IdolaAPI(object):
             self.get_arena_ranking_offset(event_id, 80),
         ]
         for ranking_information_intervals in top_100_ranking_information:
-            for (profile_id, ranking_information,) in ranking_information_intervals.items():
+            for (
+                profile_id,
+                ranking_information,
+            ) in ranking_information_intervals.items():
                 update_profile_cache(ranking_information["name"], profile_id)
                 players[profile_id]["name"] = ranking_information["name"]
-                players[profile_id]["arena_score_rank"] = ranking_information["arena_score_rank"]
-                players[profile_id]["arena_score_point"] = ranking_information["arena_score_point"]
+                players[profile_id]["arena_score_rank"] = ranking_information[
+                    "arena_score_rank"
+                ]
+                players[profile_id]["arena_score_point"] = ranking_information[
+                    "arena_score_point"
+                ]
         return players
 
     def show_raid_suppression_top_100_players(self, event_id=None):
@@ -460,7 +468,9 @@ class IdolaAPI(object):
 
         prev_profile_id = None
         for ranking_information_intervals in top_100_ranking_information:
-            for ranking_information in sorted(ranking_information_intervals, key=lambda item: item["score_rank"]):
+            for ranking_information in sorted(
+                ranking_information_intervals, key=lambda item: item["score_rank"]
+            ):
                 name = ranking_information["friend_profile"]["name"]
                 profile_id = ranking_information["friend_profile"]["profile_id"]
                 update_profile_cache(name, profile_id)
@@ -471,7 +481,9 @@ class IdolaAPI(object):
                 raid_score_point = ranking_information["score_point"]
                 if raid_score_rank > 100:
                     break
-                msg.append(f"{raid_score_rank}: {raid_score_point:,d} - {name}({profile_id})")
+                msg.append(
+                    f"{raid_score_rank}: {raid_score_point:,d} - {name}({profile_id})"
+                )
         return "\n".join(msg)
 
     def show_raid_creation_top_100_players(self, event_id=None):
@@ -488,7 +500,9 @@ class IdolaAPI(object):
 
         prev_profile_id = None
         for ranking_information_intervals in top_100_ranking_information:
-            for ranking_information in sorted(ranking_information_intervals, key=lambda item: item["score_rank"],):
+            for ranking_information in sorted(
+                ranking_information_intervals, key=lambda item: item["score_rank"],
+            ):
                 name = ranking_information["friend_profile"]["name"]
                 profile_id = ranking_information["friend_profile"]["profile_id"]
                 update_profile_cache(name, profile_id)
@@ -499,7 +513,9 @@ class IdolaAPI(object):
                 raid_score_point = ranking_information["score_point"]
                 if raid_score_rank > 100:
                     break
-                msg.append(f"{raid_score_rank}: {raid_score_point:,d} - {name}({profile_id})")
+                msg.append(
+                    f"{raid_score_rank}: {raid_score_point:,d} - {name}({profile_id})"
+                )
         return "\n".join(msg)
 
     def get_top_50_arena_border(self, event_id=None):
@@ -508,7 +524,11 @@ class IdolaAPI(object):
                 event_id = self.get_latest_arena_event_id()
             ranking_information = self.get_arena_ranking(event_id, 49)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -521,7 +541,11 @@ class IdolaAPI(object):
                 event_id = self.get_latest_arena_event_id()
             ranking_information = self.get_arena_ranking(event_id, 99)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -534,7 +558,11 @@ class IdolaAPI(object):
                 event_id = self.get_latest_arena_event_id()
             ranking_information = self.get_arena_ranking(event_id, 499)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -547,7 +575,11 @@ class IdolaAPI(object):
                 event_id = self.get_latest_arena_event_id()
             ranking_information = self.get_arena_ranking(event_id, 999)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -560,7 +592,11 @@ class IdolaAPI(object):
                 event_id = self.get_latest_raid_event_id()
             ranking_information = self.get_raid_battle_ranking(event_id, 99)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -573,7 +609,11 @@ class IdolaAPI(object):
                 event_id = self.get_latest_raid_event_id()
             ranking_information = self.get_raid_battle_ranking(event_id, 499)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -586,7 +626,11 @@ class IdolaAPI(object):
                 event_id = self.get_latest_raid_event_id()
             ranking_information = self.get_raid_battle_ranking(event_id, 999)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -599,7 +643,11 @@ class IdolaAPI(object):
                 event_id = self.get_latest_raid_event_id()
             ranking_information = self.get_raid_battle_ranking(event_id, 1999)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -612,7 +660,11 @@ class IdolaAPI(object):
                 event_id = self.get_latest_raid_event_id()
             ranking_information = self.get_raid_battle_ranking(event_id, 4999)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -624,7 +676,11 @@ class IdolaAPI(object):
             event_id = self.get_latest_raid_event_id()
             ranking_information = self.get_raid_creation_ranking(event_id, 99)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -636,7 +692,11 @@ class IdolaAPI(object):
             event_id = self.get_latest_raid_event_id()
             ranking_information = self.get_raid_creation_ranking(event_id, 499)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -649,7 +709,11 @@ class IdolaAPI(object):
                 event_id = self.get_latest_raid_event_id()
             ranking_information = self.get_raid_creation_ranking(event_id, 999)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -662,7 +726,11 @@ class IdolaAPI(object):
                 event_id = self.get_latest_raid_event_id()
             ranking_information = self.get_raid_creation_ranking(event_id, 1999)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -675,7 +743,11 @@ class IdolaAPI(object):
                 event_id = self.get_latest_raid_event_id()
             ranking_information = self.get_raid_creation_ranking(event_id, 4999)
             sorted_ranking_information = sorted(
-                [player_information["score_point"] for player_information in ranking_information], reverse=True
+                [
+                    player_information["score_point"]
+                    for player_information in ranking_information
+                ],
+                reverse=True,
             )
             return sorted_ranking_information[0]
         except IndexError as e:
@@ -701,11 +773,17 @@ class IdolaAPI(object):
             self.truncate(self.get_name_from_id(character["character"]["char_id"]))
             + "\n"
             + lb_bullet(character["character"]["potential"])
-            + braced_number(self.destiny_bonus(character["destiny_bonus_level"], character["destiny_bonus_status"],))
+            + braced_number(
+                self.destiny_bonus(
+                    character["destiny_bonus_level"], character["destiny_bonus_status"],
+                )
+            )
             for character in party_info["law"]
         ]
         law_wep_names = [
-            self.truncate(self.get_name_from_id(character["weapon_symbol"]["symbol_id"]))
+            self.truncate(
+                self.get_name_from_id(character["weapon_symbol"]["symbol_id"])
+            )
             + "\n"
             + "LV"
             + str(character["weapon_symbol"]["level"])
@@ -719,7 +797,9 @@ class IdolaAPI(object):
             for character in party_info["law"]
         ]
         try:
-            law_idomag_type = self.get_name_from_id(party_info["law_idomag"]["idomag_type_id"])
+            law_idomag_type = self.get_name_from_id(
+                party_info["law_idomag"]["idomag_type_id"]
+            )
         except Exception:
             law_idomag_type = None
 
@@ -732,11 +812,17 @@ class IdolaAPI(object):
             self.truncate(self.get_name_from_id(character["character"]["char_id"]))
             + "\n"
             + lb_bullet(character["character"]["potential"])
-            + braced_number(self.destiny_bonus(character["destiny_bonus_level"], character["destiny_bonus_status"],))
+            + braced_number(
+                self.destiny_bonus(
+                    character["destiny_bonus_level"], character["destiny_bonus_status"],
+                )
+            )
             for character in party_info["chaos"]
         ]
         chaos_wep_names = [
-            self.truncate(self.get_name_from_id(character["weapon_symbol"]["symbol_id"]))
+            self.truncate(
+                self.get_name_from_id(character["weapon_symbol"]["symbol_id"])
+            )
             + "\n"
             + "LV"
             + str(character["weapon_symbol"]["level"])
@@ -751,7 +837,9 @@ class IdolaAPI(object):
         ]
 
         try:
-            chaos_idomag_type = self.get_name_from_id(party_info["chaos_idomag"]["idomag_type_id"])
+            chaos_idomag_type = self.get_name_from_id(
+                party_info["chaos_idomag"]["idomag_type_id"]
+            )
         except Exception:
             chaos_idomag_type = None
 
@@ -768,11 +856,15 @@ class IdolaAPI(object):
             "law_characters": unpack_newline(law_char_names),
             "law_weapon_symbols": unpack_newline(law_wep_names),
             "law_soul_symbols": unpack_newline(law_soul_names),
-            "law_idomag": f"{law_idomag_type}({law_idomag_name})" if law_idomag_type else "-",
+            "law_idomag": f"{law_idomag_type}({law_idomag_name})"
+            if law_idomag_type
+            else "-",
             "chaos_characters": unpack_newline(chaos_char_names),
             "chaos_weapon_symbols": unpack_newline(chaos_wep_names),
             "chaos_soul_symbols": unpack_newline(chaos_soul_names),
-            "chaos_idomag": f"{chaos_idomag_type}({chaos_idomag_name})" if chaos_idomag_type else "-",
+            "chaos_idomag": f"{chaos_idomag_type}({chaos_idomag_name})"
+            if chaos_idomag_type
+            else "-",
             "party_info": party_info,
         }
 
@@ -845,7 +937,9 @@ class IdolaAPI(object):
     def parse_symbol_option_bonus(self, option_bonus_list):
         decoded_option_bonus = []
         for option_bonus in option_bonus_list:
-            option_bonus_name = self.option_bonus_id_to_name(option_bonus["option_bonus_id"])
+            option_bonus_name = self.option_bonus_id_to_name(
+                option_bonus["option_bonus_id"]
+            )
             value = option_bonus["value"]
             is_fixed = option_bonus["is_fixed"]
             if is_fixed:
@@ -862,21 +956,35 @@ class IdolaAPI(object):
         party_info = self.get_arena_party_info(profile_id)
         for character in itertools.chain(party_info["law"], party_info["chaos"]):
             character_name = self.get_name_from_id(character["character"]["char_id"])
-            weapon_symbol = self.get_name_from_id(character["weapon_symbol"]["symbol_id"])
-            weapon_cur_option_bonus = self.parse_symbol_option_bonus(character["weapon_symbol"]["option_bonus_list"])
-            weapon_next_option_bonus = self.parse_symbol_option_bonus(character["weapon_symbol"]["next_option_bonus_list"])
+            weapon_symbol = self.get_name_from_id(
+                character["weapon_symbol"]["symbol_id"]
+            )
+            weapon_cur_option_bonus = self.parse_symbol_option_bonus(
+                character["weapon_symbol"]["option_bonus_list"]
+            )
+            weapon_next_option_bonus = self.parse_symbol_option_bonus(
+                character["weapon_symbol"]["next_option_bonus_list"]
+            )
             soul_symbol = self.get_name_from_id(character["soul_symbol"]["symbol_id"])
-            soul_cur_option_bonus = self.parse_symbol_option_bonus(character["soul_symbol"]["option_bonus_list"])
-            soul_next_option_bonus = self.parse_symbol_option_bonus(character["soul_symbol"]["next_option_bonus_list"])
+            soul_cur_option_bonus = self.parse_symbol_option_bonus(
+                character["soul_symbol"]["option_bonus_list"]
+            )
+            soul_next_option_bonus = self.parse_symbol_option_bonus(
+                character["soul_symbol"]["next_option_bonus_list"]
+            )
 
             char_details = {}
             char_details["character_name"] = f"{character_name}"
             char_details["weapon_symbol"] = f"Weapon Symbol: {weapon_symbol}"
-            char_details["weapon_next_option"] = f"{weapon_cur_option_bonus} \u21D2 {weapon_next_option_bonus}"
+            char_details[
+                "weapon_next_option"
+            ] = f"{weapon_cur_option_bonus} \u21D2 {weapon_next_option_bonus}"
             char_details["soul_symbol"] = f"Soul Symbol: {soul_symbol}"
-            char_details["soul_next_option"] = f"{soul_cur_option_bonus} \u21D2 {soul_next_option_bonus}"
+            char_details[
+                "soul_next_option"
+            ] = f"{soul_cur_option_bonus} \u21D2 {soul_next_option_bonus}"
             option_char.append(char_details)
-        return party_info['player_name'], option_char
+        return party_info["player_name"], option_char
 
 
 if __name__ == "__main__":
@@ -888,4 +996,10 @@ if __name__ == "__main__":
     IDOLA_TOKEN_KEY = os.getenv("IDOLA_TOKEN_KEY")
     IDOLA_UUID = os.getenv("IDOLA_UUID")
 
-    idola = IdolaAPI(IDOLA_USER_AGENT, IDOLA_DEVICE_ID, IDOLA_DEVICE_TOKEN, IDOLA_TOKEN_KEY, IDOLA_UUID,)
+    idola = IdolaAPI(
+        IDOLA_USER_AGENT,
+        IDOLA_DEVICE_ID,
+        IDOLA_DEVICE_TOKEN,
+        IDOLA_TOKEN_KEY,
+        IDOLA_UUID,
+    )

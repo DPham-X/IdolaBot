@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 import asyncio
-import json
-import pprint
 import re
 from dataclasses import dataclass, field
 
-import requests
 import textdistance
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz, process
@@ -42,8 +39,8 @@ class SoulSymbol(object):
 def custom_scorer(s1, s2):
     s1 = s1.lower().replace("'", "")
     s2 = s2.lower().replace("'", "")
-    s1 = s1.encode('utf-8')
-    s2 = s2.encode('utf-8')
+    s1 = s1.encode("utf-8")
+    s2 = s2.encode("utf-8")
     score = textdistance.levenshtein.normalized_similarity(s1, s2)
     if score < 0.7:
         score = textdistance.sorensen.normalized_similarity(s1, s2)
@@ -78,7 +75,9 @@ class BumpedParser(object):
         asession = AsyncHTMLSession()
         response = await asession.get(WEAPON_DATABASE_URL)
         if response.status_code != 200:
-            raise Exception(f"Could not retrieve weapon database from bumped: {response.status_code}")
+            raise Exception(
+                f"Could not retrieve weapon database from bumped: {response.status_code}"
+            )
         await response.html.arender()
         soup = BeautifulSoup(response.html.html, "html.parser")
 
@@ -99,7 +98,9 @@ class BumpedParser(object):
 
                 en_name, _, jp_name = name.partition("\n")
                 cleaned_effect = re.sub(r"\n{2,}", r" ", effect)
-                cleaned_effect = cleaned_effect.replace("\n[\n", "[").replace("\n]", "]")
+                cleaned_effect = cleaned_effect.replace("\n[\n", "[").replace(
+                    "\n]", "]"
+                )
                 ws = WeaponSymbol(
                     en_name=en_name,
                     jp_name=jp_name,
@@ -115,7 +116,9 @@ class BumpedParser(object):
         asession = AsyncHTMLSession()
         response = await asession.get(SOUL_DATABASE_URL)
         if response.status_code != 200:
-            raise Exception(f"Could not retrieve soul database from bumped: {response.status_code}")
+            raise Exception(
+                f"Could not retrieve soul database from bumped: {response.status_code}"
+            )
         await response.html.arender()
         soup = BeautifulSoup(response.html.html, "html.parser")
 
@@ -150,7 +153,9 @@ class BumpedParser(object):
                 en_name = en_name.strip()
                 jp_name = jp_name.strip()
                 cleaned_effect = re.sub(r"\n{2,}", r" ", effect)
-                cleaned_effect = cleaned_effect.replace("\n[\n", "[").replace("\n]", "]")
+                cleaned_effect = cleaned_effect.replace("\n[\n", "[").replace(
+                    "\n]", "]"
+                )
                 ws = SoulSymbol(
                     en_name=en_name,
                     jp_name=jp_name,
@@ -180,7 +185,9 @@ class BumpedParser(object):
         return unfuzz_soul_name
 
     def get_weapon_database(self):
-        return set(weapon_symbol.en_name for weapon_symbol in self.weapon_symbol.values())
+        return set(
+            weapon_symbol.en_name for weapon_symbol in self.weapon_symbol.values()
+        )
 
     def get_soul_database(self):
         return set(soul_symbol.en_name for soul_symbol in self.soul_symbols.values())
