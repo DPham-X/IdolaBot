@@ -117,6 +117,7 @@ class IDOLA(commands.Cog):
     @commands.command()
     @has_permissions(administrator=True)
     async def update_bumped(self, ctx):
+        """[Admin] Refreshes Weapon and Soul Symbol information from Bumped database"""
         try:
             await self.send_embed_info(ctx, "Updating database from bumped website")
             await self.bumped_api.start()
