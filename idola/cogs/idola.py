@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
+import logging
 import os
 import traceback
 
 import discord
 from discord.ext import commands, tasks
-from discord.ext.commands import MissingPermissions, has_permissions
+from discord.ext.commands import has_permissions
 from lib.api import IdolaAPI
 from lib.bumped import BumpedParser
 from lib.web_visualiser import AfuureusIdolaStatusTool, NNSTJPWebVisualiser
+
+logger = logging.getLogger(f"idola.{__name__}")
 
 IDOLA_USER_AGENT = os.getenv("IDOLA_USER_AGENT")
 IDOLA_DEVICE_ID = os.getenv("IDOLA_DEVICE_ID")
@@ -50,14 +53,7 @@ class IDOLA(commands.Cog):
         embed = discord.Embed(
             title="Error", description=f"{message}", color=discord.Colour.red(),
         )
-        await ctx.send(embed=embed)
-
-    async def send_permission_error(self, ctx):
-        embed = discord.Embed(
-            title="Error",
-            discription=f"You don't have permission to do that",
-            color=discord.Colour.red(),
-        )
+        logger.error(f"Sent error message: {message}")
         await ctx.send(embed=embed)
 
     async def send_embed_info(self, ctx, message):
@@ -70,7 +66,7 @@ class IDOLA(commands.Cog):
     async def on_ready(self):
         await self.client.change_presence(activity=discord.Game("Ready!"))
         for guild in self.client.guilds:
-            print(
+            logger.info(
                 f"{self.client.user} is connected to the following guild:\n"
                 f"{guild.name}(id: {guild.id})"
             )
@@ -84,7 +80,26 @@ class IDOLA(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        traceback.print_exception(type(error), error, error.__traceback__)
+        exception_message = traceback.format_exception(
+            type(error), error, error.__traceback__
+        )
+        logger.error("".join(exception_message))
+
+        if isinstance(error, commands.errors.CommandNotFound):
+            await self.send_embed_error(
+                ctx,
+                f"Unknown command. See {self.client.command_prefix}help to get the list of available commands",
+            )
+            return
+
+        if isinstance(error, commands.UserInputError):
+            await self.send_embed_error(ctx, "Invalid input")
+            return
+
+        if isinstance(error, commands.MissingPermissions):
+            await self.send_embed_error(ctx, "You don't have permission to do that")
+            return
+
         await self.send_embed_error(ctx, "An unexpected error occurred")
 
     @commands.command(hidden=True)
@@ -94,7 +109,7 @@ class IDOLA(commands.Cog):
             idola.start()
             await self.send_embed_info(ctx, "IdolaBot has been restarted")
         except Exception as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             await self.send_embed_error(
                 ctx, "An error occurred, IdolaBot could not be restarted"
             )
@@ -107,15 +122,10 @@ class IDOLA(commands.Cog):
             await self.bumped_api.start()
             await self.send_embed_info(ctx, "Finished updating bumped database")
         except Exception as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             await self.send_embed_error(
                 ctx, f"An error occurred whilst trying to update bumped database: {e}"
             )
-
-    @update_bumped.error
-    async def update_bumped_error(self, error, ctx):
-        if isinstance(error, MissingPermissions):
-            return await self.send_permission_error()
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -125,7 +135,7 @@ class IDOLA(commands.Cog):
             idola.save_discord_profile_ids()
             await self.send_embed_info(ctx, "Profile cache saved")
         except Exception as e:
-            print(traceback.format_exc())
+            logger.exception(e)
             await self.send_embed_error(ctx, f"Could not save profile cache - {e}")
 
     @tasks.loop(hours=1)
@@ -133,23 +143,23 @@ class IDOLA(commands.Cog):
         try:
             idola.save_profile_cache()
             idola.save_discord_profile_ids()
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as e:
+            logger.exception(e)
 
     @tasks.loop(seconds=60)
     async def border_status_update(self):
         try:
             border_score = idola.get_top_100_raid_suppression_border()
-            print(f"{border_score:,d} - SuppressionBorderTop100")
+            logger.info(f"{border_score:,d} - SuppressionBorderTop100")
             await self.client.change_presence(
                 activity=discord.Game(f"{border_score:,d} - SuppressionBorderTop100")
             )
         except Exception as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
 
     @tasks.loop(hours=4)
     async def relog(self):
-        print("Relogging")
+        logger.info("Relogging")
         idola.start()
 
     @tasks.loop(seconds=180)
@@ -159,13 +169,13 @@ class IDOLA(commands.Cog):
                 return
 
             channel = self.client.get_channel(int(self.border_message_channel))
-            print(f"Updating pinned message in {channel.name}")
+            logger.info(f"Updating pinned message in {channel.name}")
             pinned_messages = await channel.pins()
             border_message = None
             for pinned_message in pinned_messages:
                 if pinned_message.author.id == self.client.user.id:
                     border_message = pinned_message
-                    print(
+                    logger.info(
                         f"Updating existing pinned message with ID {border_message.id}"
                     )
                     break
@@ -276,12 +286,12 @@ class IDOLA(commands.Cog):
             else:
                 border_message = await channel.send(embed=embed)
                 await border_message.pin()
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as e:
+            logger.exception(e)
 
     @tasks.loop(seconds=120)
     async def border_channel_update(self):
-        print("Updating channel borders")
+        logger.info("Updating channel borders")
         try:
             # Arena
             if self.arena_border_50_channel:
@@ -382,8 +392,8 @@ class IDOLA(commands.Cog):
                     if raid_creation_border_5000
                     else f"🥉5K: Unknown"
                 )
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as e:
+            logger.exception(e)
 
     @commands.command()
     async def arena_border(self, ctx):
@@ -607,7 +617,7 @@ class IDOLA(commands.Cog):
             )
             nnstjp_formatted_link = f"NNSTJP: [{nnstjp_link}]({nnstjp_link})"
         except Exception as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             nnstjp_formatted_link = "Unavailable"
 
         try:
@@ -616,7 +626,7 @@ class IDOLA(commands.Cog):
             )
             afuu_formatted_link = f"Afuureus: [{afuu_link}]({afuu_link})"
         except Exception as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             afuu_formatted_link = "Unavailable"
 
         embed = discord.Embed(
@@ -671,7 +681,7 @@ class IDOLA(commands.Cog):
             )
             nnstjp_formatted_link = f"NNSTJP: [{nnstjp_link}]({nnstjp_link})"
         except Exception as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             nnstjp_formatted_link = "Unavailable"
 
         try:
@@ -680,7 +690,7 @@ class IDOLA(commands.Cog):
             )
             afuu_formatted_link = f"Afuureus: [{afuu_link}]({afuu_link})"
         except Exception as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             afuu_formatted_link = "Unavailable"
 
         embed = discord.Embed(

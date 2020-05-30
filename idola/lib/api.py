@@ -4,6 +4,7 @@ import datetime
 import hashlib
 import itertools
 import json
+import logging
 import os
 import pickle
 import traceback
@@ -14,6 +15,8 @@ import pylru
 import pytz
 import requests
 from dotenv import load_dotenv
+
+logger = logging.getLogger(f"idola.{__name__}")
 
 IDOLA_API_URL = "https://game.idola.jp/api"
 IDOLA_API_INIT = "https://service.idola.jp/api/app/init"
@@ -115,7 +118,7 @@ class IdolaAPI(object):
         self.import_id_map(os.path.join("lib", "idola_map", "Idomag ID.csv"))
 
         self.start()
-        print("Idola API ready!")
+        logger.info("Idola API ready!")
 
     def start(self):
         try:
@@ -124,11 +127,11 @@ class IdolaAPI(object):
             self.pre_login()
             self.login()
         except Exception as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
 
     def get_app_ver(self):
         self.app_ver = play_scraper.details("com.sega.idola").get("current_version")
-        print(f"Got com.sega.idola app_ver: {self.app_ver}")
+        logger.info(f"Got com.sega.idola app_ver: {self.app_ver}")
 
     def import_id_map(self, csv_filepath):
         # https://github.com/NNSTJP/Idola
@@ -143,7 +146,7 @@ class IdolaAPI(object):
         for c_id in self.character_map:
             if str(char_id).startswith(c_id):
                 return self.character_map[c_id]
-        print(f"Unknown char_id: {char_id}")
+        logger.error(f"Unknown char_id: {char_id}")
         return "Unknown"
 
     def update_retrans_key(self):
@@ -163,7 +166,7 @@ class IdolaAPI(object):
         response = self.client.post(IDOLA_HOME_NOTICE, body)
         json_response = response.json()
         self.res_ver = json_response["res_version"]
-        print(f"ResVer updated to {self.res_ver}")
+        logger.info(f"ResVer updated to {self.res_ver}")
 
     def api_init(self):
         headers = {
@@ -180,7 +183,7 @@ class IdolaAPI(object):
         json_response = response.json()
         self.retrans_key = json_response["retrans_key"]
         self.res_ver = json_response["res_version"]
-        print(f"ResVer: {self.res_ver}")
+        logger.info(f"ResVer: {self.res_ver}")
 
     def pre_login(self):
         body = {
@@ -199,7 +202,7 @@ class IdolaAPI(object):
         to_hash = self.token_key + ":" + self.session_key
         auth_key = hashlib.sha1(to_hash.encode("utf-8")).hexdigest()
         self.auth_key = auth_key
-        print(f"Auth_key: {auth_key}")
+        logger.info(f"Auth_key: {auth_key}")
 
     def login(self):
         body = {
@@ -532,7 +535,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_100_arena_border(self, event_id=None):
@@ -549,7 +552,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_500_arena_border(self, event_id=None):
@@ -566,7 +569,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_1000_arena_border(self, event_id=None):
@@ -583,7 +586,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_100_raid_suppression_border(self, event_id=None):
@@ -600,7 +603,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_500_raid_suppression_border(self, event_id=None):
@@ -617,7 +620,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_1000_raid_suppression_border(self, event_id=None):
@@ -634,7 +637,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_2000_raid_suppression_border(self, event_id=None):
@@ -651,7 +654,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_5000_raid_suppression_border(self, event_id=None):
@@ -668,7 +671,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_100_raid_creation_border(self, event_id=None):
@@ -684,7 +687,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_500_raid_creation_border(self, event_id=None):
@@ -700,7 +703,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_1000_raid_creation_border(self, event_id=None):
@@ -717,7 +720,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_2000_raid_creation_border(self, event_id=None):
@@ -734,7 +737,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_top_5000_raid_creation_border(self, event_id=None):
@@ -751,7 +754,7 @@ class IdolaAPI(object):
             )
             return sorted_ranking_information[0]
         except IndexError as e:
-            print(e, traceback.format_exc())
+            logger.exception(e)
             return None
 
     def get_image_from_character_id(self, char_id):
@@ -908,9 +911,9 @@ class IdolaAPI(object):
             for k, v in reversed(profile_dict.items()):
                 profile_cache[k] = v
         except FileNotFoundError as e:
-            print(f"Error: Could not load profile_cache - {e}")
+            logger.error(f"Error: Could not load profile_cache - {e}")
             return False
-        print("Profile cache loaded")
+        logger.info("Profile cache loaded")
         return True
 
     def register_discord_profile_id(self, discord_id, profile_id):
@@ -929,9 +932,9 @@ class IdolaAPI(object):
         try:
             discord_profile_ids = pickle.load(open("discord_profile_ids.p", "rb"))
         except FileNotFoundError as e:
-            print(f"Error: Could not load profile_cache - {e}")
+            logger.error(f"Error: Could not load profile_cache - {e}")
             return False
-        print("Discord ID DB loaded")
+        logger.info("Discord ID DB loaded")
         return True
 
     def parse_symbol_option_bonus(self, option_bonus_list):

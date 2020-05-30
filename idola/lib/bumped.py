@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import asyncio
+import logging
 import re
 from dataclasses import dataclass, field
 
@@ -7,6 +8,9 @@ import textdistance
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz, process
 from requests_html import AsyncHTMLSession
+
+logger = logging.getLogger(f"idola.{__name__}")
+
 
 BUMPED_IDOLA_URL = "https://bumped.org/idola"
 WEAPON_DATABASE_URL = BUMPED_IDOLA_URL + "/idola-weapon-database/"
@@ -67,7 +71,7 @@ class BumpedParser(object):
         asyncio.run(self.start())
 
     async def start(self):
-        print("Parsing Bumped website")
+        logger.info("Parsing Bumped website")
         self.weapon_symbols = {}
         self.soul_symbols = {}
         await self.import_weapon_symbols()
