@@ -4,6 +4,7 @@ import traceback
 
 import discord
 from discord.ext import commands, tasks
+from discord.ext.commands import has_permissions, MissingPermissions
 
 from lib.api import IdolaAPI
 from lib.bumped import BumpedParser
@@ -52,6 +53,13 @@ class IDOLA(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    async def send_permission_error(self, ctx):
+        embed = discord.Embed(
+            title="Error",
+            discription=f"You don't have permission to do that",
+            color=discord.Colour.red(),
+        )
+
     async def send_embed_info(self, ctx, message):
         embed = discord.Embed(
             title="Info",
@@ -88,8 +96,7 @@ class IDOLA(commands.Cog):
             print(e, traceback.format_exc())
             await self.send_embed_error(ctx, "An error occurred, IdolaBot could not be restarted")
 
-    @commands.command(hidden=True)
-    @commands.is_owner()
+    @has_permissions(administrator=True)
     async def update_bumped(self, ctx):
         try:
             await self.send_embed_info(ctx, "Updating database from bumped website")
@@ -98,6 +105,11 @@ class IDOLA(commands.Cog):
         except Exception as e:
             print(e, traceback.format_exc())
             await self.send_embed_error(ctx, f"An error occurred whilst trying to update bumped database: {e}")
+
+    @update_bumped.error
+    async def update_bumped_error(self, error, ctx):
+        if isinstance(error, MissingPermissions):
+            return await self.send_permission_error()
 
     @commands.command(hidden=True)
     @commands.is_owner()
