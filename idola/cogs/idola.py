@@ -99,6 +99,7 @@ class IDOLA(commands.Cog):
                 ctx, "An error occurred, IdolaBot could not be restarted"
             )
 
+    @commands.command()
     @has_permissions(administrator=True)
     async def update_bumped(self, ctx):
         try:
