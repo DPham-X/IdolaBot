@@ -97,7 +97,7 @@ class IDOLA(commands.Cog):
             await self.send_embed_info(ctx, "Finished updating bumped database")
         except Exception as e:
             print(e, traceback.format_exc())
-            await self.send_embed_error(ctx, "An error occurred whilst trying to update bumped database")
+            await self.send_embed_error(ctx, f"An error occurred whilst trying to update bumped database: {e}")
 
     @commands.command(hidden=True)
     @commands.is_owner()
