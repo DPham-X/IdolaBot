@@ -2,25 +2,44 @@
 
 ## Installation
 
-git clone https://github.com/iXyk/IdolaBot.git
+    git clone https://github.com/iXyk/IdolaBot.git
+    cd IdolaBot
+    git submodule update --init --recursive
 
-git submodule update --init --recursive
+### Ubuntu 20.04
+
+    cd ..
+
+Ensure apt is updated
+
+    sudo apt-get update
+    sudo apt-get -y upgrade
+
+Ensure that python3 virtualenv is installed
+
+    sudo apt-get install -y python3-virtualenv
+
+Create the idola virtualenv, activate it and install the python dependencies
+
+    python3 -m virtualenv -p python3 idola-venv
+    source idola-venv/bin/activate
+    cd IdolaBot
+
+    pip install -r requirements.txt
+
+To install the optional levenshtein package
+
+    sudo apt-get install -y python3 python3-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev
+    pip install -r requirements-optional.txt
+
+Next fill out the idola environment variables (`.env`) located inside `IdolaBot/.env`
+
+Once the environment variables have been filled out run that start script
+
+    ./start_bot.sh
 
 ## Updating
 
-git pull https://github.com/iXyk/IdolaBot.git
+    git pull https://github.com/iXyk/IdolaBot.git
 
-git submodule update --recursive --remote
-
-## Requirements
-
-pip install -r requirements.txt
-
-### Ubuntu/Debian
-
-<https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md>
-
-Install the following dependencies for the Bumped parser
-
-    sudo apt-get install -y libxcomposite libx11-xcb-dev libxcursor-dev libxdamage-dev libxi-dev
-    gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
+    git submodule update --recursive --remote
