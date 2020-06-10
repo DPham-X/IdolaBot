@@ -131,7 +131,7 @@ class IdolaAPI(object):
 
     def get_app_ver(self):
         self.app_ver = play_scraper.details("com.sega.idola").get("current_version")
-        logger.info(f"Got com.sega.idola app_ver: {self.app_ver}")
+        logger.info(f"Setting app_ver com.sega.idola: {self.app_ver}")
 
     def import_id_map(self, csv_filepath):
         # https://github.com/NNSTJP/Idola
