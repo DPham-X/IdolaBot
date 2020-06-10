@@ -812,6 +812,7 @@ class IDOLA(commands.Cog):
     @commands.command()
     async def weapon(self, ctx, weapon_name: str):
         """Get Weapon Symbol information from Bumped"""
+        input_weapon_name = weapon_name
         weapon_name = self.bumped_api.get_unfuzzed_weapon_name(weapon_name)
         if not weapon_name:
             await self.send_embed_error(ctx, "Could not find weapon in Bumped database")
@@ -819,7 +820,7 @@ class IDOLA(commands.Cog):
         weapon = self.bumped_api.weapon_symbols.get(weapon_name, None)
         embed = discord.Embed(
             title=f"{weapon.en_name} | {weapon.jp_name}",
-            description=f"Closest match for '{weapon_name}'",
+            description=f"Closest match for '{input_weapon_name}'",
             color=discord.Colour.blue(),
         )
         embed.set_thumbnail(url=weapon.icon_url)
@@ -834,6 +835,7 @@ class IDOLA(commands.Cog):
     @commands.command()
     async def soul(self, ctx, soul_name: str):
         """Get Soul Symbol information from Bumped"""
+        input_soul_name = soul_name
         soul_name = self.bumped_api.get_unfuzzed_soul_name(soul_name)
         if not soul_name:
             await self.send_embed_error(ctx, "Could not find soul in Bumped database")
@@ -841,7 +843,7 @@ class IDOLA(commands.Cog):
         soul = self.bumped_api.soul_symbols.get(soul_name, None)
         embed = discord.Embed(
             title=f"{soul.en_name} | {soul.jp_name}",
-            description=f"Closest match for '{soul_name}'",
+            description=f"Closest match for '{input_soul_name}'",
             color=discord.Colour.blue(),
         )
         embed.set_thumbnail(url=soul.icon_url)
