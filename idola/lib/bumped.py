@@ -4,10 +4,10 @@ import logging
 import re
 from dataclasses import dataclass, field
 
+import aiohttp
 import textdistance
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz, process
-from requests_html import AsyncHTMLSession
 
 logger = logging.getLogger(f"idola.{__name__}")
 
@@ -78,14 +78,10 @@ class BumpedParser(object):
         await self.import_soul_symbols()
 
     async def import_weapon_symbols(self):
-        asession = AsyncHTMLSession()
-        response = await asession.get(WEAPON_DATABASE_URL)
-        if response.status_code != 200:
-            raise Exception(
-                f"Could not retrieve weapon database from bumped: {response.status_code}"
-            )
-        await response.html.arender(timeout=self._RENDER_TIMEOUT)
-        soup = BeautifulSoup(response.html.html, "html.parser")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(WEAPON_DATABASE_URL) as r:
+                html = await r.text()
+        soup = BeautifulSoup(html, "html.parser")
 
         # Remove javascript and css from html
         for script in soup(["script", "style"]):
@@ -96,6 +92,8 @@ class BumpedParser(object):
             max_table_len = len(table.findAll("tr"))
             for row in table.findAll("tr")[1:max_table_len]:
                 col = row.findAll("td")
+                if len(col) != 5:
+                    continue
                 icon_url = col[0].find("img").get("src")
                 name = col[1].getText().strip()
                 stats = col[2].getText().strip()
@@ -119,14 +117,10 @@ class BumpedParser(object):
                 self.weapon_symbols[jp_name] = ws
 
     async def import_soul_symbols(self):
-        asession = AsyncHTMLSession()
-        response = await asession.get(SOUL_DATABASE_URL)
-        if response.status_code != 200:
-            raise Exception(
-                f"Could not retrieve soul database from bumped: {response.status_code}"
-            )
-        await response.html.arender(timeout=self._RENDER_TIMEOUT)
-        soup = BeautifulSoup(response.html.html, "html.parser")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(SOUL_DATABASE_URL) as r:
+                html = await r.text()
+        soup = BeautifulSoup(html, "html.parser")
 
         # Remove javascript and css from html
         for script in soup(["script", "style"]):
@@ -142,6 +136,8 @@ class BumpedParser(object):
                 req = True
             for row in table.findAll("tr")[1:max_table_len]:
                 col = row.findAll("td")
+                if len(col) != 5:
+                    continue
                 icon_url = col[0].find("img").get("src")
                 name = col[1].getText().strip()
                 stats = col[2].getText().strip()
@@ -162,7 +158,7 @@ class BumpedParser(object):
                 cleaned_effect = cleaned_effect.replace("\n[\n", "[").replace(
                     "\n]", "]"
                 )
-                ws = SoulSymbol(
+                ss = SoulSymbol(
                     en_name=en_name,
                     jp_name=jp_name,
                     requirements=requirements,
@@ -171,8 +167,8 @@ class BumpedParser(object):
                     effect=cleaned_effect,
                     icon_url=icon_url,
                 )
-                self.soul_symbols[en_name] = ws
-                self.soul_symbols[jp_name] = ws
+                self.soul_symbols[en_name] = ss
+                self.soul_symbols[jp_name] = ss
 
     def get_unfuzzed_weapon_name(self, weapon_name):
         unfuzz_weapon_name, score = process.extractOne(
