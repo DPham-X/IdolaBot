@@ -1,9 +1,13 @@
 import json
+import logging
 from copy import deepcopy
 from itertools import chain
 from urllib.parse import quote
 
 from .util import shorten_url
+
+logger = logging.getLogger(f"idola.{__name__}")
+
 
 base_data = {
     "Party": "01",
@@ -112,8 +116,8 @@ class PartyStats(object):
             character["destiny_bonus_status"] for character in party_info["chaos"]
         ]
         d_encoded = []
-        for character in chain(law_characters, chaos_characters):
-            d_encoded.append(1 if character == 2 else 0.5)
+        for db_status in chain(law_characters, chaos_characters):
+            d_encoded.append(1 if db_status >= 1 else 0)
         data["CharacterD"] = d_encoded
 
     @classmethod
