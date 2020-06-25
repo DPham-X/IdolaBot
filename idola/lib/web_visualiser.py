@@ -117,7 +117,7 @@ class PartyStats(object):
         ]
         d_encoded = []
         for db_status in chain(law_characters, chaos_characters):
-            d_encoded.append(1 if db_status >= 1 else 0)
+            d_encoded.append(1 if db_status >= 1 else 0.5)
         data["CharacterD"] = d_encoded
 
     @classmethod
