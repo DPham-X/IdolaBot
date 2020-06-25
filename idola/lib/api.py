@@ -138,6 +138,8 @@ class IdolaAPI(object):
         with open(csv_filepath, newline="") as csvfile:
             char_csv = csv.reader(csvfile, delimiter=",")
             for row in char_csv:
+                if len(row) != 2:
+                    continue
                 self.character_map[str(row[0])] = str(row[1])
 
     def get_name_from_id(self, char_id):
