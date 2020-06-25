@@ -591,88 +591,37 @@ class IDOLA(commands.Cog):
             await self.send_embed_error(ctx, "There was a problem registering your ID")
 
     @commands.command()
-    async def arena_team(self, ctx, profile_id=None):
-        """Shows the latest ranked arena team for a given profile_id"""
-        if profile_id is None:
+    async def arena_team(self, ctx, arena_id=None):
+        """Shows the latest ranked arena team for a given profile_id/profile_name"""
+        if arena_id is None:
             discord_id = ctx.message.author.id
-            profile_id = idola.get_profile_id_from_discord_id(int(discord_id))
-            if profile_id is None:
+            arena_id = idola.get_profile_id_from_discord_id(int(discord_id))
+            if arena_id is None:
                 await self.send_embed_error(
                     ctx,
                     "Your arena_team has not been registered. Use `register_profile` to register your team. Or enter a profile id.",
                 )
                 return
 
+        arena_team = None
         try:
-            arena_team = idola.get_arena_team_composition(int(profile_id))
+            arena_team = idola.get_arena_team_composition_from_name(str(arena_id))
         except KeyError:
-            await self.send_embed_error(
-                ctx,
-                f"Unable to find the arena_team for profile id: '{profile_id}', ensure that it is correct.",
-            )
-            return
+            pass
 
-        try:
-            nnstjp_link = NNSTJPWebVisualiser.generate_shareable_link(
-                arena_team["party_info"]
-            )
-            nnstjp_formatted_link = f"NNSTJP: [{nnstjp_link}]({nnstjp_link})"
-        except Exception as e:
-            logger.exception(e)
-            nnstjp_formatted_link = "Unavailable"
+        if not arena_team:
+            try:
+                arena_team = idola.get_arena_team_composition(int(arena_id))
+            except (KeyError, ValueError):
+                pass
 
-        try:
-            afuu_link = AfuureusIdolaStatusTool.generate_shareable_link(
-                arena_team["party_info"]
-            )
-            afuu_formatted_link = f"Afuureus: [{afuu_link}]({afuu_link})"
-        except Exception as e:
-            logger.exception(e)
-            afuu_formatted_link = "Unavailable"
-
-        embed = discord.Embed(
-            title=f"Team Score: {arena_team['team_score']:,d}",
-            description=f"**Idomag**\nLaw: {arena_team['law_idomag']}\nChaos: {arena_team['chaos_idomag']}",
-            color=discord.Colour.blue(),
-        )
-        embed.set_author(name=f"{arena_team['player_name']}")
-        embed.set_thumbnail(url=arena_team["avatar_url"])
-
-        embed.add_field(
-            name="Law Characters", value=arena_team["law_characters"], inline=True,
-        )
-        embed.add_field(
-            name="Weapon Symbols", value=arena_team["law_weapon_symbols"], inline=True,
-        )
-        embed.add_field(
-            name="Soul Symbols", value=arena_team["law_soul_symbols"], inline=True,
-        )
-        embed.add_field(
-            name="Chaos Characters", value=arena_team["chaos_characters"], inline=True,
-        )
-        embed.add_field(
-            name="Weapon Symbols",
-            value=arena_team["chaos_weapon_symbols"],
-            inline=True,
-        )
-        embed.add_field(
-            name="Soul Symbols", value=arena_team["chaos_soul_symbols"], inline=True,
-        )
-        embed.add_field(
-            name=78 * "\u200b", value=f"{nnstjp_formatted_link}\n{afuu_formatted_link}",
-        )
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def arena_team_name(self, ctx, profile_name):
-        """Shows the matching arena_team using their name if the profile_id has already been cached"""
-        arena_team = idola.get_arena_team_composition_from_name(profile_name)
         if not arena_team:
             await self.send_embed_error(
                 ctx,
-                "Could not find a player by that name in the cache.\n"
+                "Could not find a player by that name.\n"
                 "To update the cache run '!arena_team' with your profile id first.\n"
-                'To find a name that contains spaces use quotes around your profile name. (Eg. !arena_team_name "<profile_name>")',
+                'To find a name that contains spaces use quotes around your profile name. (Eg. !arena_team "<profile_name>")\n'
+                "Note: Profile names are CASE-SENSITIVE",
             )
             return
 
