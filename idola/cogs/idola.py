@@ -172,7 +172,7 @@ class IDOLA(commands.Cog):
         logger.info("Relogging")
         idola.start()
 
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=5)
     async def get_tweets(self):
         """ Gets tweets from @sega_idola"""
         if not self.twitter_channel:
