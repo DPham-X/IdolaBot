@@ -8,6 +8,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import has_permissions
 from lib.api import IdolaAPI
 from lib.bumped import BumpedParser
+from lib.twitter_api import TwitterAPI
 from lib.web_visualiser import AfuureusIdolaStatusTool, NNSTJPWebVisualiser
 
 logger = logging.getLogger(f"idola.{__name__}")
@@ -27,7 +28,12 @@ class IDOLA(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.bumped_api = BumpedParser()
-
+        self.twitter_api = TwitterAPI(
+            access_token_key=os.getenv("TWITTER_ACCESS_TOKEN_KEY"),
+            access_token_secret=os.getenv("TWITTER_ACCESS_TOKEN_SECRET"),
+            consumer_key=os.getenv("TWITTER_CONSUMER_KEY"),
+            consumer_secret=os.getenv("TWITTER_CONSUMER_SECRET"),
+        )
         self.border_fails = 0
 
         self.arena_border_50_channel = os.getenv("ARENA_BORDER_50_CHANNEL")
@@ -48,6 +54,8 @@ class IDOLA(commands.Cog):
         self.creation_border_5000_channel = os.getenv("CREATION_BORDER_5000_CHANNEL")
 
         self.border_message_channel = os.getenv("BORDER_MESSAGE_CHANNEL")
+
+        self.twitter_channel = os.getenv("IDOLA_TWITTER_CHANNEL")
 
     async def send_embed_error(self, ctx, message):
         embed = discord.Embed(
@@ -77,6 +85,7 @@ class IDOLA(commands.Cog):
         self.border_channel_update.start()
         self.border_pinned_update.start()
         self.periodic_save.start()
+        self.get_tweets.start()
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -162,6 +171,47 @@ class IDOLA(commands.Cog):
     async def relog(self):
         logger.info("Relogging")
         idola.start()
+
+    @tasks.loop(minutes=1)
+    async def get_tweets(self):
+        """ Gets tweets from @sega_idola"""
+        if not self.twitter_channel:
+            logger.info(f"TWITTER_CHANNEL not defined")
+            return
+
+        logger.info("Getting tweets")
+        tweets = self.twitter_api.get_tweets()
+        channel = self.client.get_channel(int(self.twitter_channel))
+        if not tweets:
+            logger.info("No new tweets")
+            return
+
+        for tweet in tweets:
+            embed = discord.Embed(
+                title="\u200b",
+                description=self.twitter_api.translate(tweet.full_text),
+                color=discord.Colour.blue(),
+            )
+            embed.set_author(
+                name=f"{tweet.user.name} (@{tweet.user.screen_name})",
+                url=f"https://twitter.com/{tweet.user.screen_name}",
+                icon_url=tweet.user.profile_image_url_https,
+            )
+            if tweet.media:
+                image_url = tweet.media[0].media_url_https
+                if image_url:
+                    embed.set_image(url=image_url)
+            if not tweet.retweeted_status:
+                embed.add_field(name="Likes", value=tweet.favorite_count)
+            else:
+                embed.add_field(
+                    name="Retweeted", value=tweet.retweet_count,
+                )
+            embed.set_footer(
+                icon_url="https://images-ext-1.discordapp.net/external/bXJWV2Y_F3XSra_kEqIYXAAsI3m1meckfLhYuWzxIfI/https/abs.twimg.com/icons/apple-touch-icon-192x192.png",
+                text="Twitter",
+            )
+            await channel.send(embed=embed)
 
     @tasks.loop(seconds=180)
     async def border_pinned_update(self):
