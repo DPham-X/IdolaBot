@@ -78,7 +78,7 @@ class TwitterAPI:
                 continue
             unseen_tweets.insert(0, tweet)
             self.existing_tweets.add(tweet.id)
-        if not unseen_tweets:
+        if unseen_tweets:
             self.save_existing_tweets()
         return unseen_tweets
 
