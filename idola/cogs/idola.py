@@ -156,7 +156,7 @@ class IDOLA(commands.Cog):
         except Exception as e:
             logger.exception(e)
 
-    @tasks.loop(seconds=60)
+    @tasks.loop(minutes=5)
     async def border_status_update(self):
         try:
             border_score = idola.get_top_100_raid_suppression_border()
@@ -213,7 +213,7 @@ class IDOLA(commands.Cog):
             )
             await channel.send(embed=embed)
 
-    @tasks.loop(seconds=180)
+    @tasks.loop(minutes=5)
     async def border_pinned_update(self):
         try:
             if not self.border_message_channel:
@@ -340,7 +340,7 @@ class IDOLA(commands.Cog):
         except Exception as e:
             logger.exception(e)
 
-    @tasks.loop(seconds=120)
+    @tasks.loop(minutes=5)
     async def border_channel_update(self):
         logger.info("Updating channel borders")
         try:
