@@ -807,6 +807,38 @@ class IDOLA(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
+    async def guild(self, ctx, guild_id: int):
+        guild_info = idola.get_guild_info(guild_id)
+        guild_memberlist = idola.get_guild_memberlist(guild_id)
+
+        guild_memberlist_msg = "```"
+        for guild_member in guild_memberlist:
+            user_name = guild_member["user_name"]
+            user_rank = guild_member["user_rank"]
+            user_id = guild_member["user_id"]
+            guild_memberlist_msg += f"{user_rank:0>3}: {user_name}({user_id})\n"
+        guild_memberlist_msg += "```"
+
+        embed = discord.Embed(
+            title=guild_info["guild_name"],
+            description=guild_info["introduction"],
+            color=discord.Colour.blue(),
+        )
+        embed.add_field(
+            name="Leader", value=guild_info["leader_user_name"], inline=False
+        )
+        embed.add_field(name="Members", value=guild_info["membership"], inline=True)
+        embed.add_field(
+            name="est",
+            value=idola.datetime_jp_format(
+                idola.epoch_to_datetime(guild_info["established_at"])
+            ),
+            inline=True,
+        )
+        embed.add_field(name="MemberList", value=guild_memberlist_msg, inline=False)
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def arena_roll(self, ctx, profile_id=None):
         """Shows what your next symbol roll will be using your arena team"""
         if profile_id is None:
