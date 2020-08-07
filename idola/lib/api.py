@@ -31,6 +31,7 @@ IDOLA_ARENA_RANKING_OFFSET = IDOLA_API_URL + "/ant/offsetranking"
 IDOLA_RAID_EVENT_INFO = IDOLA_API_URL + "/raid/geteventinfo"
 IDOLA_RAID_RANKING = IDOLA_API_URL + "/raid/ranking"
 IDOLA_RAID_RANKING_OFFSET = IDOLA_API_URL + "/raid/offsetranking"
+IDOLA_GUILD_INFO = IDOLA_API_URL + "/guild/info"
 
 
 def unpack(s):
@@ -362,6 +363,20 @@ class IdolaAPI(object):
         ranking_list = json_response["replace"]["creator_ranking"]
         self.retrans_key = json_response["retrans_key"]
         return ranking_list
+
+    def get_guild_info(self, guild_id: int):
+        body = {
+            "app_ver": self.app_ver,
+            "res_ver": self.res_ver,
+            "auth_key": self.auth_key,
+            "retrans_key": self.retrans_key,
+            "guild_id": guild_id,
+        }
+        response = self.client.post(IDOLA_GUILD_INFO, body)
+        json_response = response.json
+        guild_data = json_response["replace"]["guild_data"]
+        self.retrans_key = json_response["retrans_key"]
+        return guild_data
 
     @staticmethod
     def epoch_to_datetime(epoch_time):
