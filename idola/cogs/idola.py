@@ -19,6 +19,11 @@ IDOLA_DEVICE_TOKEN = os.getenv("IDOLA_DEVICE_TOKEN")
 IDOLA_TOKEN_KEY = os.getenv("IDOLA_TOKEN_KEY")
 IDOLA_UUID = os.getenv("IDOLA_UUID")
 
+TWITTER_ACCESS_TOKEN_KEY = os.getenv("TWITTER_ACCESS_TOKEN_KEY")
+TWITTER_ACCESS_TOKEN_SECRET = os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
+TWITTER_CONSUMER_KEY = os.getenv("TWITTER_CONSUMER_KEY")
+TWITTER_CONSUMER_SECRET = os.getenv("TWITTER_CONSUMER_SECRET")
+
 idola = IdolaAPI(
     IDOLA_USER_AGENT, IDOLA_DEVICE_ID, IDOLA_DEVICE_TOKEN, IDOLA_TOKEN_KEY, IDOLA_UUID,
 )
@@ -28,12 +33,19 @@ class IDOLA(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.bumped_api = BumpedParser()
-        self.twitter_api = TwitterAPI(
-            access_token_key=os.getenv("TWITTER_ACCESS_TOKEN_KEY"),
-            access_token_secret=os.getenv("TWITTER_ACCESS_TOKEN_SECRET"),
-            consumer_key=os.getenv("TWITTER_CONSUMER_KEY"),
-            consumer_secret=os.getenv("TWITTER_CONSUMER_SECRET"),
-        )
+        self.twitter_api = None
+        if (
+            TWITTER_ACCESS_TOKEN_KEY
+            and TWITTER_ACCESS_TOKEN_SECRET
+            and TWITTER_ACCESS_TOKEN_SECRET
+            and TWITTER_CONSUMER_SECRET
+        ):
+            self.twitter_api = TwitterAPI(
+                access_token_key=TWITTER_ACCESS_TOKEN_KEY,
+                access_token_secret=TWITTER_ACCESS_TOKEN_SECRET,
+                consumer_key=TWITTER_CONSUMER_KEY,
+                consumer_secret=TWITTER_CONSUMER_SECRET,
+            )
         self.border_fails = 0
 
         self.arena_border_50_channel = os.getenv("ARENA_BORDER_50_CHANNEL")
@@ -175,6 +187,9 @@ class IDOLA(commands.Cog):
     @tasks.loop(minutes=5)
     async def get_tweets(self):
         """ Gets tweets from @sega_idola"""
+        if not self.twitter_api:
+            return
+
         if not self.twitter_channel:
             logger.info(f"TWITTER_CHANNEL not defined")
             return
@@ -772,6 +787,20 @@ class IDOLA(commands.Cog):
             text = "\n".join(chunks)
             embed = discord.Embed(
                 title="Idola Raid Creation Top 100" if j == 0 else "\u200b",
+                description=f"```{text}```",
+                color=discord.Colour.blue(),
+            )
+            await ctx.send(embed=embed)
+
+    @commands.command()
+    async def guild_top_100(self, ctx):
+        """Show the Top 100 guilds"""
+        msg = idola.show_top_100_guilds()
+        msg = msg.split("\n")
+        for j, chunks in enumerate([msg[i : i + 50] for i in range(0, len(msg), 50)]):
+            text = "\n".join(chunks)
+            embed = discord.Embed(
+                title="Idola Brigade Battle Top 100" if j == 0 else "\u200b",
                 description=f"```{text}```",
                 color=discord.Colour.blue(),
             )

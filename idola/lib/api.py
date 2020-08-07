@@ -389,9 +389,9 @@ class IdolaAPI(object):
         }
         response = self.client.post(IDOLA_GUILD_RANKING_OFFSET, body)
         json_response = response.json()
-        guild_data = json_response["replace"]["ranking_list"]
+        ranking_list = json_response["replace"]["ranking_list"]
         self.retrans_key = json_response["retrans_key"]
-        return guild_data
+        return ranking_list
 
     @staticmethod
     def epoch_to_datetime(epoch_time):
@@ -551,6 +551,17 @@ class IdolaAPI(object):
                 msg.append(
                     f"{raid_score_rank}: {raid_score_point:,d} - {name}({profile_id})"
                 )
+        return "\n".join(msg)
+
+    def show_top_100_guilds(self):
+        msg = []
+        guilds = self.get_top_100_guilds()
+        for rank, guild in sorted(guilds.items()):
+            guild_name = guild["guild_name"]
+            guild_id = guild["guild_id"]
+            if rank > 100:
+                break
+            msg.append(f"{rank}: {guild_name}({guild_id})")
         return "\n".join(msg)
 
     def get_top_50_arena_border(self, event_id=None):
@@ -785,6 +796,19 @@ class IdolaAPI(object):
                 reverse=True,
             )
             return sorted_ranking_information[0]
+        except IndexError as e:
+            logger.exception(e)
+            return None
+
+    def get_top_100_guilds(self):
+        try:
+            top_100_guilds = {}
+            for offset in range(0, 100, 10):
+                ranking_list = self.get_guild_ranking(offset)
+                for guild in ranking_list:
+                    rank = int(guild["rank"])
+                    top_100_guilds[rank] = guild
+            return top_100_guilds
         except IndexError as e:
             logger.exception(e)
             return None
