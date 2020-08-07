@@ -32,6 +32,7 @@ IDOLA_RAID_EVENT_INFO = IDOLA_API_URL + "/raid/geteventinfo"
 IDOLA_RAID_RANKING = IDOLA_API_URL + "/raid/ranking"
 IDOLA_RAID_RANKING_OFFSET = IDOLA_API_URL + "/raid/offsetranking"
 IDOLA_GUILD_INFO = IDOLA_API_URL + "/guild/info"
+IDOLA_GUILD_RANKING_OFFSET = IDOLA_API_URL + "/rod/ranking"
 
 
 def unpack(s):
@@ -373,8 +374,22 @@ class IdolaAPI(object):
             "guild_id": guild_id,
         }
         response = self.client.post(IDOLA_GUILD_INFO, body)
-        json_response = response.json
+        json_response = response.json()
         guild_data = json_response["replace"]["guild_data"]
+        self.retrans_key = json_response["retrans_key"]
+        return guild_data
+
+    def get_guild_ranking(self, offset: int):
+        body = {
+            "app_ver": self.app_ver,
+            "res_ver": self.res_ver,
+            "auth_key": self.auth_key,
+            "retrans_key": self.retrans_key,
+            "ranking_offset": offset,
+        }
+        response = self.client.post(IDOLA_GUILD_RANKING_OFFSET, body)
+        json_response = response.json()
+        guild_data = json_response["replace"]["ranking_list"]
         self.retrans_key = json_response["retrans_key"]
         return guild_data
 
