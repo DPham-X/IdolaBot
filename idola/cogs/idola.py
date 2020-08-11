@@ -875,7 +875,7 @@ class IDOLA(commands.Cog):
         guild_search_result = idola.get_guild_from_guild_name(guild_name)
         if not guild_search_result:
             await self.send_embed_error(
-                "ctx", "Could not find brigade by that name, they may be full"
+                ctx, "Could not find brigade by that name, they may be full"
             )
             return
         message = []
@@ -900,7 +900,7 @@ class IDOLA(commands.Cog):
         guild_search_result = idola.get_guild_id_from_display_id(display_id)
         if not guild_search_result:
             await self.send_embed_error(
-                "ctx", "Could not find brigade by that name, they may be full"
+                ctx, "Could not find brigade by that name, they may be full"
             )
             return
         message = []
