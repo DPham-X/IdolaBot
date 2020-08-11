@@ -873,6 +873,11 @@ class IDOLA(commands.Cog):
     async def find_guild_by_name(self, ctx, guild_name):
         """Search for open brigades by their brigade name"""
         guild_search_result = idola.get_guild_from_guild_name(guild_name)
+        if not guild_search_result:
+            await self.send_embed_error(
+                "ctx", "Could not find brigade by that name, they may be full"
+            )
+            return
         message = []
         for i, guild in enumerate(guild_search_result[:10]):
             message.append(
@@ -893,6 +898,11 @@ class IDOLA(commands.Cog):
     async def find_guild_by_id(self, ctx, display_id):
         """Search for open brigades by their Display ID"""
         guild_search_result = idola.get_guild_id_from_display_id(display_id)
+        if not guild_search_result:
+            await self.send_embed_error(
+                "ctx", "Could not find brigade by that name, they may be full"
+            )
+            return
         message = []
         for i, guild in enumerate(guild_search_result[:10]):
             message.append(

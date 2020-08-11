@@ -76,6 +76,7 @@ class BumpedParser(object):
         self.soul_symbols = {}
         await self.import_weapon_symbols()
         await self.import_soul_symbols()
+        logger.info("Finished parsing Bumped website")
 
     async def import_weapon_symbols(self):
         browser = await launch(headless=True)
