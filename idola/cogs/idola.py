@@ -9,6 +9,7 @@ from discord.ext.commands import has_permissions
 from lib.api import IdolaAPI
 from lib.bumped import BumpedParser
 from lib.twitter_api import TwitterAPI
+from lib.util import base_round
 from lib.web_visualiser import AfuureusIdolaStatusTool, NNSTJPWebVisualiser
 
 logger = logging.getLogger(f"idola.{__name__}")
@@ -792,9 +793,9 @@ class IDOLA(commands.Cog):
             )
             await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["brigade_top_100"])
     async def guild_top_100(self, ctx):
-        """Show the Top 100 guilds"""
+        """Show the Top 100 brigade"""
         msg = idola.show_top_100_guilds()
         msg = msg.split("\n")
         for j, chunks in enumerate([msg[i : i + 50] for i in range(0, len(msg), 50)]):
@@ -806,17 +807,46 @@ class IDOLA(commands.Cog):
             )
             await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["brigade_by_range"])
+    async def guild_by_range(self, ctx, start: int, end: int):
+        """Show top brigades in the leaderboards by range"""
+        round_start = base_round(int(start), base=20)
+        rounded_end = base_round(int(end), base=20)
+        msg = idola.show_top_guilds_by_range(round_start, rounded_end)
+        msg = msg.split("\n")
+        for j, chunks in enumerate([msg[i : i + 50] for i in range(0, len(msg), 50)]):
+            text = "\n".join(chunks)
+            embed = discord.Embed(
+                title=f"Idola Brigade Battle {start} to {end}" if j == 0 else "\u200b",
+                description=f"```{text}```",
+                color=discord.Colour.blue(),
+            )
+            await ctx.send(embed=embed)
+
+    @commands.command(aliases=["guild_info", "brigade", "brigade_info"])
     async def guild(self, ctx, guild_id: int):
+        """Shows brigade information"""
         guild_info = idola.get_guild_info(guild_id)
         guild_memberlist = idola.get_guild_memberlist(guild_id)
+
+        arena_top_500 = idola.show_arena_ranking_top_500_players()
 
         guild_memberlist_msg = "```"
         for guild_member in guild_memberlist:
             user_name = guild_member["user_name"]
             user_rank = guild_member["user_rank"]
             user_id = guild_member["user_id"]
-            guild_memberlist_msg += f"{user_rank:0>3}: {user_name}({user_id})\n"
+
+            arena_rank_text = ""
+            arena_rank = 0
+            if user_id in arena_top_500:
+                arena_rank = arena_top_500.get(user_id, {}).get("arena_score_rank", "")
+                arena_rank_text = f"A:{arena_rank}"
+
+            guild_memberlist_msg += f"{user_rank:0>3}: {user_name}({user_id}) "
+            if arena_rank:
+                guild_memberlist_msg += arena_rank_text
+            guild_memberlist_msg += "\n"
         guild_memberlist_msg += "```"
 
         embed = discord.Embed(
@@ -825,8 +855,9 @@ class IDOLA(commands.Cog):
             color=discord.Colour.blue(),
         )
         embed.add_field(
-            name="Leader", value=guild_info["leader_user_name"], inline=False
+            name="Leader", value=guild_info["leader_user_name"], inline=True
         )
+        embed.add_field(name="Display ID", value=guild_info["display_id"], inline=True)
         embed.add_field(name="Members", value=guild_info["membership"], inline=True)
         embed.add_field(
             name="est",
@@ -836,6 +867,46 @@ class IDOLA(commands.Cog):
             inline=True,
         )
         embed.add_field(name="MemberList", value=guild_memberlist_msg, inline=False)
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=["find_brigade_by_name"])
+    async def find_guild_by_name(self, ctx, guild_name):
+        """Search for open brigades by their brigade name"""
+        guild_search_result = idola.get_guild_from_guild_name(guild_name)
+        message = []
+        for i, guild in enumerate(guild_search_result[:10]):
+            message.append(
+                f"{i+1:0>2}: {guild['guild_name']} | DisplayID: {guild['display_id']} | GuildID: {guild['guild_id']}"
+            )
+
+        embed = discord.Embed(
+            title="Search results..",
+            description=f"Searching for '{guild_name}'",
+            color=discord.Colour.green(),
+        )
+        embed.add_field(
+            name="Found the following guilds..", value="\n".join(message),
+        )
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=["find_brigade_by_id"])
+    async def find_guild_by_id(self, ctx, display_id):
+        """Search for open brigades by their Display ID"""
+        guild_search_result = idola.get_guild_id_from_display_id(display_id)
+        message = []
+        for i, guild in enumerate(guild_search_result[:10]):
+            message.append(
+                f"{i+1:0>2}: {guild['guild_name']} | DisplayID: {guild['display_id']} | GuildID: {guild['guild_id']}"
+            )
+
+        embed = discord.Embed(
+            title="Search results..",
+            description=f"Searching for '{display_id}'",
+            color=discord.Colour.green(),
+        )
+        embed.add_field(
+            name="Found the following guilds..", value="\n".join(message),
+        )
         await ctx.send(embed=embed)
 
     @commands.command()

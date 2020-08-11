@@ -34,6 +34,7 @@ IDOLA_RAID_RANKING_OFFSET = IDOLA_API_URL + "/raid/offsetranking"
 IDOLA_GUILD_INFO = IDOLA_API_URL + "/guild/info"
 IDOLA_GUILD_RANKING_OFFSET = IDOLA_API_URL + "/rod/ranking"
 IDOLA_GUILD_MEMBERLIST = IDOLA_API_URL + "/guild/memberlist"
+IDOLA_GUILD_SEARCH = IDOLA_API_URL + "/guild/search"
 
 
 def unpack(s):
@@ -410,6 +411,44 @@ class IdolaAPI(object):
         self.retrans_key = json_response["retrans_key"]
         return guild_member_list
 
+    def get_guild_id_from_display_id(self, display_id: str):
+        body = {
+            "app_ver": self.app_ver,
+            "res_ver": self.res_ver,
+            "auth_key": self.auth_key,
+            "retrans_key": self.retrans_key,
+            "active_hours_type": 0,
+            "play_style_type": 0,
+            "event_type": 0,
+            "guild_name": "",
+            "display_id": str(display_id),
+            "auto_accept": 0,
+        }
+        response = self.client.post(IDOLA_GUILD_SEARCH, body)
+        json_response = response.json()
+        guild_search_result = json_response["replace"]["guild_search_result"]
+        self.retrans_key = json_response["retrans_key"]
+        return guild_search_result
+
+    def get_guild_from_guild_name(self, guild_name: str):
+        body = {
+            "app_ver": self.app_ver,
+            "res_ver": self.res_ver,
+            "auth_key": self.auth_key,
+            "retrans_key": self.retrans_key,
+            "active_hours_type": 0,
+            "play_style_type": 0,
+            "event_type": 0,
+            "guild_name": str(guild_name),
+            "display_id": "",
+            "auto_accept": 0,
+        }
+        response = self.client.post(IDOLA_GUILD_SEARCH, body)
+        json_response = response.json()
+        guild_search_result = json_response["replace"]["guild_search_result"]
+        self.retrans_key = json_response["retrans_key"]
+        return guild_search_result
+
     @staticmethod
     def epoch_to_datetime(epoch_time):
         utc_datetime = datetime.datetime.utcfromtimestamp(epoch_time)
@@ -506,6 +545,28 @@ class IdolaAPI(object):
                 ]
         return players
 
+    def show_arena_ranking_top_500_players(self, event_id=None):
+        players = defaultdict(dict)
+        if not event_id:
+            event_id = self.get_latest_arena_event_id()
+        top_500_ranking_information = [
+            self.get_arena_ranking_offset(event_id, i) for i in range(0, 499, 20)
+        ]
+        for ranking_information_intervals in top_500_ranking_information:
+            for (
+                profile_id,
+                ranking_information,
+            ) in ranking_information_intervals.items():
+                update_profile_cache(ranking_information["name"], profile_id)
+                players[profile_id]["name"] = ranking_information["name"]
+                players[profile_id]["arena_score_rank"] = ranking_information[
+                    "arena_score_rank"
+                ]
+                players[profile_id]["arena_score_point"] = ranking_information[
+                    "arena_score_point"
+                ]
+        return players
+
     def show_raid_suppression_top_100_players(self, event_id=None):
         msg = []
         if not event_id:
@@ -573,11 +634,24 @@ class IdolaAPI(object):
     def show_top_100_guilds(self):
         msg = []
         guilds = self.get_top_100_guilds()
-        for rank, guild in sorted(guilds.items()):
+        for _, guild in sorted(guilds.items(), key=lambda x: x[1]["rank"]):
             guild_name = guild["guild_name"]
             guild_id = guild["guild_id"]
+            rank = guild["rank"]
             if rank > 100:
                 break
+            msg.append(f"{rank}: {guild_name}({guild_id})")
+        return "\n".join(msg)
+
+    def show_top_guilds_by_range(self, start: int, end: int):
+        msg = []
+        guilds = self.get_range_guilds(start, end)
+        for _, guild in sorted(guilds.items(), key=lambda x: x[1]["rank"]):
+            guild_name = guild["guild_name"]
+            guild_id = guild["guild_id"]
+            rank = guild["rank"]
+            if rank < start or rank > end:
+                continue
             msg.append(f"{rank}: {guild_name}({guild_id})")
         return "\n".join(msg)
 
@@ -823,9 +897,22 @@ class IdolaAPI(object):
             for offset in range(0, 100, 10):
                 ranking_list = self.get_guild_ranking(offset)
                 for guild in ranking_list:
-                    rank = int(guild["rank"])
-                    top_100_guilds[rank] = guild
+                    guild_id = int(guild["guild_id"])
+                    top_100_guilds[guild_id] = guild
             return top_100_guilds
+        except IndexError as e:
+            logger.exception(e)
+            return None
+
+    def get_range_guilds(self, start: int, end: int):
+        try:
+            guilds = {}
+            for offset in range(start, end, 10):
+                ranking_list = self.get_guild_ranking(offset)
+                for guild in ranking_list:
+                    guild_id = int(guild["guild_id"])
+                    guilds[guild_id] = guild
+            return guilds
         except IndexError as e:
             logger.exception(e)
             return None
