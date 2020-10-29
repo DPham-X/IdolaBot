@@ -700,15 +700,6 @@ class IDOLA(commands.Cog):
             logger.exception(e)
             nnstjp_formatted_link = "Unavailable"
 
-        try:
-            afuu_link = AfuureusIdolaStatusTool.generate_shareable_link(
-                arena_team["party_info"]
-            )
-            afuu_formatted_link = f"Afuureus: [{afuu_link}]({afuu_link})"
-        except Exception as e:
-            logger.exception(e)
-            afuu_formatted_link = "Unavailable"
-
         embed = discord.Embed(
             title=f"Team Score: {arena_team['team_score']:,d}",
             description=f"**Idomag**\nLaw: {arena_team['law_idomag']}\nChaos: {arena_team['chaos_idomag']}",
@@ -738,7 +729,7 @@ class IDOLA(commands.Cog):
             name="Soul Symbols", value=arena_team["chaos_soul_symbols"], inline=True,
         )
         embed.add_field(
-            name=78 * "\u200b", value=f"{nnstjp_formatted_link}\n{afuu_formatted_link}",
+            name=78 * "\u200b", value=f"{nnstjp_formatted_link}\n",
         )
         await ctx.send(embed=embed)
 
