@@ -954,7 +954,7 @@ class IDOLA(commands.Cog):
     async def weapon(self, ctx, *args):
         """Get Weapon Symbol information from Bumped"""
         input_weapon_name = " ".join(args)
-        weapon_name = self.bumped_api.get_unfuzzed_weapon_name(weapon_name)
+        weapon_name = self.bumped_api.get_unfuzzed_weapon_name(input_weapon_name)
         if not weapon_name:
             await self.send_embed_error(ctx, "Could not find weapon in Bumped database")
             return
@@ -977,7 +977,7 @@ class IDOLA(commands.Cog):
     async def soul(self, ctx, *args):
         """Get Soul Symbol information from Bumped"""
         input_soul_name = " ".join(args)
-        soul_name = self.bumped_api.get_unfuzzed_soul_name(soul_name)
+        soul_name = self.bumped_api.get_unfuzzed_soul_name(input_soul_name)
         if not soul_name:
             await self.send_embed_error(ctx, "Could not find soul in Bumped database")
             return
