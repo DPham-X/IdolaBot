@@ -74,8 +74,8 @@ class TwitterAPI:
             created_at_ts = datetime.datetime.strptime(
                 tweet.created_at, "%a %b %d %H:%M:%S +0000 %Y"
             ).replace(tzinfo=pytz.UTC)
-            if created_at_ts < self.bot_start_ts:
-                continue
+            # if created_at_ts < self.bot_start_ts:
+            #     continue
             unseen_tweets.insert(0, tweet)
             self.existing_tweets.add(tweet.id)
         if unseen_tweets:
