@@ -187,6 +187,12 @@ class IDOLA(commands.Cog):
 
     @tasks.loop(minutes=5)
     async def get_tweets(self):
+        try:
+            await self._get_tweets()
+        except Exception as e:
+            logger.exception(e)
+
+    async def _get_tweets(self):
         """ Gets tweets from @sega_idola"""
         if not self.twitter_api:
             return
