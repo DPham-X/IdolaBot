@@ -21,13 +21,15 @@ logger.setLevel(logging.DEBUG)
 
 # Discord env variables
 load_dotenv(find_dotenv())
-TOKEN = os.getenv("DISCORD_TOKEN")
-PREFIX = os.getenv("DISCORD_PREFIX")
-if not PREFIX:
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+if not DISCORD_TOKEN:
+    raise RuntimeError("DISCORD_TOKEN must be defined")
+DISCORD_PREFIX = os.getenv("DISCORD_PREFIX")
+if not DISCORD_PREFIX:
     raise Exception("Discord prefix must be defined")
 
 # Start discord bot
-bot = commands.Bot(command_prefix=PREFIX, description="""IDOLA BOT""")
+bot = commands.Bot(command_prefix=DISCORD_PREFIX, description="""IDOLA BOT""")
 bot.load_extension("cogs.idola")
 logger.info("Starting IDOLA Discord ...")
-bot.run(TOKEN)
+bot.run(DISCORD_TOKEN)
