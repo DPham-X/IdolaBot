@@ -1,13 +1,10 @@
 import datetime
-import json
 import logging
 import pickle
-import time
-from pprint import pprint
 
 import pytz
 import twitter
-from googletrans import Translator
+from google_trans_new import google_translator
 
 logger = logging.getLogger(f"idola.{__name__}")
 
@@ -82,8 +79,24 @@ class TwitterAPI:
             self.save_existing_tweets()
         return unseen_tweets
 
+    def get_test_tweet(self):
+        logger.info(f"Fetching tweets for @{self.screen_name}")
+        tweets = self.api.GetUserTimeline(
+            screen_name=self.screen_name,
+            exclude_replies=True,
+            include_rts=True,
+            count=1,
+        )
+        return tweets
+
     def translate(self, message):
-        translator = Translator()
-        message = message.replace("イドラ", "IDOLA")
-        t_results = translator.translate(message, src="ja", dest="en")
-        return t_results.text
+        try:
+            translator = google_translator()
+            message = message.replace("イドラ", "IDOLA")
+            translated_text = translator.translate(
+                message, lang_src="ja", lang_tgt="en"
+            )
+            return translated_text
+        except Exception as e:
+            logger.exception(e)
+        return message
