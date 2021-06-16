@@ -1036,6 +1036,23 @@ class IDOLA(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @commands.command()
+    @has_permissions(administrator=True)
+    async def update_map(self, ctx):
+        "[Admin] Pulls the latest change for ID mapping"
+        try:
+            await self.send_embed_info(ctx, "Starting repo update")
+            output = subprocess.check_output(
+                "git submodule update --init --recursive",
+                shell=True,
+                stderr=subprocess.STDOUT,
+                universal_newlines=True,
+            )
+            logger.info(output)
+            await self.send_embed_info(ctx, "Repo update finished")
+        except Exception as e:
+            await self.send_embed_error(ctx, e)
+
 
 def setup(client):
     client.add_cog(IDOLA(client))
