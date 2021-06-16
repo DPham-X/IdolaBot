@@ -3,7 +3,7 @@ install-ubuntu:
 	sudo apt-get update
 	sudo apt-get -u upgrade
 	sudo apt-get install -y python3 python3-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev
-	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
 	make install
 
 .PHONY: install
