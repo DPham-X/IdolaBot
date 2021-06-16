@@ -616,7 +616,8 @@ class IdolaAPI(object):
         prev_profile_id = None
         for ranking_information_intervals in top_100_ranking_information:
             for ranking_information in sorted(
-                ranking_information_intervals, key=lambda item: item["score_rank"],
+                ranking_information_intervals,
+                key=lambda item: item["score_rank"],
             ):
                 name = ranking_information["friend_profile"]["name"]
                 profile_id = ranking_information["friend_profile"]["profile_id"]
@@ -940,7 +941,8 @@ class IdolaAPI(object):
             + lb_bullet(character["character"]["potential"])
             + braced_number(
                 self.destiny_bonus(
-                    character["destiny_bonus_level"], character["destiny_bonus_status"],
+                    character["destiny_bonus_level"],
+                    character["destiny_bonus_status"],
                 )
             )
             for character in party_info["law"]
@@ -979,7 +981,8 @@ class IdolaAPI(object):
             + lb_bullet(character["character"]["potential"])
             + braced_number(
                 self.destiny_bonus(
-                    character["destiny_bonus_level"], character["destiny_bonus_status"],
+                    character["destiny_bonus_level"],
+                    character["destiny_bonus_status"],
                 )
             )
             for character in party_info["chaos"]

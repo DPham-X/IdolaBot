@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+import subprocess
 import traceback
 
 import discord
@@ -10,7 +11,7 @@ from lib.api import IdolaAPI
 from lib.bumped import BumpedParser
 from lib.twitter_api import TwitterAPI
 from lib.util import base_round
-from lib.web_visualiser import AfuureusIdolaStatusTool, NNSTJPWebVisualiser
+from lib.web_visualiser import NNSTJPWebVisualiser
 
 logger = logging.getLogger(f"idola.{__name__}")
 
@@ -26,7 +27,11 @@ TWITTER_CONSUMER_KEY = os.getenv("TWITTER_CONSUMER_KEY")
 TWITTER_CONSUMER_SECRET = os.getenv("TWITTER_CONSUMER_SECRET")
 
 idola = IdolaAPI(
-    IDOLA_USER_AGENT, IDOLA_DEVICE_ID, IDOLA_DEVICE_TOKEN, IDOLA_TOKEN_KEY, IDOLA_UUID,
+    IDOLA_USER_AGENT,
+    IDOLA_DEVICE_ID,
+    IDOLA_DEVICE_TOKEN,
+    IDOLA_TOKEN_KEY,
+    IDOLA_UUID,
 )
 
 
@@ -72,14 +77,18 @@ class IDOLA(commands.Cog):
 
     async def send_embed_error(self, ctx, message):
         embed = discord.Embed(
-            title="Error", description=f"{message}", color=discord.Colour.red(),
+            title="Error",
+            description=f"{message}",
+            color=discord.Colour.red(),
         )
         logger.error(f"Sent error message: {message}")
         await ctx.send(embed=embed)
 
     async def send_embed_info(self, ctx, message):
         embed = discord.Embed(
-            title="Info", description=f"{message}", color=discord.Colour.green(),
+            title="Info",
+            description=f"{message}",
+            color=discord.Colour.green(),
         )
         await ctx.send(embed=embed)
 
@@ -193,7 +202,7 @@ class IDOLA(commands.Cog):
             logger.exception(e)
 
     async def _get_tweets(self):
-        """ Gets tweets from @sega_idola"""
+        """Gets tweets from @sega_idola"""
         if not self.twitter_api:
             return
 
@@ -227,7 +236,8 @@ class IDOLA(commands.Cog):
                 embed.add_field(name="Likes", value=tweet.favorite_count)
             else:
                 embed.add_field(
-                    name="Retweeted", value=tweet.retweet_count,
+                    name="Retweeted",
+                    value=tweet.retweet_count,
                 )
             embed.set_footer(
                 icon_url="https://images-ext-1.discordapp.net/external/bXJWV2Y_F3XSra_kEqIYXAAsI3m1meckfLhYuWzxIfI/https/abs.twimg.com/icons/apple-touch-icon-192x192.png",
@@ -480,7 +490,10 @@ class IDOLA(commands.Cog):
         end_date = idola.get_raid_event_end_date()
         time_left = idola.datetime_difference(current_time, end_date)
 
-        embed = discord.Embed(title="Idola Arena Border", color=discord.Colour.blue(),)
+        embed = discord.Embed(
+            title="Idola Arena Border",
+            color=discord.Colour.blue(),
+        )
         embed.set_thumbnail(
             url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/arena.png"
         )
@@ -519,7 +532,9 @@ class IDOLA(commands.Cog):
             inline=True,
         )
         embed.add_field(
-            name="Ending at", value=idola.datetime_jp_format(end_date), inline=True,
+            name="Ending at",
+            value=idola.datetime_jp_format(end_date),
+            inline=True,
         )
         await ctx.send(embed=embed)
 
@@ -537,7 +552,8 @@ class IDOLA(commands.Cog):
         time_left = idola.datetime_difference(current_time, end_date)
 
         embed = discord.Embed(
-            title="Idola Raid Suppression Border", color=discord.Colour.blue(),
+            title="Idola Raid Suppression Border",
+            color=discord.Colour.blue(),
         )
         embed.set_thumbnail(
             url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png"
@@ -584,7 +600,9 @@ class IDOLA(commands.Cog):
             inline=True,
         )
         embed.add_field(
-            name="Ending at", value=idola.datetime_jp_format(end_date), inline=True,
+            name="Ending at",
+            value=idola.datetime_jp_format(end_date),
+            inline=True,
         )
         await ctx.send(embed=embed)
 
@@ -649,7 +667,9 @@ class IDOLA(commands.Cog):
             inline=True,
         )
         embed.add_field(
-            name="Ending at", value=idola.datetime_jp_format(end_date), inline=True,
+            name="Ending at",
+            value=idola.datetime_jp_format(end_date),
+            inline=True,
         )
         await ctx.send(embed=embed)
 
@@ -715,16 +735,24 @@ class IDOLA(commands.Cog):
         embed.set_thumbnail(url=arena_team["avatar_url"])
 
         embed.add_field(
-            name="Law Characters", value=arena_team["law_characters"], inline=True,
+            name="Law Characters",
+            value=arena_team["law_characters"],
+            inline=True,
         )
         embed.add_field(
-            name="Weapon Symbols", value=arena_team["law_weapon_symbols"], inline=True,
+            name="Weapon Symbols",
+            value=arena_team["law_weapon_symbols"],
+            inline=True,
         )
         embed.add_field(
-            name="Soul Symbols", value=arena_team["law_soul_symbols"], inline=True,
+            name="Soul Symbols",
+            value=arena_team["law_soul_symbols"],
+            inline=True,
         )
         embed.add_field(
-            name="Chaos Characters", value=arena_team["chaos_characters"], inline=True,
+            name="Chaos Characters",
+            value=arena_team["chaos_characters"],
+            inline=True,
         )
         embed.add_field(
             name="Weapon Symbols",
@@ -732,10 +760,13 @@ class IDOLA(commands.Cog):
             inline=True,
         )
         embed.add_field(
-            name="Soul Symbols", value=arena_team["chaos_soul_symbols"], inline=True,
+            name="Soul Symbols",
+            value=arena_team["chaos_soul_symbols"],
+            inline=True,
         )
         embed.add_field(
-            name=78 * "\u200b", value=f"{nnstjp_formatted_link}\n",
+            name=78 * "\u200b",
+            value=f"{nnstjp_formatted_link}\n",
         )
         await ctx.send(embed=embed)
 
@@ -745,13 +776,15 @@ class IDOLA(commands.Cog):
         players = idola.show_arena_ranking_top_100_players()
         msg = []
         for profile_id, ranking_information in sorted(
-            players.items(), key=lambda item: item[1]["arena_score_point"],
+            players.items(),
+            key=lambda item: item[1]["arena_score_point"],
         ):
             arena_score_rank = ranking_information["arena_score_rank"]
             arena_score_point = ranking_information["arena_score_point"]
             name = ranking_information["name"]
             msg.insert(
-                0, f"{arena_score_rank}: {arena_score_point:,d} - {name}({profile_id})",
+                0,
+                f"{arena_score_rank}: {arena_score_point:,d} - {name}({profile_id})",
             )
         for j, chunks in enumerate([msg[i : i + 50] for i in range(0, len(msg), 50)]):
             text = "\n".join(chunks)
@@ -887,7 +920,8 @@ class IDOLA(commands.Cog):
             color=discord.Colour.green(),
         )
         embed.add_field(
-            name="Found the following guilds..", value="\n".join(message),
+            name="Found the following guilds..",
+            value="\n".join(message),
         )
         await ctx.send(embed=embed)
 
@@ -912,7 +946,8 @@ class IDOLA(commands.Cog):
             color=discord.Colour.green(),
         )
         embed.add_field(
-            name="Found the following guilds..", value="\n".join(message),
+            name="Found the following guilds..",
+            value="\n".join(message),
         )
         await ctx.send(embed=embed)
 
@@ -966,7 +1001,8 @@ class IDOLA(commands.Cog):
         embed.add_field(name="Arena/Raid Stats", value=weapon.arena_stats, inline=True)
         embed.add_field(name="Effect", value=weapon.effect, inline=False)
         embed.add_field(
-            name=78 * "\u200b", value=f"[{weapon.url}]({weapon.url})",
+            name=78 * "\u200b",
+            value=f"[{weapon.url}]({weapon.url})",
         )
         await ctx.send(embed=embed)
 
@@ -994,6 +1030,11 @@ class IDOLA(commands.Cog):
             embed.add_field(name="Requirements", value=soul.requirements, inline=True)
         embed.add_field(name="Effect", value=soul.effect, inline=False)
         embed.add_field(
+            name=78 * "\u200b",
+            value=f"[{soul.url}]({soul.url})",
+        )
+        await ctx.send(embed=embed)
+
     @commands.command()
     @has_permissions(administrator=True)
     async def test_tweet(self, ctx):
