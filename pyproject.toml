@@ -6,7 +6,7 @@ authors = ["Your Name <you@example.com>"]
 license = "GNU General Public License v3.0"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 "discord.py" = "^1.7.3"
 fuzzywuzzy = "^0.18.0"
 googletrans = "^3.0.0"
