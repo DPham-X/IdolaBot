@@ -191,7 +191,7 @@ class AfuureusIdolaStatusTool(PartyStats):
 
 
 class NNSTJPWebVisualiser(PartyStats):
-    url = "http://nnstjp.github.io/Idola/index.html"
+    url = "https://kinomyu.github.io/NNSTJP.github.io/Idola/index.html"
 
     @classmethod
     def generate_shareable_link(cls, party_info):
