@@ -1,18 +1,30 @@
-[tool.black]
-include = '\.pyi?$'
-exclude = '''
-/(
-	\.git
-	| \.hg
-	| \.mypy_cache
-	| \.tox
-	| \.venv
-	| _build
-	| buck-out
-	| build
-	| dist
+[tool.poetry]
+name = "idolabot"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+license = "GNU General Public License v3.0"
 
-	# The following are specific to Black, you probably don't want those.
-	| blib2to3
-	| tests/data
-)/
+[tool.poetry.dependencies]
+python = "^3.9"
+"discord.py" = "^1.7.3"
+fuzzywuzzy = "^0.18.0"
+googletrans = "^3.0.0"
+play-scraper = "^0.6.0"
+pylru = "^1.2.0"
+pyppeteer = "^0.2.5"
+python-dotenv = "^0.17.1"
+python-twitter = "^3.5"
+pytz = "^2021.1"
+requests = "^2.25.1"
+textdistance = "^4.2.1"
+python-Levenshtein = "^0.12.2"
+google-trans-new = "^1.1.9"
+
+[tool.poetry.dev-dependencies]
+black = "^21.6b0"
+isort = "^5.8.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
