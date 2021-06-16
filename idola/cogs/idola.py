@@ -994,7 +994,45 @@ class IDOLA(commands.Cog):
             embed.add_field(name="Requirements", value=soul.requirements, inline=True)
         embed.add_field(name="Effect", value=soul.effect, inline=False)
         embed.add_field(
-            name=78 * "\u200b", value=f"[{soul.url}]({soul.url})",
+    @commands.command()
+    @has_permissions(administrator=True)
+    async def test_tweet(self, ctx):
+        """[TEST] Gets tweets from @sega_idola"""
+        if not self.twitter_api:
+            await self.send_embed_error(ctx, "Twitter API not defined")
+            return
+
+        if not self.twitter_channel:
+            await self.send_embed_error(ctx, "Twitter channel not defined")
+            return
+
+        tweets = self.twitter_api.get_test_tweet()
+        if not tweets:
+            await self.send_embed_info(ctx, "No test tweet to get")
+            return
+        tweet = tweets[0]
+        embed = discord.Embed(
+            title="\u200b",
+            description=self.twitter_api.translate(tweet.full_text),
+            color=discord.Colour.blue(),
+        )
+        embed.set_author(
+            name=f"{tweet.user.name} (@{tweet.user.screen_name})",
+            url=f"https://twitter.com/{tweet.user.screen_name}",
+            icon_url=tweet.user.profile_image_url_https,
+        )
+        if tweet.media and (image_url := tweet.media[0].media_url_https):
+            embed.set_image(url=image_url)
+        if not tweet.retweeted_status:
+            embed.add_field(name="Likes", value=tweet.favorite_count)
+        else:
+            embed.add_field(
+                name="Retweeted",
+                value=tweet.retweet_count,
+            )
+        embed.set_footer(
+            icon_url="https://images-ext-1.discordapp.net/external/bXJWV2Y_F3XSra_kEqIYXAAsI3m1meckfLhYuWzxIfI/https/abs.twimg.com/icons/apple-touch-icon-192x192.png",
+            text="Twitter",
         )
         await ctx.send(embed=embed)
 
