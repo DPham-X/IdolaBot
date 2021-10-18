@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: '3.10.0'
       - name: Install system dependencies
-        run: sudo apt-get -y install python-devel
+        run: sudo apt-get -y install libxml2-dev libxslt-dev
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.1.3
         with:
