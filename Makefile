@@ -14,6 +14,11 @@ install:
 	poetry install
 	git submodule update --init --recursive
 
+.PHONY: lint
+lint:
+	poetry run flake8 idola --ignore errors
+	poetry run mypy idola || true
+
 .PHONY: format
 format:
 	poetry run black idola

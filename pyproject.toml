@@ -20,6 +20,8 @@ requests = "^2.25.1"
 textdistance = "^4.2.1"
 python-Levenshtein = "^0.12.2"
 google-trans-new = "^1.1.9"
+mypy = "^0.910"
+flake8 = "^4.0.1"
 
 [tool.poetry.dev-dependencies]
 black = "^21.6b0"
