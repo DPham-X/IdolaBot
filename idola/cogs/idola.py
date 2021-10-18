@@ -58,15 +58,9 @@ class IDOLA(commands.Cog):
         self.arena_border_100_channel = os.getenv("ARENA_BORDER_100_CHANNEL")
         self.arena_border_500_channel = os.getenv("ARENA_BORDER_500_CHANNEL")
         self.arena_border_1000_channel = os.getenv("ARENA_BORDER_1000_CHANNEL")
-        self.suppression_border_100_channel = os.getenv(
-            "SUPPRESSION_BORDER_100_CHANNEL"
-        )
-        self.suppression_border_1000_channel = os.getenv(
-            "SUPPRESSION_BORDER_1000_CHANNEL"
-        )
-        self.suppression_border_5000_channel = os.getenv(
-            "SUPPRESSION_BORDER_5000_CHANNEL"
-        )
+        self.suppression_border_100_channel = os.getenv("SUPPRESSION_BORDER_100_CHANNEL")
+        self.suppression_border_1000_channel = os.getenv("SUPPRESSION_BORDER_1000_CHANNEL")
+        self.suppression_border_5000_channel = os.getenv("SUPPRESSION_BORDER_5000_CHANNEL")
         self.creation_border_100_channel = os.getenv("CREATION_BORDER_100_CHANNEL")
         self.creation_border_1000_channel = os.getenv("CREATION_BORDER_1000_CHANNEL")
         self.creation_border_5000_channel = os.getenv("CREATION_BORDER_5000_CHANNEL")
@@ -96,10 +90,7 @@ class IDOLA(commands.Cog):
     async def on_ready(self):
         await self.client.change_presence(activity=discord.Game("Ready!"))
         for guild in self.client.guilds:
-            logger.info(
-                f"{self.client.user} is connected to the following guild:\n"
-                f"{guild.name}(id: {guild.id})"
-            )
+            logger.info(f"{self.client.user} is connected to the following guild:\n" f"{guild.name}(id: {guild.id})")
 
         # Start looping tasks
         self.relog.start()
@@ -111,9 +102,7 @@ class IDOLA(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        exception_message = traceback.format_exception(
-            type(error), error, error.__traceback__
-        )
+        exception_message = traceback.format_exception(type(error), error, error.__traceback__)
         logger.error("".join(exception_message))
 
         if isinstance(error, commands.errors.CommandNotFound):
@@ -141,9 +130,7 @@ class IDOLA(commands.Cog):
             await self.send_embed_info(ctx, "IdolaBot has been restarted")
         except Exception as e:
             logger.exception(e)
-            await self.send_embed_error(
-                ctx, "An error occurred, IdolaBot could not be restarted"
-            )
+            await self.send_embed_error(ctx, "An error occurred, IdolaBot could not be restarted")
 
     @commands.command()
     @has_permissions(administrator=True)
@@ -155,9 +142,7 @@ class IDOLA(commands.Cog):
             await self.send_embed_info(ctx, "Finished updating bumped database")
         except Exception as e:
             logger.exception(e)
-            await self.send_embed_error(
-                ctx, f"An error occurred whilst trying to update bumped database: {e}"
-            )
+            await self.send_embed_error(ctx, f"An error occurred whilst trying to update bumped database: {e}")
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -183,9 +168,7 @@ class IDOLA(commands.Cog):
         try:
             border_score = idola.get_top_100_raid_suppression_border()
             logger.info(f"{border_score:,d} - SuppressionBorderTop100")
-            await self.client.change_presence(
-                activity=discord.Game(f"{border_score:,d} - SuppressionBorderTop100")
-            )
+            await self.client.change_presence(activity=discord.Game(f"{border_score:,d} - SuppressionBorderTop100"))
         except Exception as e:
             logger.exception(e)
 
@@ -258,9 +241,7 @@ class IDOLA(commands.Cog):
             for pinned_message in pinned_messages:
                 if pinned_message.author.id == self.client.user.id:
                     border_message = pinned_message
-                    logger.info(
-                        f"Updating existing pinned message with ID {border_message.id}"
-                    )
+                    logger.info(f"Updating existing pinned message with ID {border_message.id}")
                     break
 
             embed = discord.Embed(title="Idola Borders", color=discord.Colour.blue())
@@ -271,23 +252,15 @@ class IDOLA(commands.Cog):
             border_score_point_1000 = idola.get_top_1000_arena_border()
 
             border_output = (
-                f"🥇100: {border_score_point_100:,d} points\n"
-                if border_score_point_100
-                else "🥇100: Unknown\n"
+                f"🥇100: {border_score_point_100:,d} points\n" if border_score_point_100 else "🥇100: Unknown\n"
             )
             border_output += (
-                f"🥇500: {border_score_point_500:,d} points\n"
-                if border_score_point_500
-                else "🥇500: Unknown\n"
+                f"🥇500: {border_score_point_500:,d} points\n" if border_score_point_500 else "🥇500: Unknown\n"
             )
             border_output += (
-                f"🥇1000: {border_score_point_1000:,d} points\n"
-                if border_score_point_1000
-                else "🥇1000: Unknown\n"
+                f"🥇1000: {border_score_point_1000:,d} points\n" if border_score_point_1000 else "🥇1000: Unknown\n"
             )
-            embed.add_field(
-                name="Idola Arena Border", value=border_output, inline=False
-            )
+            embed.add_field(name="Idola Arena Border", value=border_output, inline=False)
 
             # Suppression
             border_score_point_100 = idola.get_top_100_raid_suppression_border()
@@ -296,28 +269,18 @@ class IDOLA(commands.Cog):
             border_score_point_5000 = idola.get_top_5000_raid_suppression_border()
 
             border_output = (
-                f"🥇100: {border_score_point_100:,d} points\n"
-                if border_score_point_100
-                else "🥇100: Unknown\n"
+                f"🥇100: {border_score_point_100:,d} points\n" if border_score_point_100 else "🥇100: Unknown\n"
             )
             border_output += (
-                f"🥇500: {border_score_point_500:,d} points\n"
-                if border_score_point_500
-                else "🥇500: Unknown\n"
+                f"🥇500: {border_score_point_500:,d} points\n" if border_score_point_500 else "🥇500: Unknown\n"
             )
             border_output += (
-                f"🥇1000: {border_score_point_1000:,d} points\n"
-                if border_score_point_1000
-                else "🥇1000: Unknown\n"
+                f"🥇1000: {border_score_point_1000:,d} points\n" if border_score_point_1000 else "🥇1000: Unknown\n"
             )
             border_output += (
-                f"🥇5000: {border_score_point_5000:,d} points\n"
-                if border_score_point_5000
-                else "🥇5000: Unknown\n"
+                f"🥇5000: {border_score_point_5000:,d} points\n" if border_score_point_5000 else "🥇5000: Unknown\n"
             )
-            embed.add_field(
-                name="Idola Raid Suppression Border", value=border_output, inline=False
-            )
+            embed.add_field(name="Idola Raid Suppression Border", value=border_output, inline=False)
 
             # Creation
             border_score_point_100 = idola.get_top_100_raid_creation_border()
@@ -326,28 +289,18 @@ class IDOLA(commands.Cog):
             border_score_point_5000 = idola.get_top_5000_raid_creation_border()
 
             border_output = (
-                f"🥇100: {border_score_point_100:,d} points\n"
-                if border_score_point_100
-                else "🥇100: Unknown\n"
+                f"🥇100: {border_score_point_100:,d} points\n" if border_score_point_100 else "🥇100: Unknown\n"
             )
             border_output += (
-                f"🥇500: {border_score_point_500:,d} points\n"
-                if border_score_point_500
-                else "🥇500: Unknown\n"
+                f"🥇500: {border_score_point_500:,d} points\n" if border_score_point_500 else "🥇500: Unknown\n"
             )
             border_output += (
-                f"🥇1000: {border_score_point_1000:,d} points\n"
-                if border_score_point_1000
-                else "🥇1000: Unknown\n"
+                f"🥇1000: {border_score_point_1000:,d} points\n" if border_score_point_1000 else "🥇1000: Unknown\n"
             )
             border_output += (
-                f"🥇5000: {border_score_point_5000:,d} points\n"
-                if border_score_point_5000
-                else "🥇5000: Unknown\n"
+                f"🥇5000: {border_score_point_5000:,d} points\n" if border_score_point_5000 else "🥇5000: Unknown\n"
             )
-            embed.add_field(
-                name="Idola Creation Border", value=border_output, inline=False
-            )
+            embed.add_field(name="Idola Creation Border", value=border_output, inline=False)
 
             # Time
             current_time = idola.get_current_time()
@@ -360,9 +313,7 @@ class IDOLA(commands.Cog):
                 value=idola.datetime_jp_format(current_time),
                 inline=True,
             )
-            embed.add_field(
-                name="Ending at", value=idola.datetime_jp_format(end_date), inline=True
-            )
+            embed.add_field(name="Ending at", value=idola.datetime_jp_format(end_date), inline=True)
 
             if border_message is None:
                 await border_message.edit(embed=embed)
@@ -381,99 +332,63 @@ class IDOLA(commands.Cog):
                 arena_border_score_50 = idola.get_top_50_arena_border()
                 channel = self.client.get_channel(int(self.arena_border_50_channel))
                 await channel.edit(
-                    name=f"🏆50: {arena_border_score_50:,d}"
-                    if arena_border_score_50
-                    else f"🏆50: Unknown"
+                    name=f"🏆50: {arena_border_score_50:,d}" if arena_border_score_50 else f"🏆50: Unknown"
                 )
             if self.arena_border_100_channel:
                 arena_border_score_100 = idola.get_top_100_arena_border()
                 channel = self.client.get_channel(int(self.arena_border_100_channel))
                 await channel.edit(
-                    name=f"🥇100: {arena_border_score_100:,d}"
-                    if arena_border_score_100
-                    else f"🥇100: Unknown"
+                    name=f"🥇100: {arena_border_score_100:,d}" if arena_border_score_100 else f"🥇100: Unknown"
                 )
             if self.arena_border_500_channel:
                 arena_border_score_500 = idola.get_top_500_arena_border()
                 channel = self.client.get_channel(int(self.arena_border_500_channel))
                 await channel.edit(
-                    name=f"🥈500: {arena_border_score_500:,d}"
-                    if arena_border_score_500
-                    else f"🥈500: Unknown"
+                    name=f"🥈500: {arena_border_score_500:,d}" if arena_border_score_500 else f"🥈500: Unknown"
                 )
             if self.arena_border_1000_channel:
                 arena_border_score_1000 = idola.get_top_1000_arena_border()
                 channel = self.client.get_channel(int(self.arena_border_1000_channel))
                 await channel.edit(
-                    name=f"🥉1K: {arena_border_score_1000:,d}"
-                    if arena_border_score_1000
-                    else f"🥉1K: Unknown"
+                    name=f"🥉1K: {arena_border_score_1000:,d}" if arena_border_score_1000 else f"🥉1K: Unknown"
                 )
             # Suppression
             if self.suppression_border_100_channel:
-                raid_suppression_border_100 = (
-                    idola.get_top_100_raid_suppression_border()
-                )
-                channel = self.client.get_channel(
-                    int(self.suppression_border_100_channel)
-                )
+                raid_suppression_border_100 = idola.get_top_100_raid_suppression_border()
+                channel = self.client.get_channel(int(self.suppression_border_100_channel))
                 await channel.edit(
-                    name=f"🥇100: {raid_suppression_border_100:,d}"
-                    if raid_suppression_border_100
-                    else f"🥇100: Unknown"
+                    name=f"🥇100: {raid_suppression_border_100:,d}" if raid_suppression_border_100 else f"🥇100: Unknown"
                 )
             if self.suppression_border_1000_channel:
-                raid_suppression_border_1000 = (
-                    idola.get_top_1000_raid_suppression_border()
-                )
-                channel = self.client.get_channel(
-                    int(self.suppression_border_1000_channel)
-                )
+                raid_suppression_border_1000 = idola.get_top_1000_raid_suppression_border()
+                channel = self.client.get_channel(int(self.suppression_border_1000_channel))
                 await channel.edit(
-                    name=f"🥈1K: {raid_suppression_border_1000:,d}"
-                    if raid_suppression_border_1000
-                    else f"🥈1K: Unknown"
+                    name=f"🥈1K: {raid_suppression_border_1000:,d}" if raid_suppression_border_1000 else f"🥈1K: Unknown"
                 )
             if self.suppression_border_5000_channel:
-                raid_suppression_border_5000 = (
-                    idola.get_top_5000_raid_suppression_border()
-                )
-                channel = self.client.get_channel(
-                    int(self.suppression_border_5000_channel)
-                )
+                raid_suppression_border_5000 = idola.get_top_5000_raid_suppression_border()
+                channel = self.client.get_channel(int(self.suppression_border_5000_channel))
                 await channel.edit(
-                    name=f"🥉5K: {raid_suppression_border_5000:,d}"
-                    if raid_suppression_border_5000
-                    else f"🥉5K: Unknown"
+                    name=f"🥉5K: {raid_suppression_border_5000:,d}" if raid_suppression_border_5000 else f"🥉5K: Unknown"
                 )
             # Creation
             if self.creation_border_100_channel:
                 raid_creation_border_100 = idola.get_top_100_raid_creation_border()
                 channel = self.client.get_channel(int(self.creation_border_100_channel))
                 await channel.edit(
-                    name=f"🥇100: {raid_creation_border_100:,d}"
-                    if raid_creation_border_100
-                    else f"🥇100: Unknown"
+                    name=f"🥇100: {raid_creation_border_100:,d}" if raid_creation_border_100 else f"🥇100: Unknown"
                 )
             if self.creation_border_1000_channel:
                 raid_creation_border_1000 = idola.get_top_1000_raid_creation_border()
-                channel = self.client.get_channel(
-                    int(self.creation_border_1000_channel)
-                )
+                channel = self.client.get_channel(int(self.creation_border_1000_channel))
                 await channel.edit(
-                    name=f"🥈1K: {raid_creation_border_1000:,d}"
-                    if raid_creation_border_1000
-                    else f"🥈1K: Unknown"
+                    name=f"🥈1K: {raid_creation_border_1000:,d}" if raid_creation_border_1000 else f"🥈1K: Unknown"
                 )
             if self.creation_border_5000_channel:
                 raid_creation_border_5000 = idola.get_top_5000_raid_creation_border()
-                channel = self.client.get_channel(
-                    int(self.creation_border_5000_channel)
-                )
+                channel = self.client.get_channel(int(self.creation_border_5000_channel))
                 await channel.edit(
-                    name=f"🥉5K: {raid_creation_border_5000:,d}"
-                    if raid_creation_border_5000
-                    else f"🥉5K: Unknown"
+                    name=f"🥉5K: {raid_creation_border_5000:,d}" if raid_creation_border_5000 else f"🥉5K: Unknown"
                 )
         except Exception as e:
             logger.exception(e)
@@ -494,35 +409,25 @@ class IDOLA(commands.Cog):
             title="Idola Arena Border",
             color=discord.Colour.blue(),
         )
-        embed.set_thumbnail(
-            url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/arena.png"
-        )
+        embed.set_thumbnail(url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/arena.png")
         embed.add_field(
             name="Top 50",
-            value=f"{border_score_point_50:,d} points"
-            if border_score_point_50
-            else "Unknown",
+            value=f"{border_score_point_50:,d} points" if border_score_point_50 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 100",
-            value=f"{border_score_point_100:,d} points"
-            if border_score_point_100
-            else "Unknown",
+            value=f"{border_score_point_100:,d} points" if border_score_point_100 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 500",
-            value=f"{border_score_point_500:,d} points"
-            if border_score_point_500
-            else "Unknown",
+            value=f"{border_score_point_500:,d} points" if border_score_point_500 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 1000",
-            value=f"{border_score_point_1000:,d} points"
-            if border_score_point_1000
-            else "Unknown",
+            value=f"{border_score_point_1000:,d} points" if border_score_point_1000 else "Unknown",
             inline=True,
         )
         embed.add_field(name="Time Left", value=time_left, inline=False)
@@ -555,42 +460,30 @@ class IDOLA(commands.Cog):
             title="Idola Raid Suppression Border",
             color=discord.Colour.blue(),
         )
-        embed.set_thumbnail(
-            url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png"
-        )
+        embed.set_thumbnail(url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png")
         embed.add_field(
             name="Top 100",
-            value=f"{border_score_point_100:,d} points"
-            if border_score_point_100
-            else "Unknown",
+            value=f"{border_score_point_100:,d} points" if border_score_point_100 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 500",
-            value=f"{border_score_point_500:,d} points"
-            if border_score_point_500
-            else "Unknown",
+            value=f"{border_score_point_500:,d} points" if border_score_point_500 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 1000",
-            value=f"{border_score_point_1000:,d} points"
-            if border_score_point_1000
-            else "Unknown",
+            value=f"{border_score_point_1000:,d} points" if border_score_point_1000 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 2000",
-            value=f"{border_score_point_2000:,d} points"
-            if border_score_point_2000
-            else "Unknown",
+            value=f"{border_score_point_2000:,d} points" if border_score_point_2000 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 5000",
-            value=f"{border_score_point_5000:,d} points"
-            if border_score_point_5000
-            else "Unknown",
+            value=f"{border_score_point_5000:,d} points" if border_score_point_5000 else "Unknown",
             inline=True,
         )
         embed.add_field(name="Time Left", value=time_left, inline=False)
@@ -619,45 +512,31 @@ class IDOLA(commands.Cog):
         end_date = idola.get_raid_event_end_date()
         time_left = idola.datetime_difference(current_time, end_date)
 
-        embed = discord.Embed(
-            title="Idola Raid Creation Border", color=discord.Colour.blue()
-        )
-        embed.set_thumbnail(
-            url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png"
-        )
+        embed = discord.Embed(title="Idola Raid Creation Border", color=discord.Colour.blue())
+        embed.set_thumbnail(url="https://raw.githubusercontent.com/iXyk/IdolaBot/master/idola/lib/assets/raid.png")
         embed.add_field(
             name="Top 100",
-            value=f"{border_score_point_100:,d} points"
-            if border_score_point_100
-            else "Unknown",
+            value=f"{border_score_point_100:,d} points" if border_score_point_100 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 500",
-            value=f"{border_score_point_500:,d} points"
-            if border_score_point_500
-            else "Unknown",
+            value=f"{border_score_point_500:,d} points" if border_score_point_500 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 1000",
-            value=f"{border_score_point_1000:,d} points"
-            if border_score_point_1000
-            else "Unknown",
+            value=f"{border_score_point_1000:,d} points" if border_score_point_1000 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 2000",
-            value=f"{border_score_point_2000:,d} points"
-            if border_score_point_2000
-            else "Unknown",
+            value=f"{border_score_point_2000:,d} points" if border_score_point_2000 else "Unknown",
             inline=True,
         )
         embed.add_field(
             name="Top 5000",
-            value=f"{border_score_point_5000:,d} points"
-            if border_score_point_5000
-            else "Unknown",
+            value=f"{border_score_point_5000:,d} points" if border_score_point_5000 else "Unknown",
             inline=True,
         )
         embed.add_field(name="Time Left", value=time_left, inline=False)
@@ -718,9 +597,7 @@ class IDOLA(commands.Cog):
             return
 
         try:
-            nnstjp_link = NNSTJPWebVisualiser.generate_shareable_link(
-                arena_team["party_info"]
-            )
+            nnstjp_link = NNSTJPWebVisualiser.generate_shareable_link(arena_team["party_info"])
             nnstjp_formatted_link = f"NNSTJP: [{nnstjp_link}]({nnstjp_link})"
         except Exception as e:
             logger.exception(e)
@@ -884,16 +761,12 @@ class IDOLA(commands.Cog):
             description=guild_info["introduction"],
             color=discord.Colour.blue(),
         )
-        embed.add_field(
-            name="Leader", value=guild_info["leader_user_name"], inline=True
-        )
+        embed.add_field(name="Leader", value=guild_info["leader_user_name"], inline=True)
         embed.add_field(name="Display ID", value=guild_info["display_id"], inline=True)
         embed.add_field(name="Members", value=guild_info["membership"], inline=True)
         embed.add_field(
             name="est",
-            value=idola.datetime_jp_format(
-                idola.epoch_to_datetime(guild_info["established_at"])
-            ),
+            value=idola.datetime_jp_format(idola.epoch_to_datetime(guild_info["established_at"])),
             inline=True,
         )
         embed.add_field(name="MemberList", value=guild_memberlist_msg, inline=False)
@@ -904,9 +777,7 @@ class IDOLA(commands.Cog):
         """Search for open brigades by their brigade name"""
         guild_search_result = idola.get_guild_from_guild_name(guild_name)
         if not guild_search_result:
-            await self.send_embed_error(
-                ctx, "Could not find brigade by that name, they may be full"
-            )
+            await self.send_embed_error(ctx, "Could not find brigade by that name, they may be full")
             return
         message = []
         for i, guild in enumerate(guild_search_result[:10]):
@@ -930,9 +801,7 @@ class IDOLA(commands.Cog):
         """Search for open brigades by their Display ID"""
         guild_search_result = idola.get_guild_id_from_display_id(display_id)
         if not guild_search_result:
-            await self.send_embed_error(
-                ctx, "Could not find brigade by that name, they may be full"
-            )
+            await self.send_embed_error(ctx, "Could not find brigade by that name, they may be full")
             return
         message = []
         for i, guild in enumerate(guild_search_result[:10]):
@@ -964,22 +833,16 @@ class IDOLA(commands.Cog):
                 )
                 return
         player_name, char_option = idola.get_arena_next_options(int(profile_id))
-        embed = discord.Embed(
-            title=player_name, description="\u200b", color=discord.Colour.blue()
-        )
+        embed = discord.Embed(title=player_name, description="\u200b", color=discord.Colour.blue())
         embed.set_author(name="Arena Roll")
         for char in char_option:
-            embed.add_field(
-                name="\u200b", value=f"__**{char['character_name']}**__", inline=False
-            )
+            embed.add_field(name="\u200b", value=f"__**{char['character_name']}**__", inline=False)
             embed.add_field(
                 name=char["weapon_symbol"],
                 value=char["weapon_next_option"],
                 inline=False,
             )
-            embed.add_field(
-                name=char["soul_symbol"], value=char["soul_next_option"], inline=False
-            )
+            embed.add_field(name=char["soul_symbol"], value=char["soul_next_option"], inline=False)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -1023,9 +886,7 @@ class IDOLA(commands.Cog):
         embed.set_thumbnail(url=soul.icon_url)
         embed.add_field(name="Base Stats", value=soul.base_stats, inline=True)
         if soul.arena_stats:
-            embed.add_field(
-                name="Arena/Raid Stats", value=soul.arena_stats, inline=True
-            )
+            embed.add_field(name="Arena/Raid Stats", value=soul.arena_stats, inline=True)
         else:
             embed.add_field(name="Requirements", value=soul.requirements, inline=True)
         embed.add_field(name="Effect", value=soul.effect, inline=False)

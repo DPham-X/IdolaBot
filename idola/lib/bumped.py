@@ -115,9 +115,7 @@ class BumpedParser(object):
         effect = bumped_table_col[4].getText().strip()
 
         en_name, _, jp_name = name.partition("\n")
-        cleaned_effect = (
-            re.sub(r"\n{2,}", r" ", effect).replace("\n[\n", "[").replace("\n]", "]")
-        )
+        cleaned_effect = re.sub(r"\n{2,}", r" ", effect).replace("\n[\n", "[").replace("\n]", "]")
         return {
             "en_name": en_name,
             "jp_name": jp_name,
@@ -172,9 +170,7 @@ class BumpedParser(object):
         en_name, _, jp_name = name.partition("\n")
         en_name = en_name.strip()
         jp_name = jp_name.strip()
-        cleaned_effect = (
-            re.sub(r"\n{2,}", r" ", effect).replace("\n[\n", "[").replace("\n]", "]")
-        )
+        cleaned_effect = re.sub(r"\n{2,}", r" ", effect).replace("\n[\n", "[").replace("\n]", "]")
 
         return {
             "en_name": en_name,
@@ -187,25 +183,19 @@ class BumpedParser(object):
         }
 
     def get_unfuzzed_weapon_name(self, weapon_name: str) -> Optional[str]:
-        unfuzz_weapon_name, score = process.extractOne(
-            weapon_name, self.weapon_symbols.keys(), scorer=custom_scorer
-        )
+        unfuzz_weapon_name, score = process.extractOne(weapon_name, self.weapon_symbols.keys(), scorer=custom_scorer)
         if score < self._FUZZY_THRESHOLD_SCORE:
             return None
         return unfuzz_weapon_name
 
     def get_unfuzzed_soul_name(self, soul_name: str) -> Optional[str]:
-        unfuzz_soul_name, score = process.extractOne(
-            soul_name, self.soul_symbols.keys(), scorer=custom_scorer
-        )
+        unfuzz_soul_name, score = process.extractOne(soul_name, self.soul_symbols.keys(), scorer=custom_scorer)
         if score < self._FUZZY_THRESHOLD_SCORE:
             return None
         return unfuzz_soul_name
 
     def get_weapon_database(self) -> set[str]:
-        return set(
-            weapon_symbol.en_name for weapon_symbol in self.weapon_symbols.values()
-        )
+        return set(weapon_symbol.en_name for weapon_symbol in self.weapon_symbols.values())
 
     def get_soul_database(self) -> set[str]:
         return set(soul_symbol.en_name for soul_symbol in self.soul_symbols.values())

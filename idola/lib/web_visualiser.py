@@ -82,12 +82,8 @@ class PartyStats(object):
 
     @classmethod
     def _set_character(cls, data, party_info):
-        law_characters = [
-            str(character["character"]["char_id"]) for character in party_info["law"]
-        ]
-        chaos_characters = [
-            str(character["character"]["char_id"]) for character in party_info["chaos"]
-        ]
+        law_characters = [str(character["character"]["char_id"]) for character in party_info["law"]]
+        chaos_characters = [str(character["character"]["char_id"]) for character in party_info["chaos"]]
         character_ids_encoded = []
         for character in chain(law_characters, chaos_characters):
             character_ids_encoded.append(character[:-2] + " " + character[-2:])
@@ -95,13 +91,8 @@ class PartyStats(object):
 
     @classmethod
     def _set_character_lb(cls, data, party_info):
-        law_characters = [
-            str(character["character"]["potential"]) for character in party_info["law"]
-        ]
-        chaos_characters = [
-            str(character["character"]["potential"])
-            for character in party_info["chaos"]
-        ]
+        law_characters = [str(character["character"]["potential"]) for character in party_info["law"]]
+        chaos_characters = [str(character["character"]["potential"]) for character in party_info["chaos"]]
         lb_encoded = []
         for character in chain(law_characters, chaos_characters):
             lb_encoded.append(character)
@@ -109,12 +100,8 @@ class PartyStats(object):
 
     @classmethod
     def _set_character_d(cls, data, party_info):
-        law_characters = [
-            character["destiny_bonus_status"] for character in party_info["law"]
-        ]
-        chaos_characters = [
-            character["destiny_bonus_status"] for character in party_info["chaos"]
-        ]
+        law_characters = [character["destiny_bonus_status"] for character in party_info["law"]]
+        chaos_characters = [character["destiny_bonus_status"] for character in party_info["chaos"]]
         d_encoded = []
         for db_status in chain(law_characters, chaos_characters):
             d_encoded.append(1 if db_status >= 1 else 0.5)
@@ -122,12 +109,8 @@ class PartyStats(object):
 
     @classmethod
     def _set_character_db(cls, data, party_info):
-        law_characters = [
-            str(character["destiny_bonus_level"]) for character in party_info["law"]
-        ]
-        chaos_characters = [
-            str(character["destiny_bonus_level"]) for character in party_info["chaos"]
-        ]
+        law_characters = [str(character["destiny_bonus_level"]) for character in party_info["law"]]
+        chaos_characters = [str(character["destiny_bonus_level"]) for character in party_info["chaos"]]
         db_encoded = []
         for character in chain(law_characters, chaos_characters):
             db_encoded.append(character)
@@ -135,32 +118,16 @@ class PartyStats(object):
 
     @classmethod
     def _set_weapon_symbols(cls, data, party_info):
-        law_weapon_symbols = [
-            str(character["weapon_symbol"]["symbol_id"])
-            for character in party_info["law"]
-        ]
-        chaos_weapon_symbols = [
-            str(character["weapon_symbol"]["symbol_id"])
-            for character in party_info["chaos"]
-        ]
-        weapon_symbols = [
-            character for character in chain(law_weapon_symbols, chaos_weapon_symbols)
-        ]
+        law_weapon_symbols = [str(character["weapon_symbol"]["symbol_id"]) for character in party_info["law"]]
+        chaos_weapon_symbols = [str(character["weapon_symbol"]["symbol_id"]) for character in party_info["chaos"]]
+        weapon_symbols = [character for character in chain(law_weapon_symbols, chaos_weapon_symbols)]
         data["WeaponID"] = weapon_symbols
 
     @classmethod
     def _set_soul_symbols(cls, data, party_info):
-        law_soul_symbols = [
-            str(character["soul_symbol"]["symbol_id"])
-            for character in party_info["law"]
-        ]
-        chaos_soul_symbols = [
-            str(character["soul_symbol"]["symbol_id"])
-            for character in party_info["chaos"]
-        ]
-        soul_symbols = [
-            character for character in chain(law_soul_symbols, chaos_soul_symbols)
-        ]
+        law_soul_symbols = [str(character["soul_symbol"]["symbol_id"]) for character in party_info["law"]]
+        chaos_soul_symbols = [str(character["soul_symbol"]["symbol_id"]) for character in party_info["chaos"]]
+        soul_symbols = [character for character in chain(law_soul_symbols, chaos_soul_symbols)]
         data["SoulID"] = soul_symbols
 
     @classmethod
@@ -196,10 +163,6 @@ class NNSTJPWebVisualiser(PartyStats):
     @classmethod
     def generate_shareable_link(cls, party_info):
         data = cls._import_party_info(party_info)
-        link = (
-            cls.url
-            + "?"
-            + quote(json.dumps(data, separators=(",", ":")), safe="~@#$&()*!+=:;,.?/'")
-        )
+        link = cls.url + "?" + quote(json.dumps(data, separators=(",", ":")), safe="~@#$&()*!+=:;,.?/'")
         shortened_link = shorten_url(link)
         return shortened_link

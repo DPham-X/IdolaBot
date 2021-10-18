@@ -92,9 +92,7 @@ class TwitterAPI:
         try:
             translator = google_translator()
             message = message.replace("イドラ", "IDOLA")
-            translated_text = translator.translate(
-                message, lang_src="ja", lang_tgt="en"
-            )
+            translated_text = translator.translate(message, lang_src="ja", lang_tgt="en")
             return translated_text
         except Exception as e:
             logger.exception(e)
