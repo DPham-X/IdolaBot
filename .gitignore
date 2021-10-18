@@ -7,3 +7,5 @@ __pycache__
 *.log
 *.out
 .DS_STORE
+.venv
+.mypy_cache
