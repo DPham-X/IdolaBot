@@ -9,7 +9,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import has_permissions
 from lib.api import IdolaAPI
 from lib.bumped import BumpedParser
-from lib.twitter_api import TwitterAPI
+from lib.twitter import TwitterAPI
 from lib.util import base_round
 from lib.web_visualiser import NNSTJPWebVisualiser
 
@@ -1047,11 +1047,10 @@ class IDOLA(commands.Cog):
             await self.send_embed_error(ctx, "Twitter channel not defined")
             return
 
-        tweets = self.twitter_api.get_test_tweet()
-        if not tweets:
+        tweet = self.twitter_api.get_test_tweet()
+        if not tweet:
             await self.send_embed_info(ctx, "No test tweet to get")
             return
-        tweet = tweets[0]
         embed = discord.Embed(
             title="\u200b",
             description=self.twitter_api.translate(tweet.full_text),

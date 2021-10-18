@@ -11,7 +11,11 @@ logger = logging.getLogger(f"idola.{__name__}")
 
 class TwitterAPI:
     def __init__(
-        self, consumer_key, consumer_secret, access_token_key, access_token_secret
+        self,
+        consumer_key: str,
+        consumer_secret: str,
+        access_token_key: str,
+        access_token_secret: str,
     ):
         self.api = None
         self.existing_tweets = set()
@@ -26,7 +30,7 @@ class TwitterAPI:
         self.load_existing_tweets()
         self.start()
 
-    def load_existing_tweets(self):
+    def load_existing_tweets(self) -> bool:
         if not self.db_location:
             return
 
@@ -42,11 +46,11 @@ class TwitterAPI:
             self.existing_tweets = set()
         return True
 
-    def save_existing_tweets(self):
+    def save_existing_tweets(self) -> None:
         with open(self.db_location, "wb") as f:
             pickle.dump(self.existing_tweets, f)
 
-    def start(self):
+    def start(self) -> None:
         self.api = twitter.Api(
             consumer_key=self.consumer_key,
             consumer_secret=self.consumer_secret,
@@ -68,11 +72,6 @@ class TwitterAPI:
         for tweet in tweets:
             if tweet.id in self.existing_tweets:
                 continue
-            created_at_ts = datetime.datetime.strptime(
-                tweet.created_at, "%a %b %d %H:%M:%S +0000 %Y"
-            ).replace(tzinfo=pytz.UTC)
-            # if created_at_ts < self.bot_start_ts:
-            #     continue
             unseen_tweets.insert(0, tweet)
             self.existing_tweets.add(tweet.id)
         if unseen_tweets:
@@ -87,7 +86,7 @@ class TwitterAPI:
             include_rts=True,
             count=1,
         )
-        return tweets
+        return tweets[0] if len(tweets) != 1 else None
 
     def translate(self, message):
         try:
