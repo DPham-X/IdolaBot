@@ -6,7 +6,7 @@ on:
     branches: [master]
 
 jobs:
-  test-MonkeyPrinter:
+  test-idolabot:
     runs-on: ubuntu-latest
 
     steps:
